@@ -1,0 +1,30 @@
+@startuml Sequence Inscription
+
+actor Utilisateur as U
+participant "Frontend\nReact" as F
+participant "Backend\nExpress" as B
+participant "Base de données\nPostgreSQL" as DB
+
+U -> F : Remplit le formulaire\n(username, email, password, genres)
+F -> F : Validation côté client
+F -> B : POST /api/auth/register\n{ username, email, password, genres }
+
+B -> DB : SELECT * FROM users\nWHERE email = ?
+DB --> B : Résultat
+
+alt Email déjà utilisé
+  B --> F : 409 Conflict\n{ message: "Email déjà utilisé" }
+  F --> U : Affiche l'erreur
+else Email disponible
+  B -> B : Bcrypt.hash(password)
+  B -> DB : INSERT INTO users\n(username, email, passwordHash)
+  DB --> B : Utilisateur créé
+  B -> DB : INSERT INTO user_preferences\n(userId, genreIds)
+  DB --> B : Préférences sauvegardées
+  B -> B : JWT.sign(userId, secret)
+  B --> F : 201 Created\n{ token, user }
+  F -> F : Stocke le token
+  F --> U : Redirige vers l'accueil
+end
+
+@enduml

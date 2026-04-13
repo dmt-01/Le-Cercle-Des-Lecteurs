@@ -1,0 +1,36 @@
+Design system et accessibilité RGAA
+
+La conception de l'interface a été guidée dès le départ par les exigences du Référentiel Général d'Amélioration de l'Accessibilité (RGAA) et du standard international Web Content Accessibility Guidelines (WCAG) 2.1 niveau AA. L'ensemble des décisions de design a été formalisé dans un design system défini sur Figma avant tout développement.
+
+Palette de couleurs
+
+Les couleurs ont été sélectionnées et validées selon les exigences de contraste du RGAA. Chaque combinaison texte/fond a été mesurée.
+
+Combinaison			Ratio			SeuilRGAA			Résultat
+Texte bleu nuit sur beige clair	17.4:1			4.5:1				Conforme
+Bordeaux sur beige clair	8.3:1			4.5:1				Conforme
+Lien bleu sur beige clair	6.9:1			4.5:1				Conforme
+Texte blanc sur vert succès	7.2:1			4.5:1				Conforme
+Texte blanc sur rouge erreur	5.8:1			4.5:1				Conforme
+
+La palette retenue s'articule autour de quatre couleurs principales : le bleu nuit #1A1A2E pour les textes et éléments structurants, le bordeaux #6B2737 pour les éléments d'accentuation, le beige clair #F5F0E8 comme fond principal et le beige moyen #E8E0D0 comme fond secondaire. Des couleurs fonctionnelles complètent la palette pour les états succès, alerte, erreur et lien.
+
+Typographie
+
+Deux polices ont été sélectionnées pour leurs qualités de lisibilité à l'écran. Inter est utilisée pour tous les éléments d'interface : navigation, boutons, libellés, formulaires. Conçue spécifiquement pour les écrans, elle offre une excellente lisibilité à toutes les tailles.
+Atkinson Hyperlegible est réservée aux textes longs tels que les critiques, articles et descriptions. Elle a été développée par le Braille Institute of America pour maximiser la lisibilité pour les personnes malvoyantes, en maximisant les différences visuelles entre les caractères.
+
+Tailles et espacements
+
+Les tailles de police respectent les préconisations RGAA. Le corps de texte est défini à 16px minimum avec un interligne de 1.5, garantissant une lecture confortable. La hiérarchie typographique suit une progression cohérente : H1 à 32px, H2 à 24px, H3 à 20px et texte secondaire à 14px. L'ensemble des titres utilise la graisse 500 pour éviter les contrastes trop marqués tout en maintenant la hiérarchie visuelle.
+Le système d'espacements repose sur une échelle en multiples de 4 : 4px, 8px, 12px, 16px, 24px, 32px, 48px et 64px. Cette grille assure une cohérence visuelle sur l'ensemble des pages et facilite le travail de développement.
+
+Rayons de bordure
+
+Un système de quatre rayons a été défini pour maintenir la cohérence des composants : 4px pour les badges et éléments discrets, 8px pour les boutons et champs de formulaire, 12px pour les cards et conteneurs, et 16px pour les modales et panneaux.
+
+Règles d'accessibilité strictes
+
+Au-delà des contrastes, plusieurs règles non négociables ont été appliquées systématiquement tout au long de la conception.
+La taille minimale des zones cliquables est fixée à 44×44px conformément aux critères RGAA, garantissant une utilisation confortable sur écran tactile et pour les personnes à mobilité réduite. Chaque élément interactif dispose d'un focus visible avec un contour d'au moins 3px, indispensable pour la navigation au clavier. La couleur n'est jamais utilisée seule pour transmettre une information : chaque état (erreur, succès, alerte) est systématiquement accompagné d'une icône et d'un texte explicite.
+Côté développement, ces règles se traduisent par l'obligation d'utiliser des balises HTML sémantiques (header, nav, main, article, section, footer), un h1 unique par page, des attributs alt descriptifs sur toutes les images, des label explicitement associés à chaque champ de formulaire, et des attributs aria-label sur tous les boutons dont l'intitulé visuel est insuffisant.

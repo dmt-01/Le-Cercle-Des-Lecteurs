@@ -1,0 +1,32 @@
+@startuml Livres et Critiques
+left to right direction
+
+actor Visiteur as V
+actor Membre as M
+M --|> V
+
+rectangle "Livres & Critiques" {
+  usecase "Parcourir le catalogue" as UC11
+  usecase "Rechercher un livre" as UC12
+  usecase "Consulter fiche livre" as UC13
+  usecase "Marquer comme lu" as UC14
+  usecase "Ajouter à la wishlist" as UC15
+  usecase "Noter un livre" as UC16
+  usecase "Rédiger une critique" as UC17
+  usecase "Liker une critique" as UC18
+  usecase "Voir les recommandations" as UC19
+
+  V --> UC11
+  V --> UC12
+  V --> UC13
+  M --> UC14
+  M --> UC15
+  M --> UC16
+  M --> UC17
+  M --> UC18
+  M --> UC19
+
+  UC16 .> UC13 : <<include>>
+  UC17 .> UC13 : <<include>>
+}
+@enduml

@@ -1,0 +1,26 @@
+@startuml Evenements
+left to right direction
+
+actor Visiteur as V
+actor Membre as M
+actor Administrateur as ADMIN
+M --|> V
+ADMIN --|> M
+
+rectangle "Événements" {
+  usecase "Consulter le calendrier" as UC30
+  usecase "S'inscrire à un événement" as UC31
+  usecase "Annuler son inscription" as UC32
+  usecase "Créer un événement" as UC33
+  usecase "Gérer les événements" as UC34
+
+  V --> UC30
+  M --> UC31
+  M --> UC32
+  ADMIN --> UC33
+  ADMIN --> UC34
+
+  UC31 .> UC30 : <<include>>
+  UC32 .> UC31 : <<extend>>
+}
+@enduml

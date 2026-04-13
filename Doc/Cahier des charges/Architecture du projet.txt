@@ -1,0 +1,33 @@
+Architecture technique et choix technologiques
+
+
+L'application repose sur une architecture trois tiers séparant clairement l'interface utilisateur, la logique métier et la persistance des données.
+
+Frontend — React TypeScript (port 5173)
+
+Le frontend est développé avec React en TypeScript. Ce choix se justifie par plusieurs raisons : le typage fort de TypeScript permet de détecter les erreurs à la compilation plutôt qu'à l'exécution, les composants React sont réutilisables et maintenables, et le rendu côté client évite le rechargement complet de la page à chaque interaction, offrant une expérience utilisateur fluide. L'application est initialisée avec Vite pour ses performances de build supérieures à Create React App.
+TailwindCSS est utilisé pour le style. Ce framework utilitaire permet d'écrire moins de CSS personnalisé, d'accélérer le développement et de maintenir une cohérence visuelle. Il est par ailleurs mentionné dans le cahier des charges initial.
+
+Backend — Express TypeScript (port 3000)
+
+Le backend expose une API REST développée avec Express.js en TypeScript. Express a été retenu pour sa légèreté et sa flexibilité : il n'impose pas de structure rigide et s'adapte parfaitement à la conception d'une API REST. Le choix de TypeScript assure la cohérence du typage entre le frontend et le backend.
+Prisma est utilisé comme ORM. Natif TypeScript, il génère automatiquement les types à partir du schéma de base de données, garantissant une cohérence totale entre le modèle de données et le code. Il remplace Doctrine mentionné dans le CDC, le projet ayant délibérément dévié vers une stack TypeScript unifiée.
+L'authentification repose sur JWT (JSON Web Tokens) pour la gestion des sessions sans état, combiné à Bcrypt pour le hachage sécurisé des mots de passe. Ces deux technologies constituent le standard de l'industrie pour la sécurisation des API REST.
+
+Base de données — PostgreSQL (port 5432)
+
+PostgreSQL a été retenu comme système de gestion de base de données relationnelle. Robuste, open source et largement adopté en production, il correspond parfaitement au modèle relationnel défini dans le MLD. Sa compatibilité native avec Prisma et son support des types avancés en font le choix idéal pour ce projet.
+
+Tableau récapitulatif
+
+Couche			Technologie			Justification
+Frontend		ReactTypeScript			Typage fort, composants réutilisables, SPA
+Style			TailwindCSS			Utilitaire, rapide, mentionné dans le CDC
+Backend			Express TypeScript		Léger, flexible, API REST
+ORM			Prisma				Natif TS, cohérence des types
+Auth			JWT + Bcrypt			Standard sécurité industrie
+BDD			PostgreSQL			Robuste, open source, relationnel
+
+Note sur la déviation du CDC
+
+Le cahier des charges initial préconisait Symfony 6 avec Twig. Le choix d'une stack TypeScript unifiée (React + Express) a été délibérément retenu afin de garantir une cohérence technologique entre le frontend et le backend, de faciliter le partage de types entre les deux couches, et de s'aligner sur les standards actuels du développement web.

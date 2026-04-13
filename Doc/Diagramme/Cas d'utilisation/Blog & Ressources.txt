@@ -1,0 +1,32 @@
+@startuml Blog et Ressources
+left to right direction
+
+actor Visiteur as V
+actor Membre as M
+actor Modérateur as MOD
+actor Administrateur as ADMIN
+M --|> V
+MOD --|> M
+ADMIN --|> MOD
+
+rectangle "Blog & Ressources" {
+  usecase "Lire un article" as UC35
+  usecase "Commenter un article" as UC36
+  usecase "Filtrer par catégorie" as UC37
+  usecase "S'abonner à la newsletter" as UC38
+  usecase "Partager un article" as UC39
+  usecase "Publier un article" as UC40
+  usecase "Signaler un commentaire" as UC41
+
+  V --> UC35
+  V --> UC37
+  M --> UC36
+  M --> UC38
+  M --> UC39
+  MOD --> UC41
+  ADMIN --> UC40
+
+  UC36 .> UC35 : <<include>>
+  UC41 .> UC36 : <<extend>>
+}
+@enduml

@@ -1,0 +1,18 @@
+@startuml Messagerie privee
+left to right direction
+
+actor Membre as M
+
+rectangle "Messagerie privée" {
+  usecase "Envoyer un message privé" as UC27
+  usecase "Voir si message lu" as UC28
+  usecase "Partager un livre en message" as UC29
+
+  M --> UC27
+  M --> UC28
+  M --> UC29
+
+  UC28 .> UC27 : <<include>>
+  UC29 .> UC27 : <<extend>>
+}
+@enduml

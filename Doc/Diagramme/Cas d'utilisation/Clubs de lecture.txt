@@ -1,0 +1,28 @@
+@startuml Clubs de lecture
+left to right direction
+
+actor Membre as M
+actor Modérateur as MOD
+MOD --|> M
+
+rectangle "Clubs de lecture" {
+  usecase "Créer un club" as UC20
+  usecase "Rejoindre un club" as UC21
+  usecase "Quitter un club" as UC22
+  usecase "Envoyer un message groupe" as UC23
+  usecase "Rejoindre session Zoom" as UC24
+  usecase "Exclure un membre" as UC25
+  usecase "Épingler un message" as UC26
+
+  M --> UC20
+  M --> UC21
+  M --> UC22
+  M --> UC23
+  M --> UC24
+  MOD --> UC25
+  MOD --> UC26
+
+  UC23 .> UC21 : <<include>>
+  UC24 .> UC21 : <<include>>
+}
+@enduml

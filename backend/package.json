@@ -8,13 +8,15 @@
     "dev": "NODE_ENV=dev tsx watch index.ts",
     "preprod": "NODE_ENV=preprod tsx watch index.ts",
     "start": "NODE_ENV=prod node dist/index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -24,6 +26,7 @@
     "express-rate-limit": "^8.3.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -33,6 +36,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
     "prisma": "^7.7.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"

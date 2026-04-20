@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Monte toutes les routes de l'application (définies dans src/routes/index.ts)
-app.use(router);
+app.use("/api", router);
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

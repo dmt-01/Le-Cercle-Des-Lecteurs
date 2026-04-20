@@ -1,5 +1,5 @@
-import prisma from "../libs/prisma";
 import Token from "../modeles/Token";
+import prisma from "../libs/prisma";
 
 /**
  * Repository gérant la persistance des tokens en base de données.

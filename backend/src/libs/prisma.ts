@@ -1,6 +1,6 @@
-import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
 
 /**
  * Instance unique du client Prisma partagée dans toute l'application.

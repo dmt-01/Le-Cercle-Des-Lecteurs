@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import Token from "../modeles/Token";
 import TokenRepository from "../repositories/tokenRepository";
+import { Request, Response, NextFunction } from "express";
+import Token from "../modeles/Token";
+import jwt from "jsonwebtoken";
 
 /**
  * Middleware de protection des routes authentifiées.

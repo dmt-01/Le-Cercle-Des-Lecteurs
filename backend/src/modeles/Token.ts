@@ -1,5 +1,5 @@
-import crypto from "node:crypto";
 import { TokenService } from "../services/TokenService";
+import crypto from "node:crypto";
 
 /**
  * Modèle représentant un token d'authentification lié à un utilisateur.

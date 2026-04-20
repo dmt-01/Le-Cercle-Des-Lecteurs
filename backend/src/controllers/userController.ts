@@ -1,11 +1,11 @@
+import TokenRepository from "../repositories/tokenRepository";
 import UserRepository from "../repositories/userRepository";
+import { CookieService } from "../services/CookieService";
+import { TokenService } from "../services/TokenService";
 import UserService from "../services/userService";
 import { Controller } from "../libs/Controller";
-import User from "../modeles/User";
 import Token from "../modeles/Token";
-import TokenRepository from "../repositories/tokenRepository";
-import { TokenService } from "../services/TokenService";
-import { CookieService } from "../services/CookieService";
+import User from "../modeles/User";
 import argon2 from "argon2";
 
 /**

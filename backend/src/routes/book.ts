@@ -2,6 +2,7 @@ import { listBooksSchema, searchBooksSchema, createBookSchema, updateBookSchema 
 import BookController from "../controllers/bookController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";
+import reviewRouter from "./review";
 import { Router } from "express";
 
 const bookRouter = Router();
@@ -67,5 +68,11 @@ bookRouter.delete("/:id", requireAuth, (req, res) => {
   const controller = new BookController(req, res);
   controller.remove();
 });
+
+/**
+ * /books/:bookId/reviews — délégation au routeur des reviews
+ * mergeParams: true dans reviewRouter permet d'accéder à req.params.bookId
+ */
+bookRouter.use("/:bookId/reviews", reviewRouter);
 
 export default bookRouter;

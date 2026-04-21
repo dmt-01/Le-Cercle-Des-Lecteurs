@@ -45,7 +45,7 @@ model Book {
   id               String               @id @default(uuid()) @map("id_book")
   title            String               @db.VarChar(255)
   coverImage       String?              @map("cover_image") @db.VarChar(255)
-  description      String?              @db.VarChar(255)
+  description      String?
   publication_date DateTime?
   created_at       DateTime             @default(now())
   reviews          Review[]

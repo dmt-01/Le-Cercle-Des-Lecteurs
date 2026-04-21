@@ -24,8 +24,8 @@ export const searchBooksSchema = z.object({
  */
 export const createBookSchema = z.object({
   title: z.string().min(1).max(255),
-  coverImage: z.string().url().optional(),
-  description: z.string().max(255).optional(),
+  coverImage: z.url().optional(),
+  description: z.string().optional(),
   publicationDate: z.string().optional(),          // Format ISO : "2024-01-15"
   authorIds: z.array(z.string()).optional(),        // UUIDs des auteurs existants
   genreIds: z.array(z.string()).optional(),         // UUIDs des genres existants
@@ -37,7 +37,7 @@ export const createBookSchema = z.object({
  */
 export const updateBookSchema = z.object({
   title: z.string().min(1).max(255).optional(),
-  coverImage: z.string().url().optional(),
-  description: z.string().max(255).optional(),
+  coverImage: z.url().optional(),
+  description: z.string().optional(),
   publicationDate: z.string().optional(),
 });

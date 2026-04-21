@@ -20,8 +20,8 @@ export default class BookController extends Controller {
    */
   async list() {
     try {
-      // 0.0 REQUEST : Récupérer les query params validés par le middleware
-      const { page, limit, genre, tag, author } = this.request.query as {
+      // 0.0 REQUEST : Récupérer les query params validés et coercés par le middleware
+      const { page, limit, genre, tag, author } = this.request.validatedQuery as {
         page?: number;
         limit?: number;
         genre?: string;
@@ -60,7 +60,7 @@ export default class BookController extends Controller {
   async getById() {
     try {
       // 0.0 REQUEST : Récupérer l'UUID du livre dans les paramètres de route
-      const { id } = this.request.params;
+      const id = this.request.params.id as string;
 
       // 1.0 BOOK : Charger le livre depuis la base avec toutes ses relations
       const row = await bookRepository.findById(id);
@@ -121,7 +121,7 @@ export default class BookController extends Controller {
   async update() {
     try {
       // 0.0 REQUEST : Récupérer l'UUID et les données à modifier
-      const { id } = this.request.params;
+      const id = this.request.params.id as string;
       const data = this.request.body as {
         title?: string;
         coverImage?: string;
@@ -156,7 +156,7 @@ export default class BookController extends Controller {
   async remove() {
     try {
       // 0.0 REQUEST : Récupérer l'UUID du livre à supprimer
-      const { id } = this.request.params;
+      const id = this.request.params.id as string;
 
       // 1.0 BOOK : Supprimer le livre en base
       const deleted = await bookRepository.delete(id);
@@ -183,7 +183,7 @@ export default class BookController extends Controller {
   async search() {
     try {
       // 0.0 REQUEST : Récupérer le terme de recherche validé par le middleware
-      const { q } = this.request.query as { q: string };
+      const { q } = this.request.validatedQuery as { q: string };
 
       // 1.0 BOOKS : Rechercher les livres correspondants
       const rows = await bookRepository.search(q);

@@ -30,9 +30,10 @@ export function validate(schema: z.ZodTypeAny, source: "body" | "query" = "body"
       return;
     }
 
-    // Remplacer la source par les données validées et typées par Zod
+    // Mettre à jour la source avec les données validées et typées par Zod
+    // req.query ne conserve pas les types (toujours des strings) : on stocke dans validatedQuery
     if (source === "query") {
-      req.query = result.data as any;
+      req.validatedQuery = result.data as Record<string, any>;
     } else {
       req.body = result.data;
     }

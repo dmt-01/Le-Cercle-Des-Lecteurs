@@ -11,6 +11,9 @@ declare global {
   namespace Express {
     interface Request {
       userId?: string;
+      // Données de query string validées et coercées par le middleware validate()
+      // req.query contient toujours des strings ; validatedQuery contient les bons types Zod
+      validatedQuery?: Record<string, any>;
     }
   }
 }

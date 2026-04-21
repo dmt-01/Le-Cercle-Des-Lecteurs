@@ -75,6 +75,19 @@ export default class User {
     };
   };
 
+  /**
+   * Sérialise le profil public (sans email) pour GET /users/:id.
+   */
+  serializePublic = (): Record<string, string | undefined> => {
+    return {
+      id:            this.id,
+      username:      this.username,
+      bio:           this.bio,
+      profile_image: this.profile_image,
+      created_at:    this.created_at,
+    };
+  };
+
   // Getters — accès en lecture seule aux propriétés protégées
   getId = (): string | undefined => this.id;
   getUsername = (): string => this.username;

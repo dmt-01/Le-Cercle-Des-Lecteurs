@@ -29,6 +29,76 @@ export default class UserRepository {
   }
 
   /**
+   * Retourne le profil public d'un utilisateur avec ses compteurs.
+   * @param id - UUID de l'utilisateur
+   */
+  async findByIdWithStats(id: string) {
+    return await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id:           true,
+        username:     true,
+        bio:          true,
+        profileImage: true,
+        created_at:   true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            reviews:   true,
+            reading:   true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Met à jour les informations de profil d'un utilisateur.
+   * @param id   - UUID de l'utilisateur
+   * @param data - Champs à modifier
+   * @returns L'utilisateur mis à jour ou null si introuvable
+   */
+  async update(id: string, data: { username?: string; bio?: string; profileImage?: string }) {
+    try {
+      return await prisma.user.update({
+        where: { id },
+        data: {
+          username:     data.username,
+          bio:          data.bio,
+          profileImage: data.profileImage,
+        },
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Crée une relation de follow entre deux utilisateurs.
+   * @returns true si créé, false si déjà suivi
+   */
+  async follow(userId: string, userFollowedId: string): Promise<boolean> {
+    try {
+      await prisma.follow.create({ data: { userId, userFollowedId } });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Supprime la relation de follow entre deux utilisateurs.
+   * @returns true si supprimé, false si introuvable
+   */
+  async unfollow(userId: string, userFollowedId: string): Promise<boolean> {
+    const result = await prisma.follow.deleteMany({
+      where: { userId, userFollowedId },
+    });
+    return result.count > 0;
+  }
+
+  /**
    * Crée un nouvel utilisateur en base.
    * Les noms de champs sont convertis de snake_case (interne) vers camelCase (Prisma).
    * @param data - Données de l'utilisateur à insérer

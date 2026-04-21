@@ -42,13 +42,13 @@ export default class TokenRepository {
    * @returns L'identifiant du nouveau token créé
    */
   async replaceForUser(token: Token): Promise<number> {
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (transaction) => {
       // Supprimer l'ancien token de cet utilisateur
-      await tx.token.deleteMany({
+      await transaction.token.deleteMany({
         where: { userId: token.getUserId() },
       });
       // Insérer le nouveau token
-      return await tx.token.create({
+      return await transaction.token.create({
         data: {
           userId: token.getUserId(),
           tokenHash: token.getTokenHash(),

@@ -1,10 +1,8 @@
 import UserRepository from "../repositories/userRepository";
+import { AppError } from "../libs/AppError";
 import { Request } from "express";
+import User from "../modeles/User";
 
-/**
- * Instance unique du repository utilisateur utilisée par les méthodes statiques.
- * Instanciée au niveau du module pour éviter de la recréer à chaque appel.
- */
 const userRepository = new UserRepository();
 
 /**
@@ -86,5 +84,66 @@ export default class UserService {
       success: true,
       data: { email, password },
     };
+  }
+
+  static async getMe(userId: string) {
+    const found = await userRepository.findById(userId);
+    if (!found) throw new AppError("Utilisateur introuvable", 404);
+
+    return new User(
+      found.id,
+      found.username,
+      found.email,
+      found.passwordHash,
+      found.bio ?? undefined,
+      found.profileImage ?? undefined,
+      found.created_at.toISOString(),
+    ).serialize();
+  }
+
+  static async updateMe(userId: string, data: { username?: string; bio?: string; profileImage?: string }) {
+    const updated = await userRepository.update(userId, data);
+    if (!updated) throw new AppError("Utilisateur introuvable", 404);
+
+    return new User(
+      updated.id,
+      updated.username,
+      updated.email,
+      updated.passwordHash,
+      updated.bio ?? undefined,
+      updated.profileImage ?? undefined,
+      updated.created_at.toISOString(),
+    ).serialize();
+  }
+
+  static async getPublicProfile(id: string) {
+    const found = await userRepository.findByIdWithStats(id);
+    if (!found) throw new AppError("Utilisateur introuvable", 404);
+
+    return {
+      id:            found.id,
+      username:      found.username,
+      bio:           found.bio ?? null,
+      profile_image: found.profileImage ?? null,
+      created_at:    found.created_at,
+      followers:     found._count.followers,
+      following:     found._count.following,
+      reads:         found._count.reading,
+      reviews:       found._count.reviews,
+    };
+  }
+
+  static async follow(userId: string, userFollowedId: string) {
+    if (userId === userFollowedId) {
+      throw new AppError("Vous ne pouvez pas vous suivre vous-même", 400);
+    }
+
+    const done = await userRepository.follow(userId, userFollowedId);
+    if (!done) throw new AppError("Vous suivez déjà cet utilisateur", 409);
+  }
+
+  static async unfollow(userId: string, userFollowedId: string) {
+    const done = await userRepository.unfollow(userId, userFollowedId);
+    if (!done) throw new AppError("Vous ne suivez pas cet utilisateur", 404);
   }
 }

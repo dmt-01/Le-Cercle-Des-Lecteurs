@@ -1,4 +1,4 @@
-import { signupSchema, signinSchema } from "../validators/userValidators";
+import { signupSchema, signinSchema, updateUserSchema } from "../validators/userValidators";
 import UserController from "../controllers/userController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";
@@ -6,44 +6,40 @@ import { Router } from "express";
 
 const userRouter = Router();
 
-/**
- * POST /signup
- * 1. validate(signupSchema) — vérifie les données avec Zod avant d'entrer dans le contrôleur
- * 2. UserController.signup() — crée l'utilisateur et pose le cookie JWT
- */
 userRouter.post("/signup", validate(signupSchema), (req, res) => {
-  const controller = new UserController(req, res);
-  controller.signup();
+  new UserController(req, res).signup();
 });
 
-/**
- * POST /signin
- * 1. validate(signinSchema) — vérifie les données avec Zod avant d'entrer dans le contrôleur
- * 2. UserController.signin() — vérifie les credentials et pose le cookie JWT
- */
 userRouter.post("/signin", validate(signinSchema), (req, res) => {
-  const controller = new UserController(req, res);
-  controller.signin();
+  new UserController(req, res).signin();
 });
 
-/**
- * POST /refresh
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
- * 2. UserController.refresh() — génère un nouveau token, rotation en base, met à jour le cookie
- */
 userRouter.post("/refresh", requireAuth, (req, res) => {
-  const controller = new UserController(req, res);
-  controller.refresh();
+  new UserController(req, res).refresh();
 });
 
-/**
- * POST /logout
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
- * 2. UserController.logout() — supprime le token en base et efface le cookie
- */
 userRouter.post("/logout", requireAuth, (req, res) => {
-  const controller = new UserController(req, res);
-  controller.logout();
+  new UserController(req, res).logout();
+});
+
+userRouter.get("/me", requireAuth, (req, res) => {
+  new UserController(req, res).getMe();
+});
+
+userRouter.put("/me", requireAuth, validate(updateUserSchema), (req, res) => {
+  new UserController(req, res).updateMe();
+});
+
+userRouter.get("/:id", (req, res) => {
+  new UserController(req, res).getPublicProfile();
+});
+
+userRouter.post("/:id/follow", requireAuth, (req, res) => {
+  new UserController(req, res).follow();
+});
+
+userRouter.delete("/:id/follow", requireAuth, (req, res) => {
+  new UserController(req, res).unfollow();
 });
 
 export default userRouter;

@@ -1,19 +1,20 @@
 import { Router } from "express";
-import userRouter from "./user";
-import bookRouter from "./book";
+import userRouter     from "./user";
+import bookRouter     from "./book";
+import wishlistRouter from "./wishlist";
+import groupRouter    from "./group";
+import messageRouter  from "./message";
+import eventRouter    from "./event";
+import blogRouter     from "./blog";
 
-/**
- * Routeur principal de l'application.
- *
- * Agrège tous les sous-routeurs ici.
- * Ce routeur est monté dans index.ts via app.use(router).
- */
 const router = Router();
 
-// Routes d'authentification : /users/signup, /users/signin, /users/refresh, /users/logout
-router.use("/users", userRouter);
-
-// Routes des livres : /books, /books/:id, /books/search
-router.use("/books", bookRouter);
+router.use("/users",     userRouter);
+router.use("/books",     bookRouter);
+router.use("/wishlist",  wishlistRouter);
+router.use("/groups",    groupRouter);
+router.use("/messages",  messageRouter);
+router.use("/events",    eventRouter);
+router.use("/blog",      blogRouter);
 
 export default router;

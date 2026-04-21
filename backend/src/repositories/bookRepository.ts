@@ -181,6 +181,38 @@ export default class BookRepository {
   }
 
   /**
+   * Bascule l'état "lu" d'un livre pour un utilisateur.
+   * @returns true si marqué comme lu, false si retiré
+   */
+  async toggleRead(bookId: string, userId: string): Promise<boolean> {
+    const existing = await prisma.read.findUnique({
+      where: { bookId_userId: { bookId, userId } },
+    });
+    if (existing) {
+      await prisma.read.delete({ where: { bookId_userId: { bookId, userId } } });
+      return false;
+    }
+    await prisma.read.create({ data: { bookId, userId } });
+    return true;
+  }
+
+  /**
+   * Bascule le like d'un livre pour un utilisateur.
+   * @returns true si liké, false si retiré
+   */
+  async toggleLike(bookId: string, userId: string): Promise<boolean> {
+    const existing = await prisma.like.findUnique({
+      where: { bookId_userId: { bookId, userId } },
+    });
+    if (existing) {
+      await prisma.like.delete({ where: { bookId_userId: { bookId, userId } } });
+      return false;
+    }
+    await prisma.like.create({ data: { bookId, userId } });
+    return true;
+  }
+
+  /**
    * Recherche des livres par titre ou nom d'auteur (insensible à la casse).
    * @param query - Terme de recherche
    * @returns Liste des livres correspondants (max 20)

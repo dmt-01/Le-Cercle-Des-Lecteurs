@@ -78,7 +78,7 @@ async function main() {
   ]);
   console.log(`✅ ${authors.length} auteurs créés`);
 
-  const [HUGO, CAMUS, ORWELL, FLAUBERT, KAFKA, BEAUVOIR, PROUST, DOSTOIEVSKI, SAINT_EX, STENDHAL, ZOLA, TOLSTOI] = authors;
+  const [HUGO, CAMUS, ORWELL, FLAUBERT, KAFKA, BEAUVOIR, _PROUST, DOSTOIEVSKI, SAINT_EX, STENDHAL, ZOLA, TOLSTOI] = authors;
 
   // ===== LIVRES =====
   // Index final : [0]=Les Misérables [1]=Notre-Dame [2]=L'Étranger [3]=La Peste [4]=1984

@@ -3,6 +3,7 @@ import UserRepository from "../repositories/userRepository";
 import { CookieService } from "../services/CookieService";
 import { TokenService } from "../services/TokenService";
 import UserService from "../services/userService";
+import { AppError } from "../libs/AppError";
 import { Controller } from "../libs/Controller";
 import Token from "../modeles/Token";
 import User from "../modeles/User";
@@ -217,19 +218,78 @@ export default class UserController extends Controller {
    */
   async logout() {
     try {
-      // 0.0 REQUEST : Récupérer l'userId injecté par le middleware requireAuth
       const userId = this.request.userId!;
 
-      // 1.0 TOKEN : Supprimer le token en base
       const tokenRepository = new TokenRepository();
       await tokenRepository.deleteByUserId(userId);
 
-      // 2.0 RESPONSE : Effacer le cookie et confirmer la déconnexion
       CookieService.clearRefreshCookie(this.response);
 
       return this.response.status(200).json({ message: "Déconnexion réussie" });
     } catch (error: any) {
       this.response.status(400).json({ message: error.message });
+    }
+  }
+
+  /**
+   * Profil de l'utilisateur connecté.
+   *
+   * Réponses : 404 | 200
+   */
+  async getMe() {
+    try {
+      const userId = this.request.userId!;
+      const data   = await UserService.getMe(userId);
+      return this.response.status(200).json({ data });
+    } catch (error: any) {
+      const status = error instanceof AppError ? error.statusCode : 500;
+      return this.response.status(status).json({ message: error.message });
+    }
+  }
+
+  async updateMe() {
+    try {
+      const userId = this.request.userId!;
+      const data   = await UserService.updateMe(userId, this.request.body);
+      return this.response.status(200).json({ message: "Profil mis à jour", data });
+    } catch (error: any) {
+      const status = error instanceof AppError ? error.statusCode : 400;
+      return this.response.status(status).json({ message: error.message });
+    }
+  }
+
+  async getPublicProfile() {
+    try {
+      const id   = this.request.params.id as string;
+      const data = await UserService.getPublicProfile(id);
+      return this.response.status(200).json({ data });
+    } catch (error: any) {
+      const status = error instanceof AppError ? error.statusCode : 500;
+      return this.response.status(status).json({ message: error.message });
+    }
+  }
+
+  async follow() {
+    try {
+      const userId         = this.request.userId!;
+      const userFollowedId = this.request.params.id as string;
+      await UserService.follow(userId, userFollowedId);
+      return this.response.status(200).json({ message: "Utilisateur suivi" });
+    } catch (error: any) {
+      const status = error instanceof AppError ? error.statusCode : 400;
+      return this.response.status(status).json({ message: error.message });
+    }
+  }
+
+  async unfollow() {
+    try {
+      const userId         = this.request.userId!;
+      const userFollowedId = this.request.params.id as string;
+      await UserService.unfollow(userId, userFollowedId);
+      return this.response.status(200).json({ message: "Utilisateur non suivi" });
+    } catch (error: any) {
+      const status = error instanceof AppError ? error.statusCode : 400;
+      return this.response.status(status).json({ message: error.message });
     }
   }
 }

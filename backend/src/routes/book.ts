@@ -69,10 +69,14 @@ bookRouter.delete("/:id", requireAuth, (req, res) => {
   controller.remove();
 });
 
-/**
- * /books/:bookId/reviews — délégation au routeur des reviews
- * mergeParams: true dans reviewRouter permet d'accéder à req.params.bookId
- */
+bookRouter.post("/:id/read", requireAuth, (req, res) => {
+  new BookController(req, res).toggleRead();
+});
+
+bookRouter.post("/:id/like", requireAuth, (req, res) => {
+  new BookController(req, res).toggleLike();
+});
+
 bookRouter.use("/:bookId/reviews", reviewRouter);
 
 export default bookRouter;

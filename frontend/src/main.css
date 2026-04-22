@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #1A1A2E;
+  --color-secondary: #6B2737;
+  --color-secondary-hover: #7d2e40;
+  --color-beige: #F5F0E8;
+  --color-beige-light: #FBFBE2;
+  --color-beige-medium: #E8E0D0;
+  --color-gold: #C9A96E;
+
+  --font-family-sans-serif: "Atkinson Hyperlegible", sans-serif;
+  --font-family-access: "Inter", sans-serif;
+}
+
+body {
+  background-color: #FBFBE2;
+}

@@ -40,6 +40,8 @@ export interface Book {
   cover_image?: string;
   description?: string;
   publication_date?: string;
+  average_rating?: number | null;
+  review_count?: number;
   authors: Author[];
   genres: Genre[];
   tags: Tag[];

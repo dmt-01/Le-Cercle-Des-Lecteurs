@@ -8,13 +8,13 @@ const bookIncludes = {
   categorisations: { include: { genre: true } },
   thematisations: { include: { tag: true } },
   _count: { select: { reviews: true } },
+  reviews: { select: { note: true } },
 };
 
 /**
  * Repository gérant les accès en base de données pour les livres.
  */
 export default class BookRepository {
-
   /**
    * Retourne une liste paginée de livres avec filtres optionnels.
    * @param options - page, limit, genre, tag, author
@@ -61,7 +61,18 @@ export default class BookRepository {
       prisma.book.count({ where }),
     ]);
 
-    return { books, total };
+    // Calculer la note moyenne pour chaque livre
+    const booksWithRating = books.map((book) => {
+      const notedReviews = book.reviews.filter((r) => r.note !== null);
+      const averageRating =
+        notedReviews.length > 0
+          ? notedReviews.reduce((sum, r) => sum + r.note!, 0) /
+            notedReviews.length
+          : null;
+      return { ...book, averageRating };
+    });
+
+    return {books: booksWithRating, total };
   }
 
   /**
@@ -92,7 +103,8 @@ export default class BookRepository {
     const notedReviews = reviews.filter((r) => r.note !== null);
     const averageRating =
       notedReviews.length > 0
-        ? notedReviews.reduce((sum, r) => sum + r.note!, 0) / notedReviews.length
+        ? notedReviews.reduce((sum, r) => sum + r.note!, 0) /
+          notedReviews.length
         : null;
 
     return { ...book, averageRating, reviewCount: reviews.length };
@@ -117,13 +129,23 @@ export default class BookRepository {
         title: data.title,
         coverImage: data.coverImage,
         description: data.description,
-        publication_date: data.publicationDate ? new Date(data.publicationDate) : undefined,
+        publication_date: data.publicationDate
+          ? new Date(data.publicationDate)
+          : undefined,
         // Connexion aux auteurs, genres et tags existants via leurs ids
         authors: data.authorIds
-          ? { create: data.authorIds.map((id) => ({ author: { connect: { id } } })) }
+          ? {
+              create: data.authorIds.map((id) => ({
+                author: { connect: { id } },
+              })),
+            }
           : undefined,
         categorisations: data.genreIds
-          ? { create: data.genreIds.map((id) => ({ genre: { connect: { id } } })) }
+          ? {
+              create: data.genreIds.map((id) => ({
+                genre: { connect: { id } },
+              })),
+            }
           : undefined,
         thematisations: data.tagIds
           ? { create: data.tagIds.map((id) => ({ tag: { connect: { id } } })) }
@@ -146,7 +168,7 @@ export default class BookRepository {
       coverImage?: string;
       description?: string;
       publicationDate?: string;
-    }
+    },
   ) {
     try {
       return await prisma.book.update({
@@ -189,7 +211,9 @@ export default class BookRepository {
       where: { bookId_userId: { bookId, userId } },
     });
     if (existing) {
-      await prisma.read.delete({ where: { bookId_userId: { bookId, userId } } });
+      await prisma.read.delete({
+        where: { bookId_userId: { bookId, userId } },
+      });
       return false;
     }
     await prisma.read.create({ data: { bookId, userId } });
@@ -205,7 +229,9 @@ export default class BookRepository {
       where: { bookId_userId: { bookId, userId } },
     });
     if (existing) {
-      await prisma.like.delete({ where: { bookId_userId: { bookId, userId } } });
+      await prisma.like.delete({
+        where: { bookId_userId: { bookId, userId } },
+      });
       return false;
     }
     await prisma.like.create({ data: { bookId, userId } });

@@ -28,8 +28,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     if (refreshToken.ok) {
       return apiFetch(endpoint, options);
     } else {
-         window.location.href = "/login";
-         return
+      throw new Error("Session expirée");
     }
   }
 

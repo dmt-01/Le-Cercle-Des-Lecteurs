@@ -81,7 +81,13 @@ function EventDetailPage() {
             </div>
           </div>
           <div className="hidden md:block">
-            <div className="w-full aspect-[3/4] rounded-2xl bg-gradient-to-br from-[#1a2c1a] to-[#2c5c3a] shadow-xl" />
+            <div
+              className="w-full aspect-[3/4] rounded-2xl"
+              style={{
+                background:
+                  "url(/img/template_book.png) center/cover no-repeat",
+              }}
+            />
           </div>
         </div>
       </div>
@@ -172,7 +178,13 @@ function EventDetailPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/20 flex items-end p-3">
+                    <div
+                      className="w-full h-full flex items-end p-3"
+                      style={{
+                        background:
+                          "url(/img/template_book.png) center/cover no-repeat",
+                      }}
+                    >
                       <p className="text-primary text-xs font-serif italic line-clamp-2">
                         {book.title}
                       </p>

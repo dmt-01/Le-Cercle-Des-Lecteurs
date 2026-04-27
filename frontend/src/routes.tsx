@@ -4,6 +4,17 @@ import { Outlet, Route, Routes } from "react-router";
 import SignupPage from "./Pages/Auth/SignupPage";
 import LoginPage from "./Pages/Auth/LoginPage";
 import HomePage from "./Pages/Home/HomePage";
+import BooksPage from "./Pages/Books/BooksPage";
+import BookDetailPage from "./Pages/Books/BookDetailPage";
+import UserProfilePage from "./Pages/Profile/UserProfilePage";
+import GroupsPage from "./Pages/Groups/GroupsPage";
+import GroupDetailPage from "./Pages/Groups/GroupDetailPage";
+import EventsPage from "./Pages/Events/EventsPage";
+import EventDetailPage from "./Pages/Events/EventDetailPage";
+import BlogPage from "./Pages/Blog/BlogPage";
+import BlogDetailPage from "./Pages/Blog/BlogDetailPage";
+import MessagesPage from "./Pages/Messages/MessagesPage";
+import { AboutPage, ContactPage, PrivacyPage, TermsPage, HelpPage } from "./Pages/Static/StaticPage";
 
 function Router() {
   return (
@@ -12,27 +23,27 @@ function Router() {
 
         {/* Routes publiques */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/books" element={<h1>Livres</h1>} />
-        <Route path="/books/:id" element={<h1>Détail livre</h1>} />
-        <Route path="/groups" element={<h1>Clubs</h1>} />
-        <Route path="/groups/:id" element={<h1>Détail club</h1>} />
-        <Route path="/events" element={<h1>Événements</h1>} />
-        <Route path="/blog" element={<h1>Blog</h1>} />
-        <Route path="/blog/:id" element={<h1>Article</h1>} />
-        <Route path="/users/:id" element={<h1>Profil public</h1>} />
+        <Route path="/books" element={<BooksPage />} />
+        <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route path="/groups" element={<GroupsPage />} />
+        <Route path="/groups/:id" element={<GroupDetailPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:id" element={<EventDetailPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:id" element={<BlogDetailPage />} />
+        <Route path="/users/:id" element={<UserProfilePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/about" element={<h1>À propos</h1>} />
-        <Route path="/contact" element={<h1>Contact</h1>} />
-        <Route path="/privacy" element={<h1>Politique de confidentialité</h1>} />
-        <Route path="/terms" element={<h1>Conditions d'utilisation</h1>} />
-        <Route path="/help" element={<h1>Aide</h1>} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/help" element={<HelpPage />} />
 
         {/* Routes protégées (connexion requise) */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/messages" element={<h1>Messagerie</h1>} />
-          <Route path="/wishlist" element={<h1>Wishlist</h1>} />
-          <Route path="/profile" element={<h1>Mon profil</h1>} />
+          <Route path="/messages" element={<MessagesPage />} />
+          <Route path="/profile" element={<UserProfilePage />} />
         </Route>
 
         <Route path="*" element={<h1>Page non trouvée</h1>} />

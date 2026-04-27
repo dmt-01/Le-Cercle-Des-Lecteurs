@@ -62,7 +62,8 @@ export interface Group {
   description?: string;
   access_club: boolean;
   created_at: string;
-  member_count?: number;
+  member_count: number;
+  message_count: number;
 }
 
 export interface GroupMessage {

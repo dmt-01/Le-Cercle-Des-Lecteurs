@@ -7,13 +7,14 @@ function Header() {
 
   const handleSearch = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const search = (event.currentTarget.elements.namedItem("search") as HTMLInputElement).value.trim();
+    const search = (
+      event.currentTarget.elements.namedItem("search") as HTMLInputElement
+    ).value.trim();
     if (search) navigate(`/books?search=${encodeURIComponent(search)}`);
   };
 
   return (
     <header className="bg-primary flex items-center justify-between px-8 py-3 w-full">
-
       {/* Logo */}
       <Link
         to="/"
@@ -23,7 +24,10 @@ function Header() {
       </Link>
 
       {/* Navigation principale */}
-      <nav aria-label="Navigation principale" className="flex items-center gap-6">
+      <nav
+        aria-label="Navigation principale"
+        className="flex items-center gap-6"
+      >
         {[
           { to: "/", label: "Accueil", end: true },
           { to: "/books", label: "Livres", end: false },
@@ -50,10 +54,25 @@ function Header() {
 
       {/* Droite : recherche + user */}
       <div className="flex items-center gap-3">
-        <form role="search" onSubmit={handleSearch} className="flex items-center">
+        <form
+          role="search"
+          onSubmit={handleSearch}
+          className="flex items-center"
+        >
           <div className="flex items-center bg-white/10 rounded-full px-3 py-1.5 gap-2 w-48 focus-within:ring-1 focus-within:ring-white/30 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white/50 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-white/50 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+              />
             </svg>
             <input
               type="search"
@@ -66,17 +85,27 @@ function Header() {
         </form>
 
         {user ? (
-          <nav aria-label="Navigation utilisateur" className="flex items-center gap-3">
-            <Link to="/messages" aria-label="Messagerie" className="text-white/80 text-sm hover:text-gold transition-colors">
+          <nav
+            aria-label="Navigation utilisateur"
+            className="flex items-center gap-3"
+          >
+            <Link
+              to="/messages"
+              aria-label="Messagerie"
+              className="text-white/80 text-sm hover:text-gold transition-colors"
+            >
               Messages
             </Link>
-            <Link to="/wishlist" className="text-white/80 text-sm hover:text-gold transition-colors">
-              Wishlist
-            </Link>
-            <Link to={`/users/${user.id}`} aria-label="Mon profil" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A8 8 0 1 1 18.88 6.196M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-              </svg>
+            <Link
+              to={`/users/${user.id}`}
+              aria-label="Mon profil"
+              className="w-9 h-9 rounded-full  flex items-center justify-center hover:bg-white/20 transition"
+            >
+              <img
+                src="/img/icon_profil.png"
+                alt="icon"
+                className="rounded-full object-cover bg-color-gold"
+              />
             </Link>
             <button
               onClick={logout}
@@ -88,16 +117,21 @@ function Header() {
           </nav>
         ) : (
           <nav aria-label="Connexion" className="flex items-center gap-3">
-            <Link to="/login" className="text-white/80 text-sm hover:text-gold transition-colors">
+            <Link
+              to="/login"
+              className="text-white/80 text-sm hover:text-gold transition-colors"
+            >
               Connexion
             </Link>
-            <Link to="/signup" className="bg-secondary text-white text-sm px-4 py-1.5 rounded-full hover:bg-secondary-hover transition-colors min-h-[44px] flex items-center">
+            <Link
+              to="/signup"
+              className="bg-secondary text-white text-sm px-4 py-1.5 rounded-full hover:bg-secondary-hover transition-colors min-h-[44px] flex items-center"
+            >
               Inscription
             </Link>
           </nav>
         )}
       </div>
-
     </header>
   );
 }

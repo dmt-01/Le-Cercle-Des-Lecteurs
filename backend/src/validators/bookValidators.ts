@@ -26,10 +26,10 @@ export const createBookSchema = z.object({
   title: z.string().min(1).max(255),
   coverImage: z.url().optional(),
   description: z.string().optional(),
-  publicationDate: z.string().optional(),          // Format ISO : "2024-01-15"
-  authorIds: z.array(z.string()).optional(),        // UUIDs des auteurs existants
-  genreIds: z.array(z.string()).optional(),         // UUIDs des genres existants
-  tagIds: z.array(z.string()).optional(),           // UUIDs des tags existants
+  publicationDate: z.string().optional(), // Format ISO : "2024-01-15"
+  authorIds: z.array(z.string()).optional(), // UUIDs des auteurs existants
+  genreIds: z.array(z.string()).optional(), // UUIDs des genres existants
+  tagIds: z.array(z.string()).optional(), // UUIDs des tags existants
 });
 
 /**

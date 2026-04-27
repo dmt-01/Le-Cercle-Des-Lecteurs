@@ -14,8 +14,13 @@ messageRouter.get("/:userId", requireAuth, (req, res) => {
   new MessageController(req, res).getConversation();
 });
 
-messageRouter.post("/:userId", requireAuth, validate(sendMessageSchema), (req, res) => {
-  new MessageController(req, res).send();
-});
+messageRouter.post(
+  "/:userId",
+  requireAuth,
+  validate(sendMessageSchema),
+  (req, res) => {
+    new MessageController(req, res).send();
+  },
+);
 
 export default messageRouter;

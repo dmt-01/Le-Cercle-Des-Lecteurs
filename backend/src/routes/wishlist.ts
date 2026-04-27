@@ -10,9 +10,14 @@ wishlistRouter.get("/", requireAuth, (req, res) => {
   new WishlistController(req, res).list();
 });
 
-wishlistRouter.post("/", requireAuth, validate(addWishlistSchema), (req, res) => {
-  new WishlistController(req, res).add();
-});
+wishlistRouter.post(
+  "/",
+  requireAuth,
+  validate(addWishlistSchema),
+  (req, res) => {
+    new WishlistController(req, res).add();
+  },
+);
 
 wishlistRouter.delete("/:bookId", requireAuth, (req, res) => {
   new WishlistController(req, res).remove();

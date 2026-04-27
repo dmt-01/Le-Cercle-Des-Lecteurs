@@ -1,7 +1,7 @@
 import UserRepository from "../repositories/userRepository";
 import { AppError } from "../libs/AppError";
-import { Request } from "express";
 import User from "../modeles/User";
+import { Request } from "express";
 
 const userRepository = new UserRepository();
 
@@ -13,7 +13,6 @@ const userRepository = new UserRepository();
  *  - Des méthodes statiques pour les opérations côté base de données
  */
 export default class UserService {
-
   protected username: string;
   protected email: string;
   protected password_hash: string;
@@ -73,7 +72,13 @@ export default class UserService {
   static async validateAuthRequest(request: Request) {
     const { email, password } = request.body ?? {};
 
-    if (!request.body || !email || !password || typeof email !== "string" || typeof password !== "string") {
+    if (
+      !request.body ||
+      !email ||
+      !password ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
       return {
         success: false,
         message: "Email et mot de passe requis",
@@ -101,7 +106,10 @@ export default class UserService {
     ).serialize();
   }
 
-  static async updateMe(userId: string, data: { username?: string; bio?: string; profileImage?: string }) {
+  static async updateMe(
+    userId: string,
+    data: { username?: string; bio?: string; profileImage?: string },
+  ) {
     const updated = await userRepository.update(userId, data);
     if (!updated) throw new AppError("Utilisateur introuvable", 404);
 
@@ -121,16 +129,16 @@ export default class UserService {
     if (!found) throw new AppError("Utilisateur introuvable", 404);
 
     return {
-      id:            found.id,
-      username:      found.username,
-      bio:           found.bio ?? null,
+      id: found.id,
+      username: found.username,
+      bio: found.bio ?? null,
       profile_image: found.profileImage ?? null,
-      created_at:    found.created_at,
-      followers:     found._count.followers,
-      following:     found._count.following,
-      reads:         found._count.reading,
-      reviews:       found._count.reviews,
-      groups:        found.memberships.map((m) => m.group),
+      created_at: found.created_at,
+      followers: found._count.followers,
+      following: found._count.following,
+      reads: found._count.reading,
+      reviews: found._count.reviews,
+      groups: found.memberships.map((m) => m.group),
     };
   }
 

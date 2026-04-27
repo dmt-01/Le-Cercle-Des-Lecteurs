@@ -1,16 +1,6 @@
 import ErrorMessage from "../../components/ui/ErrorMessage";
-import { apiFetch } from "../../services/api";
-import type { BlogPost } from "../../types";
-import { useEffect, useState } from "react";
+import { useBlog } from "../../hooks/useBlog";
 import { Link } from "react-router";
-
-const POST_GRADIENTS = [
-  "from-[#2c1f14] to-[#6b3a1a]",
-  "from-[#1a1f2c] to-[#2c3a5c]",
-  "from-[#0e2c1a] to-[#175c33]",
-  "from-[#2c1a1a] to-[#5c2a2a]",
-  "from-[#1a2c2c] to-[#1a4a4a]",
-];
 
 function readingTime(content?: string | null) {
   if (!content) return "1 min de lecture";
@@ -19,35 +9,28 @@ function readingTime(content?: string | null) {
 }
 
 function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-  function load() {
-    setLoading(true);
-    setError(null);
-    apiFetch("/blog")
-      .then((res) => setPosts(res.data ?? []))
-      .catch((err) => setError(err?.message ?? "Impossible de charger les articles."))
-      .finally(() => setLoading(false));
-  }
-
-  useEffect(() => { load(); }, []);
-
-  const categories = Array.from(new Set(posts.map((p) => p.category).filter(Boolean))) as string[];
-
-  const filtered = activeCategory ? posts.filter((p) => p.category === activeCategory) : posts;
-  const featured = activeCategory ? null : (posts[0] ?? null);
-  const rest = activeCategory ? filtered : filtered.slice(1);
+  const {
+    loading,
+    error,
+    activeCategory,
+    setActiveCategory,
+    categories,
+    featured,
+    rest,
+    load,
+  } = useBlog();
 
   return (
     <div className="min-h-screen">
-
       {/* ── Hero — article à la une ── */}
       {featured && (
         <div className="max-w-5xl mx-auto px-6 pt-12 pb-10 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          <div className={`aspect-[4/3] rounded-2xl bg-gradient-to-br ${POST_GRADIENTS[0]} shadow-lg`} />
+          <div
+            className="aspect-[4/3] rounded-2xl"
+            style={{
+              background: `url(/img/template_blog.png) center/cover no-repeat`,
+            }}
+          />
           <div className="flex flex-col gap-5">
             {featured.category && (
               <p className="text-[10px] uppercase tracking-widest text-secondary font-medium">
@@ -73,7 +56,9 @@ function BlogPage() {
       )}
 
       {loading && (
-        <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
+        <p className="text-primary/40 text-sm text-center py-12">
+          Chargement...
+        </p>
       )}
 
       {error && <ErrorMessage message={error} onRetry={load} />}
@@ -81,11 +66,12 @@ function BlogPage() {
       {/* ── Dernières publications + sidebar ── */}
       {!loading && !error && (
         <div className="max-w-5xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-10">
-
           {/* Articles */}
           <div>
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-              <h2 className="text-2xl font-serif italic text-primary">Dernières Publications</h2>
+              <h2 className="text-2xl font-serif italic text-primary">
+                Dernières Publications
+              </h2>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setActiveCategory(null)}
@@ -114,17 +100,22 @@ function BlogPage() {
             </div>
 
             {rest.length === 0 ? (
-              <p className="text-primary/40 text-sm italic">Aucun autre article pour le moment.</p>
+              <p className="text-primary/40 text-sm italic">
+                Aucun autre article pour le moment.
+              </p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {rest.map((post, i) => (
+                {rest.map((post) => (
                   <Link
                     key={post.id}
                     to={`/blog/${post.id}`}
                     className="flex flex-col gap-3 group"
                   >
                     <div
-                      className={`aspect-[16/9] rounded-xl bg-gradient-to-br ${POST_GRADIENTS[(i + 1) % POST_GRADIENTS.length]}`}
+                      className="aspect-[16/9] rounded-xl"
+                      style={{
+                        background: `url(/img/template_blog.png) center/cover no-repeat`,
+                      }}
                     />
                     {post.category && (
                       <span className="text-[9px] uppercase tracking-widest text-secondary font-semibold">
@@ -152,15 +143,22 @@ function BlogPage() {
 
           {/* Sidebar */}
           <div className="flex flex-col gap-6">
-
-            {/* Lecture du moment */}
             <div className="bg-white rounded-2xl border border-beige-medium p-5">
-              <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4">Lecture du moment</p>
+              <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4">
+                Lecture du moment
+              </p>
               <div className="flex gap-3 mb-4">
-                <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-[#1a5c3a] to-[#2c8c5c] shrink-0 shadow" />
+                <div
+                  className="w-14 h-20 rounded-lg"
+                  style={{
+                    background: `url(/img/template_book.png) center/cover no-repeat`,
+                  }}
+                />
                 <div className="flex flex-col justify-between">
                   <div>
-                    <p className="text-sm font-serif italic text-primary leading-snug">Les Illusions Perdues</p>
+                    <p className="text-sm font-serif italic text-primary leading-snug">
+                      Les Illusions Perdues
+                    </p>
                     <p className="text-xs text-primary/40">Honoré de Balzac</p>
                     <p className="text-gold text-sm mt-1">★★★★</p>
                   </div>
@@ -170,20 +168,26 @@ function BlogPage() {
                 </div>
               </div>
               <p className="text-xs text-primary/50 italic leading-relaxed">
-                "Une plongée brutale et magnifique dans les rouages de la presse parisienne du XIXe siècle."
+                "Une plongée brutale et magnifique dans les rouages de la presse
+                parisienne du XIXe siècle."
               </p>
             </div>
 
-            {/* Newsletter */}
             <div
               className="rounded-2xl p-6 flex flex-col gap-4"
-              style={{ background: "linear-gradient(to bottom, #1A1A2E, #2c1f14)" }}
+              style={{
+                background: "linear-gradient(to bottom, #1A1A2E, #2c1f14)",
+              }}
             >
-              <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">Newsletter</p>
-              <h3 className="text-xl font-serif italic text-white leading-snug">La Lettre du Cercle</h3>
+              <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">
+                Newsletter
+              </p>
+              <h3 className="text-xl font-serif italic text-white leading-snug">
+                La Lettre du Cercle
+              </h3>
               <p className="text-white/60 text-xs leading-relaxed">
-                Chaque dimanche matin, recevez une sélection de lectures, des entretiens inédits
-                et l'actualité des salons littéraires.
+                Chaque dimanche matin, recevez une sélection de lectures, des
+                entretiens inédits et l'actualité des salons littéraires.
               </p>
               <input
                 type="email"
@@ -193,14 +197,23 @@ function BlogPage() {
               <button className="bg-secondary text-white text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-secondary-hover transition-colors">
                 S'abonner
               </button>
-              <p className="text-white/30 text-[9px] text-center">Aucun spam, uniquement de la littérature.</p>
+              <p className="text-white/30 text-[9px] text-center">
+                Aucun spam, uniquement de la littérature.
+              </p>
             </div>
 
-            {/* Tags thématiques */}
             <div className="bg-white rounded-2xl border border-beige-medium p-5">
-              <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4">Navigation Thématique</p>
+              <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4">
+                Navigation Thématique
+              </p>
               <div className="flex flex-wrap gap-2">
-                {["#Classiques", "#Poésie", "#Essais", "#Manuscrits", "#Bibliophile"].map((tag) => (
+                {[
+                  "#Classiques",
+                  "#Poésie",
+                  "#Essais",
+                  "#Manuscrits",
+                  "#Bibliophile",
+                ].map((tag) => (
                   <span
                     key={tag}
                     className="text-xs text-primary/50 border border-beige-medium px-3 py-1.5 rounded-full"

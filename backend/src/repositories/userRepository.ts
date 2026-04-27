@@ -4,7 +4,6 @@ import prisma from "../libs/prisma";
  * Repository gérant les accès en base de données pour les utilisateurs.
  */
 export default class UserRepository {
-
   /**
    * Recherche un utilisateur par son email.
    * @param email - Email à rechercher
@@ -36,17 +35,17 @@ export default class UserRepository {
     return await prisma.user.findUnique({
       where: { id },
       select: {
-        id:           true,
-        username:     true,
-        bio:          true,
+        id: true,
+        username: true,
+        bio: true,
         profileImage: true,
-        created_at:   true,
+        created_at: true,
         _count: {
           select: {
             followers: true,
             following: true,
-            reviews:   true,
-            reading:   true,
+            reviews: true,
+            reading: true,
           },
         },
         memberships: {
@@ -64,13 +63,16 @@ export default class UserRepository {
    * @param data - Champs à modifier
    * @returns L'utilisateur mis à jour ou null si introuvable
    */
-  async update(id: string, data: { username?: string; bio?: string; profileImage?: string }) {
+  async update(
+    id: string,
+    data: { username?: string; bio?: string; profileImage?: string },
+  ) {
     try {
       return await prisma.user.update({
         where: { id },
         data: {
-          username:     data.username,
-          bio:          data.bio,
+          username: data.username,
+          bio: data.bio,
           profileImage: data.profileImage,
         },
       });
@@ -121,9 +123,9 @@ export default class UserRepository {
         data: {
           username: data.username,
           email: data.email,
-          passwordHash: data.password_hash,      // Prisma attend camelCase (mappé vers password_hash en BDD)
+          passwordHash: data.password_hash, // Prisma attend camelCase (mappé vers password_hash en BDD)
           bio: data.bio,
-          profileImage: data.profile_image,      // Prisma attend camelCase (mappé vers profile_image en BDD)
+          profileImage: data.profile_image, // Prisma attend camelCase (mappé vers profile_image en BDD)
         },
       });
     } catch (error) {

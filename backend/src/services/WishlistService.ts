@@ -5,13 +5,12 @@ import Book from "../modeles/Book";
 const wishlistRepository = new WishlistRepository();
 
 export default class WishlistService {
-
   async list(userId: string) {
     const rows = await wishlistRepository.findByUser(userId);
     return rows.map((item) => ({
-      status:   item.status,
+      status: item.status,
       added_at: item.createdAt,
-      book:     Book.fromRow(item.book).serialize(),
+      book: Book.fromRow(item.book).serialize(),
     }));
   }
 

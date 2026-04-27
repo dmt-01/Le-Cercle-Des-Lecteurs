@@ -4,16 +4,15 @@ import { AppError } from "../libs/AppError";
 const groupRepository = new GroupRepository();
 
 export default class GroupService {
-
   async list() {
     const rows = await groupRepository.findAll();
     return rows.map((g) => ({
-      id:            g.id,
-      name:          g.name,
-      description:   g.description,
-      access_club:   g.accessClub,
-      created_at:    g.created_at,
-      member_count:  g._count.members,
+      id: g.id,
+      name: g.name,
+      description: g.description,
+      access_club: g.accessClub,
+      created_at: g.created_at,
+      member_count: g._count.members,
       message_count: g._count.messages,
     }));
   }
@@ -22,37 +21,37 @@ export default class GroupService {
     const row = await groupRepository.findById(id);
     if (!row) throw new AppError("Club introuvable", 404);
     return {
-      id:           row.id,
-      name:         row.name,
-      description:  row.description,
-      access_club:  row.accessClub,
-      created_at:   row.created_at,
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      access_club: row.accessClub,
+      created_at: row.created_at,
       member_count: row._count.members,
       members: row.members.map((m) => ({
         user: m.user,
         role: m.role,
       })),
       messages: row.messages.map((msg) => ({
-        content:    msg.content,
+        content: msg.content,
         created_at: msg.createdAt,
-        user:       msg.user,
+        user: msg.user,
       })),
     };
   }
 
   async create(data: {
-    name:         string;
+    name: string;
     description?: string;
-    accessClub?:  boolean;
-    userId:       string;
+    accessClub?: boolean;
+    userId: string;
   }) {
     const group = await groupRepository.create(data);
     return {
-      id:           group.id,
-      name:         group.name,
-      description:  group.description,
-      access_club:  group.accessClub,
-      created_at:   group.created_at,
+      id: group.id,
+      name: group.name,
+      description: group.description,
+      access_club: group.accessClub,
+      created_at: group.created_at,
       member_count: group._count.members,
     };
   }
@@ -72,13 +71,17 @@ export default class GroupService {
 
   async sendMessage(groupId: string, userId: string, content: string) {
     const isMember = await groupRepository.isMember(groupId, userId);
-    if (!isMember) throw new AppError("Vous devez être membre du club pour envoyer un message", 403);
+    if (!isMember)
+      throw new AppError(
+        "Vous devez être membre du club pour envoyer un message",
+        403,
+      );
 
     const msg = await groupRepository.addMessage(groupId, userId, content);
     return {
-      content:    msg.content,
+      content: msg.content,
       created_at: msg.createdAt,
-      user:       msg.user,
+      user: msg.user,
     };
   }
 }

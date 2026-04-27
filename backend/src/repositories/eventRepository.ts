@@ -4,13 +4,12 @@ import prisma from "../libs/prisma";
  * Repository gérant les accès en base de données pour les événements.
  */
 export default class EventRepository {
-
   /**
    * Retourne tous les événements à venir, triés par date.
    */
   async findAll() {
     return await prisma.event.findMany({
-      where:   { eventDate: { gte: new Date() } },
+      where: { eventDate: { gte: new Date() } },
       orderBy: { eventDate: "asc" },
       include: { group: { select: { id: true, name: true } } },
     });
@@ -22,7 +21,7 @@ export default class EventRepository {
    */
   async findById(id: string) {
     return await prisma.event.findUnique({
-      where:   { id },
+      where: { id },
       include: { group: { select: { id: true, name: true } } },
     });
   }
@@ -40,11 +39,11 @@ export default class EventRepository {
   }) {
     return await prisma.event.create({
       data: {
-        title:       data.title,
+        title: data.title,
         description: data.description,
-        eventDate:   new Date(data.eventDate),
-        link:        data.link,
-        groupId:     data.groupId,
+        eventDate: new Date(data.eventDate),
+        link: data.link,
+        groupId: data.groupId,
       },
       include: { group: { select: { id: true, name: true } } },
     });

@@ -4,7 +4,6 @@ import prisma from "../libs/prisma";
  * Repository gérant les accès en base de données pour la messagerie privée.
  */
 export default class MessageRepository {
-
   /**
    * Retourne la liste des conversations d'un utilisateur.
    * Chaque conversation est représentée par son dernier message.
@@ -15,7 +14,7 @@ export default class MessageRepository {
       where: { OR: [{ senderId: userId }, { receiverId: userId }] },
       orderBy: { sentAt: "desc" },
       include: {
-        sender:   { select: { id: true, username: true, profileImage: true } },
+        sender: { select: { id: true, username: true, profileImage: true } },
         receiver: { select: { id: true, username: true, profileImage: true } },
       },
     });
@@ -23,7 +22,8 @@ export default class MessageRepository {
     // Dédupliquer par partenaire de conversation — garder uniquement le dernier message
     const seen = new Set<string>();
     return messages.filter((message) => {
-      const partnerId = message.senderId === userId ? message.receiverId : message.senderId;
+      const partnerId =
+        message.senderId === userId ? message.receiverId : message.senderId;
       if (seen.has(partnerId)) return false;
       seen.add(partnerId);
       return true;
@@ -39,12 +39,14 @@ export default class MessageRepository {
     return await prisma.message.findMany({
       where: {
         OR: [
-          { senderId: userId,    receiverId: partnerId },
-          { senderId: partnerId, receiverId: userId    },
+          { senderId: userId, receiverId: partnerId },
+          { senderId: partnerId, receiverId: userId },
         ],
       },
       orderBy: { sentAt: "asc" },
-      include: { sender: { select: { id: true, username: true, profileImage: true } } },
+      include: {
+        sender: { select: { id: true, username: true, profileImage: true } },
+      },
     });
   }
 
@@ -58,7 +60,7 @@ export default class MessageRepository {
     return await prisma.message.create({
       data: { senderId, receiverId, content },
       include: {
-        sender:   { select: { id: true, username: true } },
+        sender: { select: { id: true, username: true } },
         receiver: { select: { id: true, username: true } },
       },
     });
@@ -72,7 +74,7 @@ export default class MessageRepository {
   async markAsRead(senderId: string, receiverId: string) {
     await prisma.message.updateMany({
       where: { senderId, receiverId, read: false },
-      data:  { read: true },
+      data: { read: true },
     });
   }
 }

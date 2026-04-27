@@ -1,7 +1,5 @@
-import { useParams, Link } from "react-router";
-import { apiFetch } from "../../services/api";
-import { useEffect, useState } from "react";
-import type { BlogPost } from "../../types";
+import { useBlogDetail } from "../../hooks/useBlogDetail";
+import { Link } from "react-router";
 
 function readingTime(content?: string | null) {
   if (!content) return "1 min de lecture";
@@ -10,22 +8,13 @@ function readingTime(content?: string | null) {
 }
 
 function BlogDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [comment, setComment] = useState("");
-
-  useEffect(() => {
-    if (!id) return;
-    apiFetch(`/blog/${id}`)
-      .then((res) => setPost(res.data ?? null))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { post, loading, comment, setComment } = useBlogDetail();
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-20 text-center text-primary/40">Chargement...</div>
+      <div className="max-w-3xl mx-auto px-6 py-20 text-center text-primary/40">
+        Chargement...
+      </div>
     );
   }
 
@@ -51,7 +40,6 @@ function BlogDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-3xl mx-auto px-6 pt-10 pb-16">
-
         {/* ── Fil + temps de lecture ── */}
         <div className="flex items-center gap-3 mb-8">
           {post.category ? (
@@ -59,7 +47,10 @@ function BlogDetailPage() {
               {post.category}
             </span>
           ) : (
-            <Link to="/blog" className="text-[9px] uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors">
+            <Link
+              to="/blog"
+              className="text-[9px] uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors"
+            >
               ← Blog
             </Link>
           )}
@@ -80,7 +71,9 @@ function BlogDetailPage() {
               {initials}
             </div>
             <div>
-              <p className="text-sm font-semibold text-primary">{post.author.username}</p>
+              <p className="text-sm font-semibold text-primary">
+                {post.author.username}
+              </p>
               <p className="text-xs text-primary/40">Critique Curatrice</p>
             </div>
           </div>
@@ -95,14 +88,19 @@ function BlogDetailPage() {
         {/* ── Contenu ── */}
         {post.content ? (
           <div className="space-y-5 mb-12">
-            {post.content.split("\n\n").map((para, i) => (
-              <p key={i} className="text-primary/70 text-sm leading-relaxed">
+            {post.content.split("\n\n").map((para, index) => (
+              <p
+                key={index}
+                className="text-primary/70 text-sm leading-relaxed"
+              >
                 {para}
               </p>
             ))}
           </div>
         ) : (
-          <p className="text-primary/40 italic mb-12">Contenu non disponible.</p>
+          <p className="text-primary/40 italic mb-12">
+            Contenu non disponible.
+          </p>
         )}
 
         {/* ── À propos de l'auteur ── */}
@@ -115,7 +113,8 @@ function BlogDetailPage() {
               À propos de {post.author.username}
             </p>
             <p className="text-sm text-primary/60 leading-relaxed">
-              Membre actif du Cercle des lecteurs, passionné de littérature et de culture.
+              Membre actif du Cercle des lecteurs, passionné de littérature et
+              de culture.
             </p>
             <Link
               to={`/users/${post.author.id}`}
@@ -129,15 +128,18 @@ function BlogDetailPage() {
         {/* ── Commentaires ── */}
         <div className="border-t border-beige-medium pt-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-serif italic text-primary">Commentaires</h2>
-            <span className="text-[10px] uppercase tracking-widest text-primary/40">Tri par récent</span>
+            <h2 className="text-xl font-serif italic text-primary">
+              Commentaires
+            </h2>
+            <span className="text-[10px] uppercase tracking-widest text-primary/40">
+              Tri par récent
+            </span>
           </div>
 
           <p className="text-primary/40 text-sm italic mb-6">
             Les commentaires seront disponibles prochainement.
           </p>
 
-          {/* Ajouter un commentaire */}
           <div>
             <textarea
               value={comment}
@@ -156,7 +158,6 @@ function BlogDetailPage() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

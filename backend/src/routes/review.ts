@@ -25,10 +25,15 @@ reviewRouter.get("/", (req, res) => {
  * 2. validate(upsertReviewSchema) — vérifie que content ou note est fourni
  * 3. ReviewController.upsert() — crée ou met à jour la review (une par user par livre)
  */
-reviewRouter.post("/", requireAuth, validate(upsertReviewSchema), (req, res) => {
-  const controller = new ReviewController(req, res);
-  controller.upsert();
-});
+reviewRouter.post(
+  "/",
+  requireAuth,
+  validate(upsertReviewSchema),
+  (req, res) => {
+    const controller = new ReviewController(req, res);
+    controller.upsert();
+  },
+);
 
 /**
  * DELETE /books/:bookId/reviews

@@ -4,7 +4,6 @@ import prisma from "../libs/prisma";
  * Repository gérant les accès en base de données pour les clubs de lecture.
  */
 export default class GroupRepository {
-
   /**
    * Retourne tous les clubs publics avec le nombre de membres.
    */
@@ -25,12 +24,16 @@ export default class GroupRepository {
       where: { id },
       include: {
         members: {
-          include: { user: { select: { id: true, username: true, profileImage: true } } },
+          include: {
+            user: { select: { id: true, username: true, profileImage: true } },
+          },
         },
         messages: {
           take: 50,
           orderBy: { createdAt: "asc" },
-          include: { user: { select: { id: true, username: true, profileImage: true } } },
+          include: {
+            user: { select: { id: true, username: true, profileImage: true } },
+          },
         },
         _count: { select: { members: true, messages: true } },
       },
@@ -41,7 +44,12 @@ export default class GroupRepository {
    * Crée un nouveau club et ajoute son créateur comme admin.
    * @param data - Données du club + userId du créateur
    */
-  async create(data: { name: string; description?: string; accessClub?: boolean; userId: string }) {
+  async create(data: {
+    name: string;
+    description?: string;
+    accessClub?: boolean;
+    userId: string;
+  }) {
     return await prisma.group.create({
       data: {
         name: data.name,
@@ -108,7 +116,9 @@ export default class GroupRepository {
   async addMessage(groupId: string, userId: string, content: string) {
     return await prisma.groupMessage.create({
       data: { groupId, userId, content },
-      include: { user: { select: { id: true, username: true, profileImage: true } } },
+      include: {
+        user: { select: { id: true, username: true, profileImage: true } },
+      },
     });
   }
 }

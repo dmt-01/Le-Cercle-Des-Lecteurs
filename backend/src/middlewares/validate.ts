@@ -12,9 +12,11 @@ import { z } from "zod";
  * @param schema - Schéma Zod à utiliser pour la validation
  * @param source - Source des données : "body" (défaut) ou "query"
  */
-export function validate(schema: z.ZodTypeAny, source: "body" | "query" = "body") {
+export function validate(
+  schema: z.ZodTypeAny,
+  source: "body" | "query" = "body",
+) {
   return (req: Request, res: Response, next: NextFunction) => {
-
     // Tenter de valider la source choisie contre le schéma
     const result = schema.safeParse(source === "query" ? req.query : req.body);
 
@@ -23,8 +25,8 @@ export function validate(schema: z.ZodTypeAny, source: "body" | "query" = "body"
       res.status(422).json({
         message: "Données invalides",
         errors: result.error.issues.map((issue) => ({
-          field: issue.path.join("."),   // Chemin du champ en erreur (ex: "email")
-          message: issue.message,        // Message d'erreur Zod
+          field: issue.path.join("."), // Chemin du champ en erreur (ex: "email")
+          message: issue.message, // Message d'erreur Zod
         })),
       });
       return;

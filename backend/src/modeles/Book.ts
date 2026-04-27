@@ -69,9 +69,18 @@ export default class Book {
       row.coverImage ?? undefined,
       row.description ?? undefined,
       row.publication_date?.toISOString() ?? undefined,
-      row.authors?.map((a: any) => ({ id: a.author.id, name: a.author.name })),
-      row.categorisations?.map((c: any) => ({ id: c.genre.id, name: c.genre.name })),
-      row.thematisations?.map((t: any) => ({ id: t.tag.id, name: t.tag.name })),
+      row.authors?.map((author: any) => ({
+        id: author.author.id,
+        name: author.author.name,
+      })),
+      row.categorisations?.map((categorie: any) => ({
+        id: categorie.genre.id,
+        name: categorie.genre.name,
+      })),
+      row.thematisations?.map((theme: any) => ({
+        id: theme.tag.id,
+        name: theme.tag.name,
+      })),
       row.averageRating ?? undefined,
       row.reviewCount ?? row._count?.reviews ?? undefined,
     );

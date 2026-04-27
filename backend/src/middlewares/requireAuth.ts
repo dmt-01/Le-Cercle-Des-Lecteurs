@@ -18,7 +18,11 @@ import jwt from "jsonwebtoken";
  * Utilisation sur une route :
  *   router.post("/refresh", requireAuth, (req, res) => { ... });
  */
-export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     // 0.0 COOKIE : Lire le refresh token depuis le cookie httpOnly
     const rawJwt: string | undefined = req.cookies.refresh_token;
@@ -54,7 +58,6 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     // 4.0 REQUEST : Injecter l'userId dans la requête pour les contrôleurs suivants
     req.userId = storedToken.userId;
     next();
-
   } catch (error: any) {
     res.status(401).json({ message: "Non authentifié" });
   }

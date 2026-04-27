@@ -5,7 +5,6 @@ import Review from "../modeles/Review";
 const reviewRepository = new ReviewRepository();
 
 export default class ReviewService {
-
   async list(bookId: string) {
     const rows = await reviewRepository.findByBook(bookId);
     return rows.map((row) => ({
@@ -14,7 +13,12 @@ export default class ReviewService {
     }));
   }
 
-  async upsert(bookId: string, userId: string, content?: string, note?: number) {
+  async upsert(
+    bookId: string,
+    userId: string,
+    content?: string,
+    note?: number,
+  ) {
     const row = await reviewRepository.upsert(bookId, userId, content, note);
     return Review.fromRow(row).serialize();
   }

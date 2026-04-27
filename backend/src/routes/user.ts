@@ -1,4 +1,8 @@
-import { signupSchema, signinSchema, updateUserSchema } from "../validators/userValidators";
+import {
+  signupSchema,
+  signinSchema,
+  updateUserSchema,
+} from "../validators/userValidators";
 import UserController from "../controllers/userController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";

@@ -72,7 +72,7 @@ export default class BookRepository {
       return { ...book, averageRating };
     });
 
-    return {books: booksWithRating, total };
+    return { books: booksWithRating, total };
   }
 
   /**

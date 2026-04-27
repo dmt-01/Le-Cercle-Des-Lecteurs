@@ -8,10 +8,10 @@ import { UserDbRow } from "../types/Types";
  * les données avant de les renvoyer en réponse HTTP.
  */
 export default class User {
-  protected id?: string;                   // UUID généré par la base — absent avant l'insertion
+  protected id?: string; // UUID généré par la base — absent avant l'insertion
   protected username: string;
   protected email: string;
-  protected password_hash: string;         // Hash argon2 — jamais exposé dans serialize()
+  protected password_hash: string; // Hash argon2 — jamais exposé dans serialize()
   protected bio?: string;
   protected profile_image?: string;
   protected created_at: string;
@@ -27,7 +27,7 @@ export default class User {
    * @param created_at    - Date de création ISO (générée automatiquement si absente)
    */
   constructor(
-    id?: string,          // @ts-ignore
+    id?: string, // @ts-ignore
     username: string,
     email: string,
     password_hash: string,
@@ -80,11 +80,11 @@ export default class User {
    */
   serializePublic = (): Record<string, string | undefined> => {
     return {
-      id:            this.id,
-      username:      this.username,
-      bio:           this.bio,
+      id: this.id,
+      username: this.username,
+      bio: this.bio,
       profile_image: this.profile_image,
-      created_at:    this.created_at,
+      created_at: this.created_at,
     };
   };
 

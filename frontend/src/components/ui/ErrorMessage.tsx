@@ -3,7 +3,10 @@ type Props = {
   onRetry?: () => void;
 };
 
-function ErrorMessage({ message = "Une erreur est survenue.", onRetry }: Props) {
+function ErrorMessage({
+  message = "Une erreur est survenue.",
+  onRetry,
+}: Props) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
       <p className="text-primary/50 text-sm">{message}</p>

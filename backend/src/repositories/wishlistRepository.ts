@@ -1,22 +1,21 @@
 import prisma from "../libs/prisma";
 
-const bookIncludes = {
-  authors:        { include: { author: true } },
-  categorisations:{ include: { genre: true } },
-  thematisations: { include: { tag: true } },
-  _count:         { select: { reviews: true } },
-};
-
 /**
  * Repository gérant les accès en base de données pour les wishlists.
  */
 export default class WishlistRepository {
-
   /**
    * Retourne tous les livres de la wishlist d'un utilisateur.
    * @param userId - UUID de l'utilisateur
    */
   async findByUser(userId: string) {
+    const bookIncludes = {
+      authors: { include: { author: true } },
+      categorisations: { include: { genre: true } },
+      thematisations: { include: { tag: true } },
+      _count: { select: { reviews: true } },
+    };
+
     return await prisma.wishlist.findMany({
       where: { userId },
       include: { book: { include: bookIncludes } },

@@ -10,11 +10,11 @@ import crypto from "node:crypto";
  *  - Token.fromRow(row)         → pour reconstruire un token depuis la base de données
  */
 export default class Token {
-  protected id?: number;           // Identifiant en base (absent avant l'insertion)
-  protected user_id: string;       // UUID de l'utilisateur propriétaire
-  protected token_hash: string;    // Hash SHA-256 du JWT — on ne stocke jamais le JWT brut
-  protected expires_at: string;    // Date d'expiration en ISO string
-  protected created_at: string;    // Date de création en ISO string
+  protected id?: number; // Identifiant en base (absent avant l'insertion)
+  protected user_id: string; // UUID de l'utilisateur propriétaire
+  protected token_hash: string; // Hash SHA-256 du JWT — on ne stocke jamais le JWT brut
+  protected expires_at: string; // Date d'expiration en ISO string
+  protected created_at: string; // Date de création en ISO string
 
   /**
    * Constructeur privé — utilisé uniquement par les méthodes statiques de cette classe.
@@ -24,7 +24,7 @@ export default class Token {
     token_hash: string,
     expires_at: string,
     created_at: string,
-    id?: number
+    id?: number,
   ) {
     this.id = id;
     this.user_id = user_id;
@@ -44,7 +44,7 @@ export default class Token {
     const hash = crypto.createHash("sha256").update(jwt).digest("hex");
     const created = new Date();
     const expires = new Date(
-      created.getTime() + TokenService.getRefreshTokenTTL() * 1000
+      created.getTime() + TokenService.getRefreshTokenTTL() * 1000,
     );
 
     return new Token(
@@ -52,7 +52,7 @@ export default class Token {
       hash,
       expires.toISOString(),
       created.toISOString(),
-      undefined
+      undefined,
     );
   };
 
@@ -66,7 +66,7 @@ export default class Token {
       row.token_hash,
       row.expires_at,
       row.created_at,
-      row.id
+      row.id,
     );
   };
 

@@ -1,4 +1,9 @@
-import { listBooksSchema, searchBooksSchema, createBookSchema, updateBookSchema } from "../validators/bookValidators";
+import {
+  listBooksSchema,
+  searchBooksSchema,
+  createBookSchema,
+  updateBookSchema,
+} from "../validators/bookValidators";
 import BookController from "../controllers/bookController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";

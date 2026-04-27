@@ -5,18 +5,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { Group } from "../../types";
 
-const CARD_GRADIENTS = [
-  "from-[#2c1a0e] to-[#6b3a1a]",
-  "from-[#1a1f2c] to-[#2c3a5c]",
-  "from-[#0e2c1a] to-[#175c33]",
-  "from-[#2c1a1a] to-[#5c2a2a]",
-  "from-[#1a2c2c] to-[#1a4a4a]",
-  "from-[#2a2416] to-[#4a3e20]",
-];
-
 function GroupCard({
   group,
-  index,
   onJoin,
   onNavigate,
   joining,
@@ -35,29 +25,43 @@ function GroupCard({
       className="bg-white rounded-2xl overflow-hidden border border-beige-medium flex flex-col cursor-pointer hover:border-secondary/30 hover:shadow-sm transition-all"
     >
       <div
-        className={`relative h-48 bg-gradient-to-br ${CARD_GRADIENTS[index % CARD_GRADIENTS.length]} flex items-center justify-center`}
+        className="relative h-48 flex items-center justify-center"
+        style={{
+          background: "url(/img/template_group.png) center/cover no-repeat",
+        }}
       >
-        <span className="text-white/10 font-serif text-[120px] leading-none select-none">"</span>
+        <span className="text-white/10 font-serif text-[120px] leading-none select-none">
+          "
+        </span>
         <div className="absolute top-3 left-3 bg-secondary text-white text-[9px] uppercase tracking-widest px-2.5 py-1 rounded">
           En lecture
         </div>
       </div>
 
       <div className="p-5 flex flex-col gap-3 flex-1">
-        <h3 className="text-xl font-serif italic text-primary leading-snug">{group.name}</h3>
+        <h3 className="text-xl font-serif italic text-primary leading-snug">
+          {group.name}
+        </h3>
 
         {group.description && (
-          <p className="text-sm text-primary/60 leading-relaxed flex-1">{group.description}</p>
+          <p className="text-sm text-primary/60 leading-relaxed flex-1">
+            {group.description}
+          </p>
         )}
 
         <div className="flex items-center justify-between mt-2">
           <span className="text-xs text-primary/40">
-            <strong className="text-primary/60 font-semibold">{group.member_count}</strong>{" "}
+            <strong className="text-primary/60 font-semibold">
+              {group.member_count}
+            </strong>{" "}
             membre{group.member_count !== 1 ? "s" : ""}
           </span>
 
           <button
-            onClick={(e) => { e.stopPropagation(); onJoin(group.id); }}
+            onClick={(event) => {
+              event.stopPropagation();
+              onJoin(group.id);
+            }}
             disabled={joining || joined}
             className={`border text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors ${
               joined
@@ -93,7 +97,11 @@ function CreateGroupModal({
     try {
       const res = await apiFetch("/groups", {
         method: "POST",
-        body: JSON.stringify({ name: name.trim(), description: description.trim() || undefined, accessClub: true }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || undefined,
+          accessClub: true,
+        }),
       });
       onCreated(res.data);
     } catch (err: any) {
@@ -109,9 +117,11 @@ function CreateGroupModal({
     >
       <div
         className="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="text-2xl font-serif italic text-primary mb-6">Créer un cercle</h2>
+        <h2 className="text-2xl font-serif italic text-primary mb-6">
+          Créer un cercle
+        </h2>
 
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
@@ -183,11 +193,15 @@ function GroupsPage() {
     setError(null);
     apiFetch("/groups")
       .then((res) => setGroups(res.data ?? []))
-      .catch((err) => setError(err?.message ?? "Impossible de charger les cercles."))
+      .catch((err) =>
+        setError(err?.message ?? "Impossible de charger les cercles."),
+      )
       .finally(() => setLoading(false));
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function handleJoin(groupId: string) {
     if (!user) {
@@ -200,8 +214,8 @@ function GroupsPage() {
       setJoined((prev) => new Set(prev).add(groupId));
       setGroups((prev) =>
         prev.map((g) =>
-          g.id === groupId ? { ...g, member_count: g.member_count + 1 } : g
-        )
+          g.id === groupId ? { ...g, member_count: g.member_count + 1 } : g,
+        ),
       );
     } catch (err: any) {
       if (err?.status === 409) {
@@ -232,7 +246,6 @@ function GroupsPage() {
 
   return (
     <div className="min-h-screen">
-
       {showModal && (
         <CreateGroupModal
           onClose={() => setShowModal(false)}
@@ -244,11 +257,16 @@ function GroupsPage() {
       <div className="max-w-5xl mx-auto px-6 pt-12 pb-10">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-2">La Communauté</p>
-            <h1 className="text-5xl font-serif italic text-primary mb-4 leading-tight">Cercles de Lecture</h1>
+            <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-2">
+              La Communauté
+            </p>
+            <h1 className="text-5xl font-serif italic text-primary mb-4 leading-tight">
+              Cercles de Lecture
+            </h1>
             <p className="text-primary/60 text-sm leading-relaxed max-w-lg">
-              Rejoignez une assemblée d'esprits curieux. Découvrez des discussions thématiques,
-              des analyses profondes et le plaisir partagé d'une œuvre littéraire.
+              Rejoignez une assemblée d'esprits curieux. Découvrez des
+              discussions thématiques, des analyses profondes et le plaisir
+              partagé d'une œuvre littéraire.
             </p>
           </div>
           <button
@@ -263,7 +281,9 @@ function GroupsPage() {
       {/* ── Grille ── */}
       <div className="max-w-5xl mx-auto px-6 pb-16">
         {loading && (
-          <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
+          <p className="text-primary/40 text-sm text-center py-12">
+            Chargement...
+          </p>
         )}
 
         {error && <ErrorMessage message={error} onRetry={load} />}
@@ -295,17 +315,24 @@ function GroupsPage() {
       <div className="max-w-5xl mx-auto px-6 pb-16">
         <div className="bg-beige rounded-2xl p-10 flex items-center justify-between gap-8 overflow-hidden">
           <div className="flex flex-col gap-5 max-w-lg">
-            <h2 className="text-4xl font-serif italic text-primary">Curateur du mois</h2>
+            <h2 className="text-4xl font-serif italic text-primary">
+              Curateur du mois
+            </h2>
             <p className="text-primary/70 text-base italic leading-relaxed">
-              "La lecture n'est pas un acte passif, c'est une conversation entre deux âmes à travers le temps."
+              "La lecture n'est pas un acte passif, c'est une conversation entre
+              deux âmes à travers le temps."
             </p>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-base font-bold uppercase shrink-0">
                 E
               </div>
               <div>
-                <p className="text-sm font-semibold text-primary">Elena Marquès</p>
-                <p className="text-xs text-secondary italic">Fondatrice de 'L'Arpenteur'</p>
+                <p className="text-sm font-semibold text-primary">
+                  Elena Marquès
+                </p>
+                <p className="text-xs text-secondary italic">
+                  Fondatrice de 'L'Arpenteur'
+                </p>
               </div>
             </div>
           </div>
@@ -316,7 +343,6 @@ function GroupsPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

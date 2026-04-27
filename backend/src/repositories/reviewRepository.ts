@@ -4,7 +4,6 @@ import prisma from "../libs/prisma";
  * Repository gérant les accès en base de données pour les reviews.
  */
 export default class ReviewRepository {
-
   /**
    * Retourne toutes les reviews d'un livre.
    * @param bookId - UUID du livre
@@ -39,7 +38,12 @@ export default class ReviewRepository {
    * @param content - Texte de la review (optionnel)
    * @param note    - Note de 1 à 5 (optionnel)
    */
-  async upsert(bookId: string, userId: string, content?: string, note?: number) {
+  async upsert(
+    bookId: string,
+    userId: string,
+    content?: string,
+    note?: number,
+  ) {
     return await prisma.review.upsert({
       where: { bookId_userId: { bookId, userId } },
       create: { bookId, userId, content, note },

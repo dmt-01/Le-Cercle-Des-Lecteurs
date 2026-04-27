@@ -46,7 +46,8 @@ function Router() {
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/profile" element={<UserProfilePage />} />
         </Route>
-
+        
+        {/* Route pour les pages non trouvées */}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

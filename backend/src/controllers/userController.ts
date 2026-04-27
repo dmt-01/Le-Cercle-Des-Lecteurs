@@ -3,8 +3,8 @@ import UserRepository from "../repositories/userRepository";
 import { CookieService } from "../services/CookieService";
 import { TokenService } from "../services/TokenService";
 import UserService from "../services/userService";
-import { AppError } from "../libs/AppError";
 import { Controller } from "../libs/Controller";
+import { AppError } from "../libs/AppError";
 import Token from "../modeles/Token";
 import User from "../modeles/User";
 import argon2 from "argon2";
@@ -14,7 +14,6 @@ import argon2 from "argon2";
  * Hérite de Controller qui expose this.request et this.response.
  */
 export default class UserController extends Controller {
-
   /**
    * Inscription d'un nouvel utilisateur
    *
@@ -29,7 +28,13 @@ export default class UserController extends Controller {
   async signup() {
     try {
       // 0.0 REQUEST : Récupérer les données du corps validées par le middleware
-      const data: { username: string; email: string; password: string; bio?: string; profile_image?: string } = this.request.body;
+      const data: {
+        username: string;
+        email: string;
+        password: string;
+        bio?: string;
+        profile_image?: string;
+      } = this.request.body;
 
       // 1.1 USER : Vérifier qu'aucun utilisateur n'existe déjà avec cet email
       const userRepository = new UserRepository();
@@ -115,7 +120,10 @@ export default class UserController extends Controller {
       }
 
       // 1.2 USER : Vérifier la concordance entre le mot de passe soumis et le hash enregistré
-      const isPasswordValid = await argon2.verify(foundUser.passwordHash, data.password);
+      const isPasswordValid = await argon2.verify(
+        foundUser.passwordHash,
+        data.password,
+      );
 
       if (!isPasswordValid) {
         return this.response
@@ -239,7 +247,7 @@ export default class UserController extends Controller {
   async getMe() {
     try {
       const userId = this.request.userId!;
-      const data   = await UserService.getMe(userId);
+      const data = await UserService.getMe(userId);
       return this.response.status(200).json({ data });
     } catch (error: any) {
       const status = error instanceof AppError ? error.statusCode : 500;
@@ -250,8 +258,10 @@ export default class UserController extends Controller {
   async updateMe() {
     try {
       const userId = this.request.userId!;
-      const data   = await UserService.updateMe(userId, this.request.body);
-      return this.response.status(200).json({ message: "Profil mis à jour", data });
+      const data = await UserService.updateMe(userId, this.request.body);
+      return this.response
+        .status(200)
+        .json({ message: "Profil mis à jour", data });
     } catch (error: any) {
       const status = error instanceof AppError ? error.statusCode : 400;
       return this.response.status(status).json({ message: error.message });
@@ -260,7 +270,7 @@ export default class UserController extends Controller {
 
   async getPublicProfile() {
     try {
-      const id   = this.request.params.id as string;
+      const id = this.request.params.id as string;
       const data = await UserService.getPublicProfile(id);
       return this.response.status(200).json({ data });
     } catch (error: any) {
@@ -271,7 +281,7 @@ export default class UserController extends Controller {
 
   async follow() {
     try {
-      const userId         = this.request.userId!;
+      const userId = this.request.userId!;
       const userFollowedId = this.request.params.id as string;
       await UserService.follow(userId, userFollowedId);
       return this.response.status(200).json({ message: "Utilisateur suivi" });
@@ -283,10 +293,12 @@ export default class UserController extends Controller {
 
   async unfollow() {
     try {
-      const userId         = this.request.userId!;
+      const userId = this.request.userId!;
       const userFollowedId = this.request.params.id as string;
       await UserService.unfollow(userId, userFollowedId);
-      return this.response.status(200).json({ message: "Utilisateur non suivi" });
+      return this.response
+        .status(200)
+        .json({ message: "Utilisateur non suivi" });
     } catch (error: any) {
       const status = error instanceof AppError ? error.statusCode : 400;
       return this.response.status(status).json({ message: error.message });

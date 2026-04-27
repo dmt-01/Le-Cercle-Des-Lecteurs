@@ -30,12 +30,12 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-
       {/* ── Panneau gauche — image + accroche ── */}
       <div
         className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden"
         style={{
-          background: "linear-gradient(to bottom, #2c1f14e0, #6B2737cc), url('/hero-books.jpg') center/cover no-repeat",
+          background:
+            "linear-gradient(to bottom, #2c1f14e0, #6B2737cc), url('/hero-books.jpg') center/cover no-repeat",
         }}
       >
         <Link to="/" className="text-gold italic font-sansSerif text-xl">
@@ -44,17 +44,25 @@ function LoginPage() {
 
         <div>
           <h1 className="text-5xl font-serif leading-tight mb-6">
-            Redécouvrez le plaisir<br />de la lecture lente.
+            Redécouvrez le plaisir
+            <br />
+            de la lecture lente.
           </h1>
           <p className="text-white/70 text-base leading-relaxed max-w-sm mb-10">
-            Un espace privé pour les bibliophiles exigeants. Partagez vos découvertes,
-            construisez votre catalogue idéal et échangez avec des curateurs passionnés.
+            Un espace privé pour les bibliophiles exigeants. Partagez vos
+            découvertes, construisez votre catalogue idéal et échangez avec des
+            curateurs passionnés.
           </p>
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              {["bg-secondary", "bg-gold", "bg-primary"].map((c, i) => (
-                <div key={i} className={`w-8 h-8 rounded-full border-2 border-white/30 ${c}`} />
-              ))}
+              {["bg-secondary", "bg-gold", "bg-primary"].map(
+                (colorClass, index) => (
+                  <div
+                    key={index}
+                    className={`w-8 h-8 rounded-full border-2 border-white/30 ${colorClass}`}
+                  />
+                ),
+              )}
             </div>
             <p className="text-white/60 text-xs uppercase tracking-widest">
               Rejoignez 5 000+ lecteurs
@@ -66,7 +74,6 @@ function LoginPage() {
       {/* ── Panneau droit — formulaire ── */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-beige px-8 py-16">
         <div className="w-full max-w-md">
-
           <h2 className="text-3xl font-serif italic text-primary mb-2">
             Bienvenue au Cercle
           </h2>
@@ -80,9 +87,16 @@ function LoginPage() {
             </p>
           )}
 
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-5"
+          >
             <div>
-              <label htmlFor="email" className="block text-[10px] uppercase tracking-widest text-primary/50 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-[10px] uppercase tracking-widest text-primary/50 mb-1.5"
+              >
                 Adresse email
               </label>
               <input
@@ -99,10 +113,16 @@ function LoginPage() {
 
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label htmlFor="password" className="block text-[10px] uppercase tracking-widest text-primary/50">
+                <label
+                  htmlFor="password"
+                  className="block text-[10px] uppercase tracking-widest text-primary/50"
+                >
                   Mot de passe
                 </label>
-                <span className="text-xs text-primary/40 cursor-not-allowed" title="Disponible prochainement">
+                <span
+                  className="text-xs text-primary/40 cursor-not-allowed"
+                  title="Disponible prochainement"
+                >
                   Oublié ?
                 </span>
               </div>
@@ -124,7 +144,9 @@ function LoginPage() {
                 onChange={(event) => setRemember(event.target.checked)}
                 className="w-4 h-4 accent-secondary rounded"
               />
-              <span className="text-sm text-primary/60">Se souvenir de moi</span>
+              <span className="text-sm text-primary/60">
+                Se souvenir de moi
+              </span>
             </label>
 
             <button
@@ -138,13 +160,15 @@ function LoginPage() {
 
           <p className="text-center text-sm text-primary/50 mt-8">
             Pas encore membre ?{" "}
-            <Link to="/signup" className="text-secondary font-semibold hover:underline">
+            <Link
+              to="/signup"
+              className="text-secondary font-semibold hover:underline"
+            >
               Créer un compte
             </Link>
           </p>
         </div>
       </div>
-
     </div>
   );
 }

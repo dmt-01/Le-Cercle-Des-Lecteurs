@@ -1,7 +1,6 @@
-import { Link, useSearchParams } from "react-router";
-import { apiFetch } from "../../services/api";
-import { useEffect, useState } from "react";
+import { useBooks } from "../../hooks/useBooks";
 import type { Book } from "../../types";
+import { Link } from "react-router";
 
 const QUOTE = {
   text: "« Une chambre sans livres est comme un corps sans âme. »",
@@ -15,14 +14,26 @@ const NOTE_OPTIONS = [
   { label: "2★ et plus", value: 2 },
 ];
 
-function StarRating({ rating, count }: { rating: number | null; count: number }) {
-  if (!rating || count === 0) return <span className="text-xs text-primary/30 italic">Aucun vote</span>;
+function StarRating({
+  rating,
+  count,
+}: {
+  rating: number | null;
+  count: number;
+}) {
+  if (!rating || count === 0)
+    return <span className="text-xs text-primary/30 italic">Aucun vote</span>;
   const rounded = Math.round(rating);
   return (
     <div className="flex items-center gap-1">
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((starValue) => (
-          <span key={starValue} className={starValue <= rounded ? "text-gold" : "text-beige-medium"}>★</span>
+          <span
+            key={starValue}
+            className={starValue <= rounded ? "text-gold" : "text-beige-medium"}
+          >
+            ★
+          </span>
         ))}
       </div>
       <span className="text-xs text-primary/40">{rating.toFixed(1)}★</span>
@@ -36,7 +47,6 @@ function FeaturedBook({ book }: { book: Book }) {
       to={`/books/${book.id}`}
       className="flex gap-8 bg-white rounded-2xl overflow-hidden border border-beige-medium hover:border-secondary/30 transition-colors group"
     >
-      {/* Cover */}
       <div className="relative shrink-0 w-48 bg-beige-medium">
         {book.cover_image ? (
           <img
@@ -45,21 +55,28 @@ function FeaturedBook({ book }: { book: Book }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full min-h-[280px] bg-gradient-to-br from-secondary to-primary" />
+          <div
+            className="w-full h-full min-h-[280px] bg-gradient-to-br from-secondary to-primary"
+            style={{
+              background: "url(/img/template_book.png) center/cover no-repeat",
+            }}
+          />
         )}
-        <div className="absolute top-3 left-3 bg-secondary text-white text-[9px] uppercase tracking-widest px-2 py-1 rounded flex items-center gap-1">
+        <div className="absolute top-3 left-3 text-white text-[9px] uppercase tracking-widest px-2 py-1 rounded flex items-center gap-1">
           <span>✦</span> Editor's Choice
         </div>
       </div>
 
-      {/* Details */}
       <div className="flex flex-col justify-center py-8 pr-8 gap-3">
         {book.genres[0] && (
           <span className="text-[10px] uppercase tracking-widest text-secondary font-medium">
             {book.genres[0].name}
           </span>
         )}
-        <StarRating rating={book.average_rating ?? null} count={book.review_count ?? 0} />
+        <StarRating
+          rating={book.average_rating ?? null}
+          count={book.review_count ?? 0}
+        />
         <h2 className="text-4xl font-serif italic text-primary leading-tight">
           {book.title}
         </h2>
@@ -90,8 +107,15 @@ function BookCard({ book }: { book: Book }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-end p-4 bg-gradient-to-br from-primary/10 to-secondary/20">
-            <p className="text-primary text-sm font-serif italic line-clamp-3">{book.title}</p>
+          <div
+            className="w-full h-full flex items-end p-4"
+            style={{
+              background: "url(/img/template_book.png) center/cover no-repeat",
+            }}
+          >
+            <p className="text-primary text-sm font-serif italic line-clamp-3">
+              {book.title}
+            </p>
           </div>
         )}
       </div>
@@ -101,8 +125,13 @@ function BookCard({ book }: { book: Book }) {
             {book.genres[0].name}
           </span>
         )}
-        <StarRating rating={book.average_rating ?? null} count={book.review_count ?? 0} />
-        <p className="text-sm font-semibold text-primary line-clamp-1">{book.title}</p>
+        <StarRating
+          rating={book.average_rating ?? null}
+          count={book.review_count ?? 0}
+        />
+        <p className="text-sm font-semibold text-primary line-clamp-1">
+          {book.title}
+        </p>
         {book.authors[0] && (
           <p className="text-xs text-primary/40">{book.authors[0].name}</p>
         )}
@@ -111,12 +140,21 @@ function BookCard({ book }: { book: Book }) {
   );
 }
 
-function Pagination({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (newPage: number) => void }) {
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (newPage: number) => void;
+}) {
   if (totalPages <= 1) return null;
 
   const items: (number | "…")[] = [];
   if (totalPages <= 6) {
-    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) items.push(pageNumber);
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++)
+      items.push(pageNumber);
   } else {
     items.push(1, 2, 3);
     if (page > 4) items.push("…");
@@ -125,7 +163,9 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
     items.push(totalPages);
   }
 
-  const unique = items.filter((item, index, array) => array.indexOf(item) === index);
+  const unique = items.filter(
+    (item, index, array) => array.indexOf(item) === index,
+  );
 
   return (
     <div className="flex items-center justify-center gap-2 py-12">
@@ -138,7 +178,9 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
       </button>
       {unique.map((item, index) =>
         item === "…" ? (
-          <span key={`ellipsis-${index}`} className="text-primary/30 px-1">…</span>
+          <span key={`ellipsis-${index}`} className="text-primary/30 px-1">
+            …
+          </span>
         ) : (
           <button
             key={item}
@@ -151,7 +193,7 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
           >
             {item}
           </button>
-        )
+        ),
       )}
       <button
         onClick={() => onChange(page + 1)}
@@ -165,95 +207,35 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
 }
 
 function BooksPage() {
-  const [searchParams] = useSearchParams();
-
-  const [draftSearch, setDraftSearch] = useState(searchParams.get("search") ?? "");
-  const [draftGenre, setDraftGenre] = useState("");
-  const [draftNote, setDraftNote] = useState(0);
-
-  const [appliedSearch, setAppliedSearch] = useState(searchParams.get("search") ?? "");
-  const [appliedGenre, setAppliedGenre] = useState("");
-  const [appliedNote, setAppliedNote] = useState(0);
-  const [page, setPage] = useState(1);
-
-  const [books, setBooks] = useState<Book[]>([]);
-  const [allGenres, setAllGenres] = useState<string[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  // Récupère tous les genres disponibles au montage
-  useEffect(() => {
-    apiFetch("/books?limit=100")
-      .then((res) => {
-        const genres = [
-          ...new Set(
-            (res.data ?? []).flatMap((book: Book) => book.genres.map((genre) => genre.name))
-          ),
-        ] as string[];
-        setAllGenres(genres.sort());
-      })
-      .catch(() => {});
-  }, []);
-
-  // Sync le param ?search= venant du header
-  useEffect(() => {
-    const searchQuery = searchParams.get("search") ?? "";
-    setDraftSearch(searchQuery);
-    setAppliedSearch(searchQuery);
-    setPage(1);
-  }, [searchParams]);
-
-  // Fetch au changement de filtres appliqués ou de page
-  useEffect(() => {
-    setLoading(true);
-
-    const run = async () => {
-      let results: Book[] = [];
-      let pages = 1;
-
-      if (appliedSearch.trim()) {
-        const res = await apiFetch(`/books/search?q=${encodeURIComponent(appliedSearch.trim())}`);
-        results = res.data ?? [];
-        if (appliedGenre) results = results.filter((book) => book.genres.some((genre) => genre.name === appliedGenre));
-      } else {
-        const params = new URLSearchParams({ page: String(page), limit: "12" });
-        if (appliedGenre) params.set("genre", appliedGenre);
-        const res = await apiFetch(`/books?${params}`);
-        results = res.data ?? [];
-        pages = res.pagination?.totalPages ?? 1;
-      }
-
-      if (appliedNote > 0) {
-        results = results.filter((book) => (book.average_rating ?? 0) >= appliedNote);
-      }
-
-      setBooks(results);
-      setTotalPages(pages);
-    };
-
-    run().catch(() => setBooks([])).finally(() => setLoading(false));
-  }, [appliedSearch, appliedGenre, appliedNote, page]);
-
-  function handleFilter(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setAppliedSearch(draftSearch);
-    setAppliedGenre(draftGenre);
-    setAppliedNote(draftNote);
-    setPage(1);
-  }
-
-  const featured = books[0];
-  const rest = books.slice(1);
+  const {
+    draftSearch,
+    setDraftSearch,
+    draftGenre,
+    setDraftGenre,
+    draftNote,
+    setDraftNote,
+    allGenres,
+    totalPages,
+    loading,
+    featured,
+    rest,
+    page,
+    setPage,
+    appliedSearch,
+    handleFilter,
+  } = useBooks();
 
   return (
     <div className="min-h-screen">
-
       {/* ── En-tête ── */}
       <div className="max-w-5xl mx-auto px-6 pt-12 pb-8">
-        <h1 className="text-5xl font-serif italic text-primary mb-3">La Bibliothèque</h1>
+        <h1 className="text-5xl font-serif italic text-primary mb-3">
+          La Bibliothèque
+        </h1>
         <p className="text-primary/50 text-sm leading-relaxed max-w-lg">
-          Parcourez notre sélection rigoureuse d'ouvrages classiques et contemporains,
-          choisis pour leur profondeur et leur souffle littéraire.
+          Parcourez notre sélection rigoureuse d'ouvrages classiques et
+          contemporains, choisis pour leur profondeur et leur souffle
+          littéraire.
         </p>
       </div>
 
@@ -263,7 +245,6 @@ function BooksPage() {
           onSubmit={handleFilter}
           className="bg-white border border-beige-medium rounded-2xl px-6 py-5 flex flex-wrap items-end gap-4"
         >
-          {/* Recherche texte */}
           <div className="flex-1 min-w-[200px]">
             <label className="block text-[10px] uppercase tracking-widest text-primary/40 mb-1.5">
               Rechercher un titre ou auteur
@@ -277,7 +258,6 @@ function BooksPage() {
             />
           </div>
 
-          {/* Genre */}
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-primary/40 mb-1.5">
               Genre
@@ -289,12 +269,13 @@ function BooksPage() {
             >
               <option value="">Tous les genres</option>
               {allGenres.map((genre) => (
-                <option key={genre} value={genre}>{genre}</option>
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
               ))}
             </select>
           </div>
 
-          {/* Note */}
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-primary/40 mb-1.5">
               Note
@@ -305,7 +286,9 @@ function BooksPage() {
               className="bg-beige rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
             >
               {NOTE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
               ))}
             </select>
           </div>
@@ -321,23 +304,24 @@ function BooksPage() {
 
       {/* ── Résultats ── */}
       <div className="max-w-5xl mx-auto px-6">
-
         {loading && (
-          <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
+          <p className="text-primary/40 text-sm text-center py-12">
+            Chargement...
+          </p>
         )}
 
-        {!loading && books.length === 0 && (
-          <p className="text-primary/40 text-sm text-center py-12">Aucun livre trouvé.</p>
+        {!loading && !featured && (
+          <p className="text-primary/40 text-sm text-center py-12">
+            Aucun livre trouvé.
+          </p>
         )}
 
         {!loading && featured && (
           <>
-            {/* Livre vedette */}
             <div className="mb-10">
               <FeaturedBook book={featured} />
             </div>
 
-            {/* Grille */}
             {rest.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mb-16">
                 {rest.map((book) => (
@@ -348,10 +332,11 @@ function BooksPage() {
           </>
         )}
 
-        {/* Citation */}
-        {!loading && books.length > 0 && (
+        {!loading && featured && (
           <div className="border-t border-beige-medium py-16 text-center">
-            <p className="text-[60px] text-secondary/30 leading-none font-serif mb-4">"</p>
+            <p className="text-[60px] text-secondary/30 leading-none font-serif mb-4">
+              "
+            </p>
             <p className="text-2xl font-serif italic text-primary max-w-xl mx-auto leading-relaxed">
               {QUOTE.text}
             </p>
@@ -361,12 +346,17 @@ function BooksPage() {
           </div>
         )}
 
-        {/* Pagination */}
         {!appliedSearch && (
-          <Pagination page={page} totalPages={totalPages} onChange={(newPage) => { setPage(newPage); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onChange={(newPage) => {
+              setPage(newPage);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
         )}
       </div>
-
     </div>
   );
 }

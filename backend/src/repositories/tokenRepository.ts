@@ -5,7 +5,6 @@ import prisma from "../libs/prisma";
  * Repository gérant la persistance des tokens en base de données.
  */
 export default class TokenRepository {
-
   /**
    * Enregistre un nouveau token en base.
    * @param token - Instance Token à persister
@@ -15,7 +14,7 @@ export default class TokenRepository {
     const result = await prisma.token.create({
       data: {
         userId: token.getUserId(),
-        tokenHash: token.getTokenHash(),   // Hash SHA-256 du JWT (on ne stocke jamais le JWT brut)
+        tokenHash: token.getTokenHash(), // Hash SHA-256 du JWT (on ne stocke jamais le JWT brut)
         expiresAt: new Date(token.getExpiresAt()),
       },
     });

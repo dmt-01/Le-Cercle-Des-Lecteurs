@@ -1,4 +1,7 @@
-import { createGroupSchema, sendGroupMessageSchema } from "../validators/groupValidators";
+import {
+  createGroupSchema,
+  sendGroupMessageSchema,
+} from "../validators/groupValidators";
 import GroupController from "../controllers/groupController";
 import { requireAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";
@@ -26,8 +29,13 @@ groupRouter.delete("/:id/leave", requireAuth, (req, res) => {
   new GroupController(req, res).leave();
 });
 
-groupRouter.post("/:id/messages", requireAuth, validate(sendGroupMessageSchema), (req, res) => {
-  new GroupController(req, res).sendMessage();
-});
+groupRouter.post(
+  "/:id/messages",
+  requireAuth,
+  validate(sendGroupMessageSchema),
+  (req, res) => {
+    new GroupController(req, res).sendMessage();
+  },
+);
 
 export default groupRouter;

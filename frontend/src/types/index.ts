@@ -106,9 +106,6 @@ export interface BlogPost {
     profileImage?: string;
   };
 }
-
-export type Tab = "resume" | "critiques" | "forum";
-
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -117,6 +114,8 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   updateUser: (updated: User) => void;
 }
+
+export type Tab = "resume" | "critiques" | "forum";
 
 export type WishlistItem = { status: string; added_at: string; book: Book };
 

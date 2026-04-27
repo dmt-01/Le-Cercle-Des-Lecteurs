@@ -1,6 +1,10 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
-export async function apiFetch(endpoint: string, options: RequestInit = {}, _retry = false) {
+export async function apiFetch(
+  endpoint: string,
+  options: RequestInit = {},
+  _retry = false,
+) {
   const url = `${API_BASE_URL}${endpoint}`;
   const response = await fetch(url, {
     ...options,
@@ -30,7 +34,9 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}, _ret
   }
 
   const errorData = await response.json();
-  const err = new Error(errorData.message || "Une erreur est survenue") as Error & { status: number };
+  const err = new Error(
+    errorData.message || "Une erreur est survenue",
+  ) as Error & { status: number };
   err.status = response.status;
   throw err;
 }

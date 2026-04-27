@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import ErrorMessage from "../../components/ui/ErrorMessage";
+import type { PublicProfile, WishlistItem} from "../../types";
+import { useAuth } from "../../context/AuthContext";
 import { useParams, Link } from "react-router";
 import { apiFetch } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
-import type { PublicProfile, Book } from "../../types";
-import ErrorMessage from "../../components/ui/ErrorMessage";
+import { useEffect, useState } from "react";
 
-type WishlistItem = { status: string; added_at: string; book: Book };
+
 
 /* ── Modal édition profil ────────────────────────────────────────────── */
 function EditProfileModal({

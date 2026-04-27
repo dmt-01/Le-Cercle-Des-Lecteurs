@@ -1,21 +1,21 @@
-import Layout from "./components/layout/Layout";
+import { AboutPage, ContactPage, PrivacyPage, TermsPage, HelpPage } from "./Pages/Static/StaticPage";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
-import { Outlet, Route, Routes } from "react-router";
-import SignupPage from "./Pages/Auth/SignupPage";
-import LoginPage from "./Pages/Auth/LoginPage";
-import HomePage from "./Pages/Home/HomePage";
-import BooksPage from "./Pages/Books/BooksPage";
-import BookDetailPage from "./Pages/Books/BookDetailPage";
 import UserProfilePage from "./Pages/Profile/UserProfilePage";
-import GroupsPage from "./Pages/Groups/GroupsPage";
 import GroupDetailPage from "./Pages/Groups/GroupDetailPage";
-import EventsPage from "./Pages/Events/EventsPage";
 import EventDetailPage from "./Pages/Events/EventDetailPage";
-import BlogPage from "./Pages/Blog/BlogPage";
+import BookDetailPage from "./Pages/Books/BookDetailPage";
 import BlogDetailPage from "./Pages/Blog/BlogDetailPage";
 import MessagesPage from "./Pages/Messages/MessagesPage";
-import { AboutPage, ContactPage, PrivacyPage, TermsPage, HelpPage } from "./Pages/Static/StaticPage";
 import NotFoundPage from "./Pages/Static/NotFoundPage";
+import { Outlet, Route, Routes } from "react-router";
+import GroupsPage from "./Pages/Groups/GroupsPage";
+import EventsPage from "./Pages/Events/EventsPage";
+import SignupPage from "./Pages/Auth/SignupPage";
+import Layout from "./components/layout/Layout";
+import BooksPage from "./Pages/Books/BooksPage";
+import LoginPage from "./Pages/Auth/LoginPage";
+import HomePage from "./Pages/Home/HomePage";
+import BlogPage from "./Pages/Blog/BlogPage";
 
 function Router() {
   return (

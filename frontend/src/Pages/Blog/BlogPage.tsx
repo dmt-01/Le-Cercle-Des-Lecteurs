@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 import { apiFetch } from "../../services/api";
 import type { BlogPost } from "../../types";
-import ErrorMessage from "../../components/ui/ErrorMessage";
+import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 const POST_GRADIENTS = [
   "from-[#2c1f14] to-[#6b3a1a]",
@@ -97,17 +97,17 @@ function BlogPage() {
                 >
                   Tous
                 </button>
-                {categories.map((cat) => (
+                {categories.map((categorie) => (
                   <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    key={categorie}
+                    onClick={() => setActiveCategory(categorie)}
                     className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      activeCategory === cat
+                      activeCategory === categorie
                         ? "bg-primary text-white"
                         : "bg-white border border-beige-medium text-primary/50 hover:border-primary hover:text-primary"
                     }`}
                   >
-                    {cat}
+                    {categorie}
                   </button>
                 ))}
               </div>

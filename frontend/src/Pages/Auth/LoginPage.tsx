@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
 
 function LoginPage() {
   const { login } = useAuth();
@@ -14,8 +14,8 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     setError(null);
     setLoading(true);
     try {
@@ -89,7 +89,7 @@ function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="votre@email.fr"
                 required
                 autoComplete="email"
@@ -110,7 +110,7 @@ function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 required
                 autoComplete="current-password"
                 className="w-full bg-white border border-beige-medium rounded-xl px-4 py-3.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/40"
@@ -121,7 +121,7 @@ function LoginPage() {
               <input
                 type="checkbox"
                 checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
+                onChange={(event) => setRemember(event.target.checked)}
                 className="w-4 h-4 accent-secondary rounded"
               />
               <span className="text-sm text-primary/60">Se souvenir de moi</span>

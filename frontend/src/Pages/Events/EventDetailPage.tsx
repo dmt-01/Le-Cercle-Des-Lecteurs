@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
-import { apiFetch } from "../../services/api";
 import type { Event, Book } from "../../types";
+import { apiFetch } from "../../services/api";
+import { useEffect, useState } from "react";
 
 function EventDetailPage() {
   const { id } = useParams<{ id: string }>();

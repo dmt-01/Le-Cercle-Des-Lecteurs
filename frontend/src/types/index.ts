@@ -108,3 +108,16 @@ export interface BlogPost {
 }
 
 export type Tab = "resume" | "critiques" | "forum";
+
+export interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (username: string, email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateUser: (updated: User) => void;
+}
+
+export type WishlistItem = { status: string; added_at: string; book: Book };
+
+export type Section = { heading: string; body: string };

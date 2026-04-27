@@ -1,16 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import type { AuthContextType, User } from "../types";
 import { apiFetch } from "../services/api";
-import type { User } from "../types";
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (username: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  updateUser: (updated: User) => void;
-}
+import type { ReactNode } from "react";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 

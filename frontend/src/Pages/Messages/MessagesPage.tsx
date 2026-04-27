@@ -1,6 +1,6 @@
+import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "../../services/api";
-import ErrorMessage from "../../components/ui/ErrorMessage";
 
 type Conversation = {
   partner: { id: string; username: string; profileImage?: string };

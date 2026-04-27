@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
 function SignupPage() {
   const { signup } = useAuth();
@@ -24,16 +24,18 @@ function SignupPage() {
   
   const passwordValid = Object.values(passwordChecks).every(Boolean);
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!acceptTerms) {
       setError("Vous devez accepter les Conditions Générales pour continuer.");
       return;
     }
+
     if (!passwordValid) {
       setError("Le mot de passe ne respecte pas les critères requis.");
       return;
     }
+
     setError(null);
     setLoading(true);
     try {
@@ -113,7 +115,7 @@ function SignupPage() {
                 id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(event) => setUsername(event.target.value)}
                 placeholder="ex. Victor_H"
                 required
                 autoComplete="username"
@@ -129,7 +131,7 @@ function SignupPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="votre@email.com"
                 required
                 autoComplete="email"
@@ -145,7 +147,7 @@ function SignupPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 onBlur={() => setPasswordTouched(true)}
                 required
                 autoComplete="new-password"
@@ -177,7 +179,7 @@ function SignupPage() {
                 <input
                   type="checkbox"
                   checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  onChange={(event) => setAcceptTerms(event.target.checked)}
                   className="w-4 h-4 mt-0.5 accent-secondary rounded shrink-0"
                 />
                 <span className="text-xs text-primary/60 leading-relaxed">
@@ -192,7 +194,7 @@ function SignupPage() {
                 <input
                   type="checkbox"
                   checked={acceptNewsletter}
-                  onChange={(e) => setAcceptNewsletter(e.target.checked)}
+                  onChange={(event) => setAcceptNewsletter(event.target.checked)}
                   className="w-4 h-4 mt-0.5 accent-secondary rounded shrink-0"
                 />
                 <span className="text-xs text-primary/60 leading-relaxed">

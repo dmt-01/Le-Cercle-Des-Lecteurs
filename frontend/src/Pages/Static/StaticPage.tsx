@@ -1,4 +1,4 @@
-type Section = { heading: string; body: string };
+import type { Section } from "../../types";
 
 type Props = {
   category: string;

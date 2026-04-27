@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
-import { apiFetch } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
+import { useEffect, useRef, useState } from "react";
+import { apiFetch } from "../../services/api";
 
 type Member = {
   user: { id: string; username: string; profileImage?: string };

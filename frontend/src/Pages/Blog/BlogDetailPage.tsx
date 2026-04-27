@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { apiFetch } from "../../services/api";
+import { useEffect, useState } from "react";
 import type { BlogPost } from "../../types";
 
 function readingTime(content?: string | null) {
@@ -141,7 +141,7 @@ function BlogDetailPage() {
           <div>
             <textarea
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(event) => setComment(event.target.value)}
               placeholder="Partagez votre avis sur cet article..."
               rows={3}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none mb-3"

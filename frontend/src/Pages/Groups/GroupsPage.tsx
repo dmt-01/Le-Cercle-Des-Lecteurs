@@ -1,9 +1,9 @@
+import ErrorMessage from "../../components/ui/ErrorMessage";
+import { useAuth } from "../../context/AuthContext";
+import { apiFetch } from "../../services/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { apiFetch } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
 import type { Group } from "../../types";
-import ErrorMessage from "../../components/ui/ErrorMessage";
 
 const CARD_GRADIENTS = [
   "from-[#2c1a0e] to-[#6b3a1a]",

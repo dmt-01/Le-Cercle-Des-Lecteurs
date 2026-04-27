@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { apiFetch } from "../../services/api";
-import type { Event } from "../../types";
 import ErrorMessage from "../../components/ui/ErrorMessage";
+import { apiFetch } from "../../services/api";
+import { useEffect, useState } from "react";
+import type { Event } from "../../types";
+import { Link } from "react-router";
 
 const EVENT_GRADIENTS = [
   "from-[#2c1a0e] to-[#6b2737]",

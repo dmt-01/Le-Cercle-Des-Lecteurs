@@ -49,6 +49,11 @@ export default class UserRepository {
             reading:   true,
           },
         },
+        memberships: {
+          select: {
+            group: { select: { id: true, name: true } },
+          },
+        },
       },
     });
   }

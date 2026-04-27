@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { apiFetch } from "../../services/api";
 import type { Event } from "../../types";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 const EVENT_GRADIENTS = [
   "from-[#2c1a0e] to-[#6b2737]",
@@ -29,13 +30,18 @@ function groupByMonth(events: Event[]): [string, Event[]][] {
 function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     apiFetch("/events")
       .then((res) => setEvents(res.data ?? []))
-      .catch(() => {})
+      .catch((err) => setError(err?.message ?? "Impossible de charger les événements."))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
 
   const grouped = groupByMonth(events);
 
@@ -73,7 +79,9 @@ function EventsPage() {
           <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
         )}
 
-        {!loading && events.length === 0 && (
+        {error && <ErrorMessage message={error} onRetry={load} />}
+
+        {!loading && !error && events.length === 0 && (
           <p className="text-primary/40 text-sm italic text-center py-12">
             Aucun événement à venir pour le moment.
           </p>

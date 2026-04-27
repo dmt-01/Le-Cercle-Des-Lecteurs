@@ -130,6 +130,7 @@ export default class UserService {
       following:     found._count.following,
       reads:         found._count.reading,
       reviews:       found._count.reviews,
+      groups:        found.memberships.map((m) => m.group),
     };
   }
 

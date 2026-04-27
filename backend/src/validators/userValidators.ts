@@ -16,7 +16,11 @@ export const updateUserSchema = z.object({
 export const signupSchema = z.object({
   username:      z.string().min(3).max(50),
   email:         z.email(),
-  password:      z.string().min(12),
+  password:      z.string()
+    .min(12, "Le mot de passe doit contenir au moins 12 caractères")
+    .regex(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule")
+    .regex(/[a-z]/, "Le mot de passe doit contenir au moins une minuscule")
+    .regex(/[^A-Za-z0-9]/, "Le mot de passe doit contenir au moins un symbole"),
   bio:           z.string().optional(),
   profile_image: z.url().optional(),
 });

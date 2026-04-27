@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { apiFetch } from "../../services/api";
 import type { BlogPost } from "../../types";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 const POST_GRADIENTS = [
   "from-[#2c1f14] to-[#6b3a1a]",
@@ -20,16 +21,25 @@ function readingTime(content?: string | null) {
 function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     apiFetch("/blog")
       .then((res) => setPosts(res.data ?? []))
-      .catch(() => {})
+      .catch((err) => setError(err?.message ?? "Impossible de charger les articles."))
       .finally(() => setLoading(false));
-  }, []);
+  }
 
-  const featured = posts[0] ?? null;
-  const rest = posts.slice(1);
+  useEffect(() => { load(); }, []);
+
+  const categories = Array.from(new Set(posts.map((p) => p.category).filter(Boolean))) as string[];
+
+  const filtered = activeCategory ? posts.filter((p) => p.category === activeCategory) : posts;
+  const featured = activeCategory ? null : (posts[0] ?? null);
+  const rest = activeCategory ? filtered : filtered.slice(1);
 
   return (
     <div className="min-h-screen">
@@ -66,26 +76,38 @@ function BlogPage() {
         <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
       )}
 
+      {error && <ErrorMessage message={error} onRetry={load} />}
+
       {/* ── Dernières publications + sidebar ── */}
-      {!loading && (
+      {!loading && !error && (
         <div className="max-w-5xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-10">
 
           {/* Articles */}
           <div>
             <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <h2 className="text-2xl font-serif italic text-primary">Dernières Publications</h2>
-              <div className="flex gap-2">
-                {["Tous", "Interviews", "Critiques"].map((tab, i) => (
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveCategory(null)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    activeCategory === null
+                      ? "bg-primary text-white"
+                      : "bg-white border border-beige-medium text-primary/50 hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  Tous
+                </button>
+                {categories.map((cat) => (
                   <button
-                    key={tab}
-                    disabled={i !== 0}
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
                     className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      i === 0
+                      activeCategory === cat
                         ? "bg-primary text-white"
-                        : "bg-white border border-beige-medium text-primary/40 cursor-not-allowed opacity-60"
+                        : "bg-white border border-beige-medium text-primary/50 hover:border-primary hover:text-primary"
                     }`}
                   >
-                    {tab}
+                    {cat}
                   </button>
                 ))}
               </div>

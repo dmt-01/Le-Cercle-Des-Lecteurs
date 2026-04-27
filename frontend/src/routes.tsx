@@ -15,6 +15,7 @@ import BlogPage from "./Pages/Blog/BlogPage";
 import BlogDetailPage from "./Pages/Blog/BlogDetailPage";
 import MessagesPage from "./Pages/Messages/MessagesPage";
 import { AboutPage, ContactPage, PrivacyPage, TermsPage, HelpPage } from "./Pages/Static/StaticPage";
+import NotFoundPage from "./Pages/Static/NotFoundPage";
 
 function Router() {
   return (
@@ -46,7 +47,7 @@ function Router() {
           <Route path="/profile" element={<UserProfilePage />} />
         </Route>
 
-        <Route path="*" element={<h1>Page non trouvée</h1>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

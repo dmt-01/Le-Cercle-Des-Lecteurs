@@ -17,6 +17,7 @@ export interface PublicProfile {
   following: number;
   reads: number;
   reviews: number;
+  groups: { id: string; name: string }[];
 }
 
 export interface Author {
@@ -105,3 +106,5 @@ export interface BlogPost {
     profileImage?: string;
   };
 }
+
+export type Tab = "resume" | "critiques" | "forum";

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "../../services/api";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 type Conversation = {
   partner: { id: string; username: string; profileImage?: string };
@@ -65,20 +66,25 @@ function MessagesPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [filter, setFilter] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     apiFetch("/messages")
       .then((res) => {
         const convs: Conversation[] = res.data ?? [];
         setConversations(convs);
         if (convs.length > 0) setSelected(convs[0]);
       })
-      .catch(() => {})
+      .catch((err) => setError(err?.message ?? "Impossible de charger les messages."))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
 
   useEffect(() => {
     if (!selected) return;
@@ -133,7 +139,7 @@ function MessagesPage() {
       <div className="h-full flex gap-5">
 
         {/* ── Sidebar — liste des conversations ── */}
-        <div className="w-72 shrink-0 flex flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden">
+        <div className={`w-full md:w-72 shrink-0 flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden ${selected ? "hidden md:flex" : "flex"}`}>
           <div className="p-4 border-b border-beige-medium">
             <h1 className="text-xl font-serif italic text-primary mb-3">Messages</h1>
             <div className="relative">
@@ -152,7 +158,8 @@ function MessagesPage() {
             {loading && (
               <p className="text-primary/40 text-xs text-center py-6">Chargement...</p>
             )}
-            {!loading && filtered.length === 0 && (
+            {error && <ErrorMessage message={error} onRetry={load} />}
+            {!loading && !error && filtered.length === 0 && (
               <p className="text-primary/40 text-xs italic text-center py-6">Aucune conversation.</p>
             )}
             {filtered.map((conv) => {
@@ -188,7 +195,13 @@ function MessagesPage() {
           <div className="flex-1 flex flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden">
 
             {/* Header */}
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-beige-medium">
+            <div className="flex items-center gap-3 px-4 py-4 border-b border-beige-medium">
+              <button
+                onClick={() => setSelected(null)}
+                className="md:hidden text-primary/40 hover:text-secondary transition-colors mr-1 text-lg leading-none"
+              >
+                ←
+              </button>
               <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-sm font-bold shrink-0">
                 {initials(selected.partner.username)}
               </div>

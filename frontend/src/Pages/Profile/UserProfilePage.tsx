@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { apiFetch } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import type { PublicProfile, Book } from "../../types";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 type WishlistItem = { status: string; added_at: string; book: Book };
 
@@ -112,6 +113,7 @@ function UserProfilePage() {
   const [library, setLibrary] = useState<WishlistItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [following, setFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -121,6 +123,7 @@ function UserProfilePage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    setError(null);
 
     const calls: Promise<any>[] = [apiFetch(`/users/${id}`)];
     if (isOwnProfile) calls.push(apiFetch("/wishlist"));
@@ -134,7 +137,7 @@ function UserProfilePage() {
           setWishlist(items.filter((i) => i.status === "À lire"));
         }
       })
-      .catch(() => {})
+      .catch((err) => setError(err?.message ?? "Impossible de charger le profil."))
       .finally(() => setLoading(false));
   }, [id, isOwnProfile]);
 
@@ -155,6 +158,10 @@ function UserProfilePage() {
 
   if (loading) {
     return <div className="max-w-5xl mx-auto px-6 py-20 text-center text-primary/40">Chargement...</div>;
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} onRetry={() => { setError(null); setLoading(true); }} />;
   }
 
   if (!profile) {
@@ -287,7 +294,7 @@ function UserProfilePage() {
               {library.length === 0 ? (
                 <p className="text-primary/40 text-sm italic">Aucune lecture en cours ou terminée.</p>
               ) : (
-                <div className="grid grid-cols-[1fr_180px] gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
                   {/* Livre principal */}
                   {featuredBook && (
                     <Link
@@ -423,10 +430,25 @@ function UserProfilePage() {
             <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4 flex items-center gap-1.5">
               👥 Groupes rejoints
             </p>
-            <p className="text-primary/30 text-sm italic text-center py-2">Disponible prochainement.</p>
+            {profile.groups.length === 0 ? (
+              <p className="text-primary/30 text-sm italic text-center py-2">Aucun groupe rejoint.</p>
+            ) : (
+              <div className="flex flex-col gap-2 mb-3">
+                {profile.groups.slice(0, 3).map((g) => (
+                  <Link
+                    key={g.id}
+                    to={`/groups/${g.id}`}
+                    className="flex items-center justify-between text-sm text-primary/70 hover:text-secondary transition-colors py-1 border-b border-beige-medium last:border-0"
+                  >
+                    <span className="truncate">{g.name}</span>
+                    <span className="text-primary/30 ml-2">→</span>
+                  </Link>
+                ))}
+              </div>
+            )}
             <Link
               to="/groups"
-              className="mt-3 block text-center text-[10px] uppercase tracking-widest border border-beige-medium text-primary/50 hover:border-secondary hover:text-secondary px-4 py-2.5 rounded-lg transition-colors"
+              className="block text-center text-[10px] uppercase tracking-widest border border-beige-medium text-primary/50 hover:border-secondary hover:text-secondary px-4 py-2.5 rounded-lg transition-colors"
             >
               Découvrir les groupes
             </Link>

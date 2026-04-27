@@ -21,8 +21,8 @@ function StarRating({ rating, count }: { rating: number | null; count: number })
   return (
     <div className="flex items-center gap-1">
       <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <span key={i} className={i <= rounded ? "text-gold" : "text-beige-medium"}>★</span>
+        {[1, 2, 3, 4, 5].map((starValue) => (
+          <span key={starValue} className={starValue <= rounded ? "text-gold" : "text-beige-medium"}>★</span>
         ))}
       </div>
       <span className="text-xs text-primary/40">{rating.toFixed(1)}★</span>
@@ -111,12 +111,12 @@ function BookCard({ book }: { book: Book }) {
   );
 }
 
-function Pagination({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (p: number) => void }) {
+function Pagination({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (newPage: number) => void }) {
   if (totalPages <= 1) return null;
 
   const items: (number | "…")[] = [];
   if (totalPages <= 6) {
-    for (let i = 1; i <= totalPages; i++) items.push(i);
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) items.push(pageNumber);
   } else {
     items.push(1, 2, 3);
     if (page > 4) items.push("…");
@@ -125,7 +125,7 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
     items.push(totalPages);
   }
 
-  const unique = items.filter((v, i, arr) => arr.indexOf(v) === i);
+  const unique = items.filter((item, index, array) => array.indexOf(item) === index);
 
   return (
     <div className="flex items-center justify-center gap-2 py-12">
@@ -136,9 +136,9 @@ function Pagination({ page, totalPages, onChange }: { page: number; totalPages: 
       >
         ‹
       </button>
-      {unique.map((item, i) =>
+      {unique.map((item, index) =>
         item === "…" ? (
-          <span key={`ellipsis-${i}`} className="text-primary/30 px-1">…</span>
+          <span key={`ellipsis-${index}`} className="text-primary/30 px-1">…</span>
         ) : (
           <button
             key={item}
@@ -187,7 +187,7 @@ function BooksPage() {
       .then((res) => {
         const genres = [
           ...new Set(
-            (res.data ?? []).flatMap((b: Book) => b.genres.map((g) => g.name))
+            (res.data ?? []).flatMap((book: Book) => book.genres.map((genre) => genre.name))
           ),
         ] as string[];
         setAllGenres(genres.sort());
@@ -197,9 +197,9 @@ function BooksPage() {
 
   // Sync le param ?search= venant du header
   useEffect(() => {
-    const q = searchParams.get("search") ?? "";
-    setDraftSearch(q);
-    setAppliedSearch(q);
+    const searchQuery = searchParams.get("search") ?? "";
+    setDraftSearch(searchQuery);
+    setAppliedSearch(searchQuery);
     setPage(1);
   }, [searchParams]);
 
@@ -214,7 +214,7 @@ function BooksPage() {
       if (appliedSearch.trim()) {
         const res = await apiFetch(`/books/search?q=${encodeURIComponent(appliedSearch.trim())}`);
         results = res.data ?? [];
-        if (appliedGenre) results = results.filter((b) => b.genres.some((g) => g.name === appliedGenre));
+        if (appliedGenre) results = results.filter((book) => book.genres.some((genre) => genre.name === appliedGenre));
       } else {
         const params = new URLSearchParams({ page: String(page), limit: "12" });
         if (appliedGenre) params.set("genre", appliedGenre);
@@ -224,7 +224,7 @@ function BooksPage() {
       }
 
       if (appliedNote > 0) {
-        results = results.filter((b) => (b.average_rating ?? 0) >= appliedNote);
+        results = results.filter((book) => (book.average_rating ?? 0) >= appliedNote);
       }
 
       setBooks(results);
@@ -234,8 +234,8 @@ function BooksPage() {
     run().catch(() => setBooks([])).finally(() => setLoading(false));
   }, [appliedSearch, appliedGenre, appliedNote, page]);
 
-  function handleFilter(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleFilter(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     setAppliedSearch(draftSearch);
     setAppliedGenre(draftGenre);
     setAppliedNote(draftNote);
@@ -271,7 +271,7 @@ function BooksPage() {
             <input
               type="text"
               value={draftSearch}
-              onChange={(e) => setDraftSearch(e.target.value)}
+              onChange={(event) => setDraftSearch(event.target.value)}
               placeholder="Ex: Marcel Proust..."
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
@@ -284,12 +284,12 @@ function BooksPage() {
             </label>
             <select
               value={draftGenre}
-              onChange={(e) => setDraftGenre(e.target.value)}
+              onChange={(event) => setDraftGenre(event.target.value)}
               className="bg-beige rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
             >
               <option value="">Tous les genres</option>
-              {allGenres.map((g) => (
-                <option key={g} value={g}>{g}</option>
+              {allGenres.map((genre) => (
+                <option key={genre} value={genre}>{genre}</option>
               ))}
             </select>
           </div>
@@ -301,11 +301,11 @@ function BooksPage() {
             </label>
             <select
               value={draftNote}
-              onChange={(e) => setDraftNote(Number(e.target.value))}
+              onChange={(event) => setDraftNote(Number(event.target.value))}
               className="bg-beige rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
             >
-              {NOTE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+              {NOTE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
               ))}
             </select>
           </div>
@@ -363,7 +363,7 @@ function BooksPage() {
 
         {/* Pagination */}
         {!appliedSearch && (
-          <Pagination page={page} totalPages={totalPages} onChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
+          <Pagination page={page} totalPages={totalPages} onChange={(newPage) => { setPage(newPage); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
         )}
       </div>
 

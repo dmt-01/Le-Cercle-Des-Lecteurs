@@ -9,15 +9,29 @@ function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptNewsletter, setAcceptNewsletter] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const passwordChecks = {
+    length:    password.length >= 12,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    symbol:    /[^A-Za-z0-9]/.test(password),
+  };
+  
+  const passwordValid = Object.values(passwordChecks).every(Boolean);
+
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!acceptTerms) {
       setError("Vous devez accepter les Conditions Générales pour continuer.");
+      return;
+    }
+    if (!passwordValid) {
+      setError("Le mot de passe ne respecte pas les critères requis.");
       return;
     }
     setError(null);
@@ -132,10 +146,30 @@ function SignupPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setPasswordTouched(true)}
                 required
                 autoComplete="new-password"
                 className="w-full bg-white border border-beige-medium rounded-xl px-4 py-3.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/40"
               />
+              {passwordTouched && (
+                <ul className="mt-2.5 flex flex-col gap-1.5">
+                  {[
+                    { ok: passwordChecks.length,    label: "12 caractères minimum" },
+                    { ok: passwordChecks.uppercase,  label: "1 lettre majuscule" },
+                    { ok: passwordChecks.lowercase,  label: "1 lettre minuscule" },
+                    { ok: passwordChecks.symbol,     label: "1 symbole (ex. ! @ # $)" },
+                  ].map(({ ok, label }) => (
+                    <li key={label} className="flex items-center gap-2">
+                      <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${ok ? "bg-green-100 text-green-600" : "bg-primary/10 text-primary/30"}`}>
+                        {ok ? "✓" : "·"}
+                      </span>
+                      <span className={`text-xs transition-colors ${ok ? "text-green-600" : "text-primary/40"}`}>
+                        {label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <div className="flex flex-col gap-3">

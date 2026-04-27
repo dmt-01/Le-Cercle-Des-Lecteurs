@@ -20,7 +20,7 @@ function Footer() {
           Légal
         </p>
         <nav aria-label="Liens légaux" className="flex flex-col gap-2">
-          <Link to="/legal" className="text-white/80 text-sm hover:text-gold transition-colors">
+          <Link to="/about" className="text-white/80 text-sm hover:text-gold transition-colors">
             Mentions Légales
           </Link>
           <Link to="/privacy" className="text-white/80 text-sm hover:text-gold transition-colors">

@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { apiFetch } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import type { Book, Review } from "../../types";
-
-type Tab = "resume" | "critiques" | "forum";
+import type { Book, Review, Tab } from "../../types";
 
 function StarRating({ note }: { note: number }) {
   return (
     <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={i <= note ? "text-gold" : "text-beige-medium"}>★</span>
+      {[1, 2, 3, 4, 5].map((starValue) => (
+        <span key={starValue} className={starValue <= note ? "text-gold" : "text-beige-medium"}>★</span>
       ))}
     </div>
   );
@@ -49,7 +47,7 @@ function BookDetailPage() {
     if (!user || !id) return;
     apiFetch("/wishlist")
       .then((res) => {
-        const inList = (res.data ?? []).some((b: Book) => b.id === id);
+        const inList = (res.data ?? []).some((wishlistBook: Book) => wishlistBook.id === id);
         setInWishlist(inList);
       })
       .catch(() => {});
@@ -138,22 +136,22 @@ function BookDetailPage() {
               {book.authors.length > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-primary/50">Auteur</span>
-                  <span className="text-primary font-medium text-right">{book.authors.map(a => a.name).join(", ")}</span>
+                  <span className="text-primary font-medium text-right">{book.authors.map((author) => author.name).join(", ")}</span>
                 </div>
               )}
               {book.genres.length > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-primary/50">Genre</span>
-                  <span className="text-primary font-medium text-right">{book.genres.map(g => g.name).join(", ")}</span>
+                  <span className="text-primary font-medium text-right">{book.genres.map((genre) => genre.name).join(", ")}</span>
                 </div>
               )}
               {book.tags.length > 0 && (
                 <div className="flex flex-col gap-1.5 pt-1">
                   <span className="text-primary/50 text-sm">Thèmes</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {book.tags.map((t) => (
-                      <span key={t.id} className="bg-beige text-primary/60 text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full">
-                        {t.name}
+                    {book.tags.map((tag) => (
+                      <span key={tag.id} className="bg-beige text-primary/60 text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full">
+                        {tag.name}
                       </span>
                     ))}
                   </div>
@@ -169,7 +167,7 @@ function BookDetailPage() {
           {/* Fil d'Ariane genres */}
           {book.genres.length > 0 && (
             <p className="text-[10px] uppercase tracking-widest text-secondary font-medium">
-              {book.genres.map(g => g.name).join(" › ")}
+              {book.genres.map((genre) => genre.name).join(" › ")}
             </p>
           )}
 
@@ -188,8 +186,8 @@ function BookDetailPage() {
             {book.average_rating && (book.review_count ?? 0) > 0 ? (
               <div className="flex items-center gap-2">
                 <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <span key={i} className={i <= Math.round(book.average_rating!) ? "text-gold text-lg" : "text-beige-medium text-lg"}>★</span>
+                  {[1, 2, 3, 4, 5].map((starValue) => (
+                    <span key={starValue} className={starValue <= Math.round(book.average_rating!) ? "text-gold text-lg" : "text-beige-medium text-lg"}>★</span>
                   ))}
                 </div>
                 <span className="font-semibold text-primary">{book.average_rating.toFixed(1)}</span>
@@ -242,17 +240,17 @@ function BookDetailPage() {
           {/* Onglets */}
           <div className="border-b border-beige-medium">
             <div className="flex gap-6">
-              {(["resume", "critiques", "forum"] as Tab[]).map((t) => (
+              {(["resume", "critiques", "forum"] as Tab[]).map((tabItem) => (
                 <button
-                  key={t}
-                  onClick={() => setTab(t)}
+                  key={tabItem}
+                  onClick={() => setTab(tabItem)}
                   className={`pb-3 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
-                    tab === t
+                    tab === tabItem
                       ? "border-secondary text-secondary"
                       : "border-transparent text-primary/40 hover:text-primary/70"
                   }`}
                 >
-                  {t === "resume" ? "Résumé" : t.charAt(0).toUpperCase() + t.slice(1)}
+                  {tabItem === "resume" ? "Résumé" : tabItem.charAt(0).toUpperCase() + tabItem.slice(1)}
                 </button>
               ))}
             </div>
@@ -316,8 +314,8 @@ function BookDetailPage() {
               {reviews.length === 0 && (
                 <p className="text-primary/40 text-sm italic">Aucune critique pour ce livre.</p>
               )}
-              {reviews.map((review, i) => (
-                <div key={i} className="bg-white rounded-xl border border-beige-medium p-5 flex flex-col gap-3">
+              {reviews.map((review, index) => (
+                <div key={index} className="bg-white rounded-xl border border-beige-medium p-5 flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary text-xs font-bold uppercase">

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { apiFetch } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import type { Group } from "../../types";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 const CARD_GRADIENTS = [
   "from-[#2c1a0e] to-[#6b3a1a]",
@@ -172,16 +173,21 @@ function GroupsPage() {
 
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [joining, setJoining] = useState<Set<string>>(new Set());
   const [joined, setJoined] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     apiFetch("/groups")
       .then((res) => setGroups(res.data ?? []))
-      .catch(() => {})
+      .catch((err) => setError(err?.message ?? "Impossible de charger les cercles."))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
 
   async function handleJoin(groupId: string) {
     if (!user) {
@@ -260,13 +266,15 @@ function GroupsPage() {
           <p className="text-primary/40 text-sm text-center py-12">Chargement...</p>
         )}
 
-        {!loading && groups.length === 0 && (
+        {error && <ErrorMessage message={error} onRetry={load} />}
+
+        {!loading && !error && groups.length === 0 && (
           <p className="text-primary/40 text-sm italic text-center py-12">
             Aucun cercle disponible pour le moment.
           </p>
         )}
 
-        {!loading && groups.length > 0 && (
+        {!loading && !error && groups.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {groups.map((group, i) => (
               <GroupCard

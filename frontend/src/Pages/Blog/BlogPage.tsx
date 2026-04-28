@@ -1,7 +1,15 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Blog/BlogPage.tsx
+// Page liste des articles de blog.
+// Mise en page : hero (premier article) + grille + sidebar.
+// Filtrage par catégorie côté client via useBlog().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useBlog } from "../../hooks/useBlog";
 import { Link } from "react-router";
 
+/** Calcule le temps de lecture estimé d'un article (200 mots/min) */
 function readingTime(content?: string | null) {
   if (!content) return "1 min de lecture";
   const words = content.trim().split(/\s+/).length;

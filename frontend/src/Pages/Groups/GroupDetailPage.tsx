@@ -1,8 +1,17 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Groups/GroupDetailPage.tsx
+// Page de détail d'un cercle de lecture.
+// Affiche le fil de discussion (messages des membres), la liste des membres
+// et les actions d'adhésion / départ.
+// Toute la logique métier est dans useGroupDetail().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useGroupDetail } from "../../hooks/useGroupDetail";
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router";
 import { useRef } from "react";
 
+/** Formate un écart entre maintenant et une date en libellé humain (« il y a X min »). */
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
@@ -14,6 +23,11 @@ function timeAgo(dateStr: string): string {
   return `il y a ${days} jour${days > 1 ? "s" : ""}`;
 }
 
+/**
+ * Page de détail d'un cercle.
+ * `discussionRef` est conservé ici (et non dans le hook) car c'est un ancrage DOM
+ * utilisé uniquement pour le scroll — il n'a pas de logique métier associée.
+ */
 function GroupDetailPage() {
   const { user } = useAuth();
   const discussionRef = useRef<HTMLDivElement>(null);

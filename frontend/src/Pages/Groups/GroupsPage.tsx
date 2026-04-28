@@ -1,10 +1,21 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Groups/GroupsPage.tsx
+// Page liste des cercles de lecture.
+// Sous-composants : GroupCard (carte de groupe), CreateGroupModal (modal de création).
+// Toute la logique d'adhésion et de navigation est dans useGroups().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import ErrorMessage from "../../components/ui/ErrorMessage";
-import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../services/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { Group } from "../../types";
+import { useGroups } from "../../hooks/useGroups";
 
+/**
+ * Carte d'un cercle de lecture dans la grille.
+ * Le clic sur la carte navigue vers le détail ; le bouton "Rejoindre" déclenche l'adhésion.
+ */
 function GroupCard({
   group,
   onJoin,
@@ -178,71 +189,8 @@ function CreateGroupModal({
 }
 
 function GroupsPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
-
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [joining, setJoining] = useState<Set<string>>(new Set());
-  const [joined, setJoined] = useState<Set<string>>(new Set());
-  const [showModal, setShowModal] = useState(false);
-
-  function load() {
-    setLoading(true);
-    setError(null);
-    apiFetch("/groups")
-      .then((res) => setGroups(res.data ?? []))
-      .catch((err) =>
-        setError(err?.message ?? "Impossible de charger les cercles."),
-      )
-      .finally(() => setLoading(false));
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function handleJoin(groupId: string) {
-    if (!user) {
-      navigate("/login", { state: { from: "/groups" } });
-      return;
-    }
-    setJoining((prev) => new Set(prev).add(groupId));
-    try {
-      await apiFetch(`/groups/${groupId}/join`, { method: "POST" });
-      setJoined((prev) => new Set(prev).add(groupId));
-      setGroups((prev) =>
-        prev.map((g) =>
-          g.id === groupId ? { ...g, member_count: g.member_count + 1 } : g,
-        ),
-      );
-    } catch (err: any) {
-      if (err?.status === 409) {
-        setJoined((prev) => new Set(prev).add(groupId));
-      }
-    }
-    setJoining((prev) => {
-      const next = new Set(prev);
-      next.delete(groupId);
-      return next;
-    });
-  }
-
-  function handleCreateClick() {
-    if (!user) {
-      navigate("/login", { state: { from: "/groups" } });
-    } else {
-      setShowModal(true);
-    }
-  }
-
-  function handleGroupCreated(group: Group) {
-    setGroups((prev) => [group, ...prev]);
-    setJoined((prev) => new Set(prev).add(group.id));
-    setShowModal(false);
-    navigate(`/groups/${group.id}`);
-  }
+  const { groups, loading, error, joining, joined, showModal, setShowModal, handleJoin, handleCreateClick, handleGroupCreated, load } = useGroups();
 
   return (
     <div className="min-h-screen">
@@ -296,11 +244,11 @@ function GroupsPage() {
 
         {!loading && !error && groups.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {groups.map((group, i) => (
+            {groups.map((group, index) => (
               <GroupCard
                 key={group.id}
                 group={group}
-                index={i}
+                index={index}
                 onJoin={handleJoin}
                 onNavigate={(id) => navigate(`/groups/${id}`)}
                 joining={joining.has(group.id)}

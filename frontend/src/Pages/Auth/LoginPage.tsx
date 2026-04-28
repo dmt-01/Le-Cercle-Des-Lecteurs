@@ -1,19 +1,37 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Auth/LoginPage.tsx
+// Page de connexion au Cercle.
+// Mise en page deux colonnes : accroche visuelle à gauche, formulaire à droite.
+// Redirige vers la page d'origine après connexion (ex: si redirigé depuis /events).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { Link, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 
+/**
+ * Page de connexion.
+ * Lit location.state.from pour rediriger vers la page que l'utilisateur
+ * tentait d'atteindre avant d'être renvoyé vers /login.
+ */
 function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  // Récupère la page de destination après connexion (défaut : accueil)
   const from = (location.state as { from?: string })?.from ?? "/";
 
+  // État du formulaire
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Soumet le formulaire de connexion.
+   * En cas de succès, redirige vers la page demandée initialement.
+   */
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);

@@ -1,6 +1,18 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// hooks/useMessages.ts
+// Hook de la page de messagerie privée.
+//
+// Gère deux niveaux de données :
+//   • La liste des conversations (sidebar gauche)
+//   • Les messages de la conversation sélectionnée (zone de chat droite)
+//
+// Les messages sont regroupés par jour pour afficher des séparateurs de date.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "../services/api";
 
+/** Résumé d'une conversation affiché dans la sidebar */
 export type Conversation = {
   partner: { id: string; username: string; profileImage?: string };
   last_message: {
@@ -11,15 +23,21 @@ export type Conversation = {
   };
 };
 
+/** Message individuel dans le fil de discussion */
 export type ChatMessage = {
   id: string;
   content: string;
   sent_at: string;
   read: boolean;
+  /** true si le message a été envoyé par l'utilisateur courant */
   is_mine: boolean;
   sender: { id: string; username: string };
 };
 
+/**
+ * Calcule le label de séparation de jour pour une date donnée.
+ * Retourne "Aujourd'hui", "Hier" ou la date formatée en français.
+ */
 function dayLabel(dateStr: string) {
   const date = new Date(dateStr);
   const today = new Date();
@@ -30,11 +48,16 @@ function dayLabel(dateStr: string) {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
 }
 
+/**
+ * Regroupe une liste de messages par jour pour afficher des séparateurs.
+ * Retourne un tableau de { date: label, msgs: messages[] }.
+ */
 function groupByDay(messages: ChatMessage[]) {
   const groups: { date: string; msgs: ChatMessage[] }[] = [];
   for (const msg of messages) {
     const label = dayLabel(msg.sent_at);
     const last = groups[groups.length - 1];
+    // Si le message appartient au même jour que le précédent, on l'ajoute au groupe
     if (!last || last.date !== label) {
       groups.push({ date: label, msgs: [msg] });
     } else {
@@ -44,17 +67,43 @@ function groupByDay(messages: ChatMessage[]) {
   return groups;
 }
 
+/**
+ * Fournit toutes les données et handlers pour la page de messagerie (MessagesPage).
+ *
+ * • conversations / filtered — liste complète et liste filtrée par le champ de recherche
+ * • selected / setSelected   — conversation actuellement ouverte dans le chat
+ * • grouped                  — messages de la conversation active regroupés par jour
+ * • filter / setFilter       — texte de filtrage dans la sidebar
+ * • endRef                   — ref attachée au bas du fil pour le scroll automatique
+ * • handleSend               — envoie un message et met à jour localement la conversation
+ * • load                     — recharge la liste des conversations
+ */
 export function useMessages() {
+  // 1. STATE — Liste des conversations (sidebar)
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  // 1.1 STATE — Conversation sélectionnée (zone de chat)
   const [selected, setSelected] = useState<Conversation | null>(null);
+  // 1.2 STATE — Messages de la conversation sélectionnée
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // 2. STATE — Champ de saisie du message à envoyer
   const [text, setText] = useState("");
+
+  // 3. STATE — États de chargement et d'erreur
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+
+  // 4. STATE — Filtre de recherche dans la sidebar
   const [filter, setFilter] = useState("");
+
+  // 5. REF : ancre DOM au bas du fil de messages pour le scroll automatique
   const endRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Charge ou recharge la liste des conversations.
+   * Sélectionne automatiquement la première conversation.
+   */
   function load() {
     setLoading(true);
     setError(null);
@@ -62,6 +111,7 @@ export function useMessages() {
       .then((res) => {
         const convs: Conversation[] = res.data ?? [];
         setConversations(convs);
+        // 5.1 Sélection automatique de la première conversation au chargement
         if (convs.length > 0) setSelected(convs[0]);
       })
       .catch((err) =>
@@ -70,10 +120,13 @@ export function useMessages() {
       .finally(() => setLoading(false));
   }
 
+  // 6. EFFECT : chargement initial des conversations au montage
   useEffect(() => {
     load();
   }, []);
 
+  // 7. EFFECT : chargement des messages quand la conversation sélectionnée change
+  // On vide les messages précédents pour éviter un flash du contenu ancien
   useEffect(() => {
     if (!selected) return;
     setMessages([]);
@@ -82,20 +135,28 @@ export function useMessages() {
       .catch(() => {});
   }, [selected?.partner.id]);
 
+  // 8. EFFECT : scroll automatique vers le bas à chaque nouveau message
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  /**
+   * Envoie le message saisi et met à jour l'état local immédiatement.
+   * • Vide le champ de saisie avant la réponse de l'API (UX plus fluide)
+   * • Ajoute le message en bas du fil sans rechargement
+   * • Met à jour le dernier message dans la sidebar
+   */
   async function handleSend() {
     if (!text.trim() || !selected || sending) return;
     const content = text.trim();
     setSending(true);
-    setText("");
+    setText(""); // 8.1 Vide immédiatement le champ pour ne pas bloquer l'utilisateur
     try {
       const res = await apiFetch(`/messages/${selected.partner.id}`, {
         method: "POST",
         body: JSON.stringify({ content }),
       });
+      // 8.2 Construit le message local à partir de la réponse API
       const newMsg: ChatMessage = {
         id: res.data.id,
         content: res.data.content,
@@ -104,7 +165,9 @@ export function useMessages() {
         is_mine: true,
         sender: res.data.sender,
       };
+      // 8.3 Ajout optimiste du message en fin de fil
       setMessages((prev) => [...prev, newMsg]);
+      // 8.4 Mise à jour du dernier message dans la sidebar pour la conversation active
       setConversations((prev) =>
         prev.map((conv) =>
           conv.partner.id === selected.partner.id
@@ -124,10 +187,12 @@ export function useMessages() {
     setSending(false);
   }
 
+  // 9. CALCUL : filtrage des conversations par nom d'utilisateur (insensible à la casse)
   const filtered = conversations.filter((conv) =>
     conv.partner.username.toLowerCase().includes(filter.toLowerCase()),
   );
 
+  // 10. CALCUL : regroupement des messages par jour pour les séparateurs de date
   const grouped = groupByDay(messages);
 
   return {

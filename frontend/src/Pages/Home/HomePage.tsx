@@ -1,8 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Home/HomePage.tsx
+// Page d'accueil du Cercle des Lecteurs.
+// Sections : Hero → Cabinet des curiosités → Recommandés → À venir (événements)
+// Toute la logique de chargement est déléguée à useHome().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useAuth } from "../../context/AuthContext";
 import type { Book, Event } from "../../types";
 import { useHome } from "../../hooks/useHome";
 import { Link } from "react-router";
 
+/** Affiche une rangée d'étoiles et le nombre de votes pour un livre */
 function StarRating({ note, count }: { note: number; count: number }) {
   if (count === 0) {
     return <span className="text-xs text-primary/30 italic">Aucun vote</span>;
@@ -29,6 +37,7 @@ function StarRating({ note, count }: { note: number; count: number }) {
   );
 }
 
+/** Carte de livre utilisée dans la section "Recommandés pour vous" */
 function BookCard({ book }: { book: Book }) {
   return (
     <Link to={`/books/${book.id}`} className="flex flex-col gap-2 group">
@@ -71,6 +80,7 @@ function BookCard({ book }: { book: Book }) {
   );
 }
 
+/** Formate une date d'événement en { month, day } pour les mini-calendriers de la section "À venir" */
 function formatEventDate(dateStr: string) {
   const date = new Date(dateStr);
   return {

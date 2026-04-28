@@ -1,24 +1,45 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// hooks/useHome.ts
+// Hook de la page d'accueil.
+// Charge en parallèle les 8 premiers livres et les 3 prochains événements.
+// Découpe la liste de livres en trois sections d'affichage.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import type { Book, Event } from "../types";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 
+/**
+ * Fournit les données pour la page d'accueil (HomePage).
+ *
+ * • featured      — premier livre de la liste, mis en avant dans le "cabinet"
+ * • cabinetBooks  — livres 2 à 4, grille secondaire du cabinet des curiosités
+ * • recommended   — livres 5 à 8, section "Recommandés pour vous"
+ * • events        — 3 prochains événements, section "À venir"
+ */
 export function useHome() {
+  // 1. STATE : liste brute de livres et d'événements récupérés depuis l'API
   const [books, setBooks] = useState<Book[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
 
+  // 2. EFFECT : chargement initial au montage du composant
+  // Les deux appels sont indépendants, ils partent en parallèle
   useEffect(() => {
+    // 2.1 BOOKS : 8 livres suffisent pour remplir toutes les sections de la home
     apiFetch("/books?limit=8")
       .then((res) => setBooks(res.data ?? []))
       .catch(() => {});
 
+    // 2.2 EVENTS : on limite à 3 événements pour la section "À venir"
     apiFetch("/events")
       .then((res) => setEvents((res.data ?? []).slice(0, 3)))
       .catch(() => {});
   }, []);
 
-  const featured = books[0];
-  const cabinetBooks = books.slice(1, 4);
-  const recommended = books.slice(4, 8);
+  // 3. CALCUL : découpage de la liste de livres en sections d'affichage
+  const featured = books[0];           // Livre mis en avant (grande vignette)
+  const cabinetBooks = books.slice(1, 4); // 3 livres secondaires du cabinet
+  const recommended = books.slice(4, 8);  // 4 livres recommandés
 
   return { featured, cabinetBooks, recommended, events };
 }

@@ -1,6 +1,14 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Blog/BlogDetailPage.tsx
+// Page de lecture d'un article de blog.
+// Affiche le contenu paragraphe par paragraphe (séparé par \n\n),
+// la biographie de l'auteur et un espace commentaires (à venir).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useBlogDetail } from "../../hooks/useBlogDetail";
 import { Link } from "react-router";
 
+/** Calcule le temps de lecture estimé d'un article (200 mots/min) */
 function readingTime(content?: string | null) {
   if (!content) return "1 min de lecture";
   const words = content.trim().split(/\s+/).length;

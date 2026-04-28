@@ -1,10 +1,20 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Messages/MessagesPage.tsx
+// Page de messagerie privée.
+// Mise en page deux colonnes : liste des conversations (sidebar) + zone de chat.
+// Sur mobile la sidebar et le chat s'alternent (selected contrôle la vue active).
+// Toute la logique (chargement, envoi, groupement par jour) est dans useMessages().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useMessages } from "../../hooks/useMessages";
 
+/** Renvoie les deux premières lettres d'un nom en majuscules, pour les avatars. */
 function initials(name: string) {
   return name.slice(0, 2).toUpperCase();
 }
 
+/** Formate une heure de message en "HH:MM" pour l'affichage sous chaque bulle. */
 function timeLabel(dateStr: string) {
   return new Date(dateStr).toLocaleTimeString("fr-FR", {
     hour: "2-digit",
@@ -12,6 +22,10 @@ function timeLabel(dateStr: string) {
   });
 }
 
+/**
+ * Formate la date du dernier message d'une conversation pour la sidebar.
+ * Aujourd'hui → heure, hier → "Hier", sinon → "j mois" (ex : "3 janv.").
+ */
 function convTime(dateStr: string) {
   const date = new Date(dateStr);
   const today = new Date();
@@ -27,6 +41,7 @@ function convTime(dateStr: string) {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
+/** Page de messagerie : sidebar conversations + zone de chat en temps réel. */
 function MessagesPage() {
   const {
     selected,

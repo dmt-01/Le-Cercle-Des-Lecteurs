@@ -1,3 +1,10 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Books/BooksPage.tsx
+// Page bibliothèque : liste paginée de livres avec filtres (recherche, genre, note).
+// Le premier livre est affiché en "hero", les suivants en grille 4 colonnes.
+// Toute la logique de filtrage et de pagination est dans useBooks().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useBooks } from "../../hooks/useBooks";
 import type { Book } from "../../types";
 import { Link } from "react-router";
@@ -14,6 +21,7 @@ const NOTE_OPTIONS = [
   { label: "2★ et plus", value: 2 },
 ];
 
+/** Affiche une rangée d'étoiles avec la note moyenne et son nombre de votes */
 function StarRating({
   rating,
   count,
@@ -41,6 +49,7 @@ function StarRating({
   );
 }
 
+/** Grande carte "hero" affichée pour le premier livre de la liste */
 function FeaturedBook({ book }: { book: Book }) {
   return (
     <Link
@@ -96,6 +105,7 @@ function FeaturedBook({ book }: { book: Book }) {
   );
 }
 
+/** Carte de livre compacte pour la grille principale */
 function BookCard({ book }: { book: Book }) {
   return (
     <Link to={`/books/${book.id}`} className="flex flex-col gap-2 group">
@@ -140,6 +150,11 @@ function BookCard({ book }: { book: Book }) {
   );
 }
 
+/**
+ * Composant de pagination avec ellipses.
+ * Affiche toujours les 3 premières et la dernière page,
+ * et la page courante si elle est au milieu.
+ */
 function Pagination({
   page,
   totalPages,

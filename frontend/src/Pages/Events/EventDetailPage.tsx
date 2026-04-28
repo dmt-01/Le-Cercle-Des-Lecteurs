@@ -1,7 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Events/EventDetailPage.tsx
+// Page de détail d'un événement littéraire.
+// Affiche les infos (date, cercle organisateur, description), le bouton
+// d'inscription et une sélection de livres recommandés.
+// Toute la logique est dans useEventDetail().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useEventDetail } from "../../hooks/useEventDetail";
 import type { Book } from "../../types";
 import { Link } from "react-router";
 
+/** Page de détail d'un événement : infos, inscription et lectures recommandées. */
 function EventDetailPage() {
   const { event, books, loading, formattedDate, formattedTime } =
     useEventDetail();

@@ -1,8 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Events/EventsPage.tsx
+// Page calendrier des événements littéraires.
+// Les événements sont groupés par mois via useEvents() et affichés en liste.
+// Le filtrage par type (Dédicaces, Ateliers…) n'est pas encore fonctionnel.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useEvents } from "../../hooks/useEvents";
 import type { Event } from "../../types";
 import { Link } from "react-router";
 
+/** Page liste de tous les événements à venir, groupés par mois. */
 function EventsPage() {
   const { loading, error, grouped, load } = useEvents();
 

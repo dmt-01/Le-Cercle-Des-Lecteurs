@@ -1,8 +1,17 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Books/BookDetailPage.tsx
+// Page de détail d'un livre.
+// Onglets : Résumé | Critiques | Forum (à venir)
+// Actions utilisateur : wishlist, marquer comme lu.
+// Toute la logique est dans useBookDetail().
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useBookDetail } from "../../hooks/useBookDetail";
 import { useAuth } from "../../context/AuthContext";
 import type { Tab } from "../../types";
 import { Link } from "react-router";
 
+/** Rangée d'étoiles pour l'affichage d'une note dans les avis */
 function StarRating({ note }: { note: number }) {
   return (
     <div className="flex gap-0.5">

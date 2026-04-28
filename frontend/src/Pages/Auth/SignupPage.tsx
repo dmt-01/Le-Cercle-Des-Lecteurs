@@ -1,29 +1,50 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Auth/SignupPage.tsx
+// Page d'inscription au Cercle.
+// Même mise en page deux colonnes que LoginPage.
+// Inclut une validation temps réel du mot de passe avec indicateurs visuels
+// qui s'affichent uniquement après que l'utilisateur a quitté le champ (onBlur).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 
+/**
+ * Page d'inscription.
+ * La validation du mot de passe est faite à la fois :
+ *   • côté client (indicateurs visuels en temps réel)
+ *   • côté serveur (schéma Zod dans userValidators.ts)
+ */
 function SignupPage() {
   const { signup } = useAuth();
   const navigate = useNavigate();
 
+  // État du formulaire
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Contrôle l'affichage des indicateurs : on attend que l'utilisateur quitte le champ
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptNewsletter, setAcceptNewsletter] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Validation temps réel du mot de passe (recalculée à chaque frappe)
   const passwordChecks = {
     length: password.length >= 12,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     symbol: /[^A-Za-z0-9]/.test(password),
   };
-
+  // true uniquement si toutes les règles sont respectées
   const passwordValid = Object.values(passwordChecks).every(Boolean);
 
+  /**
+   * Soumet le formulaire d'inscription.
+   * Bloque si les CGU ne sont pas acceptées ou si le mot de passe est invalide.
+   */
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!acceptTerms) {

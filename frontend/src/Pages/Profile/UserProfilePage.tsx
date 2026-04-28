@@ -1,11 +1,23 @@
-import type { PublicProfile, WishlistItem } from "../../types";
-import ErrorMessage from "../../components/ui/ErrorMessage";
-import { useAuth } from "../../context/AuthContext";
-import { useParams, Link } from "react-router";
-import { apiFetch } from "../../services/api";
-import { useEffect, useState } from "react";
+// ─────────────────────────────────────────────────────────────────────────────
+// Pages/Profile/UserProfilePage.tsx
+// Page de profil utilisateur, en mode double : propre profil (édition, bibliothèque,
+// wishlist) ou profil public (bouton "Suivre").
+// Sous-composant : EditProfileModal (modal d'édition du profil).
+// Toute la logique de chargement et d'abonnement est dans useUserProfile().
+// ─────────────────────────────────────────────────────────────────────────────
 
-/* ── Modal édition profil ────────────────────────────────────────────── */
+import { useState } from "react";
+import { Link } from "react-router";
+import ErrorMessage from "../../components/ui/ErrorMessage";
+import { apiFetch } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
+import { useUserProfile } from "../../hooks/useUserProfile";
+import type { PublicProfile } from "../../types";
+
+/**
+ * Modal permettant à l'utilisateur de modifier son nom et sa biographie.
+ * Appelle PUT /users/me et remonte le profil mis à jour via `onSaved`.
+ */
 function EditProfileModal({
   profile,
   onClose,
@@ -20,24 +32,17 @@ function EditProfileModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!username.trim()) return;
     setSaving(true);
     setError(null);
     try {
       const res = await apiFetch("/users/me", {
         method: "PUT",
-        body: JSON.stringify({
-          username: username.trim(),
-          bio: bio.trim() || undefined,
-        }),
+        body: JSON.stringify({ username: username.trim(), bio: bio.trim() || undefined }),
       });
-      onSaved({
-        ...profile,
-        username: res.data.username,
-        bio: res.data.bio ?? undefined,
-      });
+      onSaved({ ...profile, username: res.data.username, bio: res.data.bio ?? undefined });
     } catch (err: any) {
       setError(err?.message ?? "Une erreur est survenue");
     }
@@ -51,11 +56,9 @@ function EditProfileModal({
     >
       <div
         className="bg-white rounded-2xl p-8 w-full max-w-md shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="text-2xl font-serif italic text-primary mb-6">
-          Éditer le profil
-        </h2>
+        <h2 className="text-2xl font-serif italic text-primary mb-6">Éditer le profil</h2>
 
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
@@ -67,7 +70,7 @@ function EditProfileModal({
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(event) => setUsername(event.target.value)}
               required
               maxLength={50}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30"
@@ -80,7 +83,7 @@ function EditProfileModal({
             </label>
             <textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              onChange={(event) => setBio(event.target.value)}
               placeholder="Parlez-nous de vous et de vos lectures..."
               rows={4}
               maxLength={300}
@@ -110,90 +113,36 @@ function EditProfileModal({
   );
 }
 
-/* ── Page principale ─────────────────────────────────────────────────── */
+/**
+ * Page profil.
+ * `showEditModal` est en état local (et non dans le hook) car c'est un état
+ * purement UI sans effet réseau — il ne mérite pas de vivre dans useUserProfile.
+ */
 function UserProfilePage() {
-  const { id: paramId } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const id = paramId ?? user?.id;
-
-  const [profile, setProfile] = useState<PublicProfile | null>(null);
-  const [library, setLibrary] = useState<WishlistItem[]>([]);
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [following, setFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
-  const isOwnProfile = !!user && user.id === id;
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    setError(null);
-
-    const calls: Promise<any>[] = [apiFetch(`/users/${id}`)];
-    if (isOwnProfile) calls.push(apiFetch("/wishlist"));
-
-    Promise.all(calls)
-      .then(([profileRes, wishlistRes]) => {
-        setProfile(profileRes.data ?? null);
-        if (wishlistRes) {
-          const items: WishlistItem[] = wishlistRes.data ?? [];
-          setLibrary(
-            items.filter((i) => i.status === "En cours" || i.status === "Lu"),
-          );
-          setWishlist(items.filter((i) => i.status === "À lire"));
-        }
-      })
-      .catch((err) =>
-        setError(err?.message ?? "Impossible de charger le profil."),
-      )
-      .finally(() => setLoading(false));
-  }, [id, isOwnProfile]);
-
-  async function handleFollow() {
-    if (!user || !id) return;
-    setFollowLoading(true);
-    try {
-      if (following) {
-        await apiFetch(`/users/${id}/follow`, { method: "DELETE" });
-        setFollowing(false);
-      } else {
-        await apiFetch(`/users/${id}/follow`, { method: "POST" });
-        setFollowing(true);
-      }
-    } catch {}
-    setFollowLoading(false);
-  }
+  const {
+    profile, setProfile,
+    library, wishlist,
+    loading, error,
+    isOwnProfile,
+    following, followLoading,
+    handleFollow, load,
+  } = useUserProfile();
 
   if (loading) {
-    return (
-      <div className="max-w-5xl mx-auto px-6 py-20 text-center text-primary/40">
-        Chargement...
-      </div>
-    );
+    return <div className="max-w-5xl mx-auto px-6 py-20 text-center text-primary/40">Chargement...</div>;
   }
 
   if (error) {
-    return (
-      <ErrorMessage
-        message={error}
-        onRetry={() => {
-          setError(null);
-          setLoading(true);
-        }}
-      />
-    );
+    return <ErrorMessage message={error} onRetry={load} />;
   }
 
   if (!profile) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-20 text-center">
         <p className="text-primary/50 mb-4">Profil introuvable.</p>
-        <Link to="/" className="text-secondary hover:underline text-sm">
-          ← Retour à l'accueil
-        </Link>
+        <Link to="/" className="text-secondary hover:underline text-sm">← Retour à l'accueil</Link>
       </div>
     );
   }
@@ -209,36 +158,27 @@ function UserProfilePage() {
 
   return (
     <div className="min-h-screen">
+
       {showEditModal && (
         <EditProfileModal
           profile={profile}
           onClose={() => setShowEditModal(false)}
-          onSaved={(updated) => {
-            setProfile(updated);
-            setShowEditModal(false);
-          }}
+          onSaved={(updated) => { setProfile(updated); setShowEditModal(false); }}
         />
       )}
 
       {/* ── Hero ── */}
       <div
         className="relative w-full"
-        style={{
-          background:
-            "linear-gradient(to bottom, #2c1f14dd, #1A1A2Eee), url('/hero-books.jpg') center/cover no-repeat",
-        }}
+        style={{ background: "linear-gradient(to bottom, #2c1f14dd, #1A1A2Eee), url('/hero-books.jpg') center/cover no-repeat" }}
       >
         <div className="max-w-5xl mx-auto px-6 pt-10 pb-8 flex flex-col gap-6">
           <div className="flex items-start justify-between gap-6 flex-wrap">
-            {/* Avatar + infos */}
+
             <div className="flex items-center gap-5">
               <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 shrink-0">
                 {profile.profile_image ? (
-                  <img
-                    src={profile.profile_image}
-                    alt={profile.username}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={profile.profile_image} alt={profile.username} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-secondary/40 flex items-center justify-center text-white text-2xl font-bold">
                     {initials}
@@ -247,20 +187,15 @@ function UserProfilePage() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-serif italic text-white">
-                    {profile.username}
-                  </h1>
+                  <h1 className="text-2xl font-serif italic text-white">{profile.username}</h1>
                   <span className="text-gold">✦</span>
                 </div>
                 {profile.bio && (
-                  <p className="text-white/60 text-sm max-w-md leading-relaxed italic">
-                    "{profile.bio}"
-                  </p>
+                  <p className="text-white/60 text-sm max-w-md leading-relaxed italic">"{profile.bio}"</p>
                 )}
               </div>
             </div>
 
-            {/* Bouton action */}
             <div className="flex items-center gap-3 shrink-0 mt-1">
               {isOwnProfile ? (
                 <button
@@ -285,7 +220,6 @@ function UserProfilePage() {
             </div>
           </div>
 
-          {/* Stats inline */}
           <div className="flex items-center gap-6 flex-wrap">
             {[
               { label: "abonnés", value: profile.followers },
@@ -294,12 +228,8 @@ function UserProfilePage() {
               { label: "critiques", value: profile.reviews },
             ].map(({ label, value }) => (
               <div key={label} className="text-center">
-                <p className="text-white text-lg font-bold leading-none">
-                  {value}
-                </p>
-                <p className="text-white/40 text-[10px] uppercase tracking-widest mt-0.5">
-                  {label}
-                </p>
+                <p className="text-white text-lg font-bold leading-none">{value}</p>
+                <p className="text-white/40 text-[10px] uppercase tracking-widest mt-0.5">{label}</p>
               </div>
             ))}
           </div>
@@ -308,46 +238,29 @@ function UserProfilePage() {
 
       {/* ── Corps ── */}
       <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-10">
-        {/* ── Colonne principale ── */}
+
         <div className="flex flex-col gap-12">
-          {/* MA BIBLIOTHÈQUE — uniquement profil propre */}
+
           {isOwnProfile && (
             <section>
               <div className="flex items-end justify-between mb-5">
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">
-                    Ma Bibliothèque
-                  </p>
-                  <h2 className="text-2xl font-serif italic text-primary">
-                    Lectures en cours & Finies
-                  </h2>
+                  <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">Ma Bibliothèque</p>
+                  <h2 className="text-2xl font-serif italic text-primary">Lectures en cours & Finies</h2>
                 </div>
-                <Link
-                  to="/wishlist"
-                  className="text-xs uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors"
-                >
+                <Link to="/wishlist" className="text-xs uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors">
                   Voir tout
                 </Link>
               </div>
 
               {library.length === 0 ? (
-                <p className="text-primary/40 text-sm italic">
-                  Aucune lecture en cours ou terminée.
-                </p>
+                <p className="text-primary/40 text-sm italic">Aucune lecture en cours ou terminée.</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
-                  {/* Livre principal */}
                   {featuredBook && (
-                    <Link
-                      to={`/books/${featuredBook.book.id}`}
-                      className="relative rounded-2xl overflow-hidden aspect-[3/4] group block"
-                    >
+                    <Link to={`/books/${featuredBook.book.id}`} className="relative rounded-2xl overflow-hidden aspect-[3/4] group block">
                       {featuredBook.book.cover_image ? (
-                        <img
-                          src={featuredBook.book.cover_image}
-                          alt={featuredBook.book.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        <img src={featuredBook.book.cover_image} alt={featuredBook.book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-[#2c1f14] to-[#6b3a1a]" />
                       )}
@@ -356,43 +269,25 @@ function UserProfilePage() {
                         <span className="bg-secondary text-white text-[9px] uppercase tracking-widest px-2 py-1 rounded mb-2 inline-block">
                           {featuredBook.status}
                         </span>
-                        <p className="text-white font-serif italic text-lg leading-snug">
-                          {featuredBook.book.title}
-                        </p>
+                        <p className="text-white font-serif italic text-lg leading-snug">{featuredBook.book.title}</p>
                         {featuredBook.book.authors[0] && (
-                          <p className="text-white/60 text-xs mt-1">
-                            {featuredBook.book.authors[0].name}
-                          </p>
+                          <p className="text-white/60 text-xs mt-1">{featuredBook.book.authors[0].name}</p>
                         )}
                       </div>
                     </Link>
                   )}
-
-                  {/* Livres secondaires */}
                   <div className="flex flex-col gap-4">
                     {secondaryBooks.map((item) => (
-                      <Link
-                        key={item.book.id}
-                        to={`/books/${item.book.id}`}
-                        className="flex-1 rounded-xl overflow-hidden relative group block"
-                      >
+                      <Link key={item.book.id} to={`/books/${item.book.id}`} className="flex-1 rounded-xl overflow-hidden relative group block">
                         {item.book.cover_image ? (
-                          <img
-                            src={item.book.cover_image}
-                            alt={item.book.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+                          <img src={item.book.cover_image} alt={item.book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         ) : (
                           <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-xl flex items-end p-3">
-                            <p className="text-primary text-xs font-serif italic line-clamp-2">
-                              {item.book.title}
-                            </p>
+                            <p className="text-primary text-xs font-serif italic line-clamp-2">{item.book.title}</p>
                           </div>
                         )}
                         <div className="absolute bottom-2 left-2 right-2">
-                          <p className="text-white text-xs font-semibold line-clamp-1 drop-shadow">
-                            {item.book.title}
-                          </p>
+                          <p className="text-white text-xs font-semibold line-clamp-1 drop-shadow">{item.book.title}</p>
                         </div>
                       </Link>
                     ))}
@@ -402,54 +297,32 @@ function UserProfilePage() {
             </section>
           )}
 
-          {/* MA WISHLIST — uniquement profil propre */}
           {isOwnProfile && (
             <section>
               <div className="flex items-end justify-between mb-5">
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">
-                    À découvrir
-                  </p>
-                  <h2 className="text-2xl font-serif italic text-primary">
-                    Ma Wishlist
-                  </h2>
+                  <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">À découvrir</p>
+                  <h2 className="text-2xl font-serif italic text-primary">Ma Wishlist</h2>
                 </div>
               </div>
-
               {wishlist.length === 0 ? (
-                <p className="text-primary/40 text-sm italic">
-                  Votre wishlist est vide.
-                </p>
+                <p className="text-primary/40 text-sm italic">Votre wishlist est vide.</p>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
                   {wishlist.slice(0, 4).map((item) => (
-                    <Link
-                      key={item.book.id}
-                      to={`/books/${item.book.id}`}
-                      className="flex flex-col gap-2 group"
-                    >
+                    <Link key={item.book.id} to={`/books/${item.book.id}`} className="flex flex-col gap-2 group">
                       <div className="aspect-[2/3] bg-beige-medium rounded-xl overflow-hidden">
                         {item.book.cover_image ? (
-                          <img
-                            src={item.book.cover_image}
-                            alt={item.book.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+                          <img src={item.book.cover_image} alt={item.book.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/20 flex items-end p-3">
-                            <p className="text-primary text-xs font-serif italic line-clamp-2">
-                              {item.book.title}
-                            </p>
+                            <p className="text-primary text-xs font-serif italic line-clamp-2">{item.book.title}</p>
                           </div>
                         )}
                       </div>
-                      <p className="text-sm font-semibold text-primary line-clamp-1">
-                        {item.book.title}
-                      </p>
+                      <p className="text-sm font-semibold text-primary line-clamp-1">{item.book.title}</p>
                       {item.book.authors[0] && (
-                        <p className="text-xs text-primary/40">
-                          {item.book.authors[0].name}
-                        </p>
+                        <p className="text-xs text-primary/40">{item.book.authors[0].name}</p>
                       )}
                     </Link>
                   ))}
@@ -458,64 +331,51 @@ function UserProfilePage() {
             </section>
           )}
 
-          {/* ACTIVITÉ RÉCENTE */}
           <section>
-            <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">
-              Historique
-            </p>
-            <h2 className="text-2xl font-serif italic text-primary mb-5">
-              Activité récente
-            </h2>
+            <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">Historique</p>
+            <h2 className="text-2xl font-serif italic text-primary mb-5">Activité récente</h2>
             <div className="bg-white rounded-2xl border border-beige-medium p-8 text-center">
-              <p className="text-primary/30 text-sm italic">
-                L'activité sera disponible prochainement.
-              </p>
+              <p className="text-primary/30 text-sm italic">L'activité sera disponible prochainement.</p>
             </div>
           </section>
         </div>
 
         {/* ── Sidebar ── */}
         <div className="flex flex-col gap-6">
-          {/* Auteurs favoris */}
+
           <div className="bg-white rounded-2xl border border-beige-medium p-5">
             <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4 flex items-center gap-1.5">
               ✦ Auteurs favoris
             </p>
             {[
-              { name: "Virginia Woolf", initials: "VW" },
-              { name: "Marcel Proust", initials: "MP" },
-              { name: "Sylvia Plath", initials: "SP" },
-            ].map((a) => (
-              <div
-                key={a.name}
-                className="flex items-center gap-3 py-2 border-b border-beige-medium last:border-0"
-              >
+              { name: "Virginia Woolf", abbr: "VW" },
+              { name: "Marcel Proust", abbr: "MP" },
+              { name: "Sylvia Plath", abbr: "SP" },
+            ].map((author) => (
+              <div key={author.name} className="flex items-center gap-3 py-2 border-b border-beige-medium last:border-0">
                 <div className="w-8 h-8 rounded-full bg-secondary/15 flex items-center justify-center text-secondary text-[10px] font-bold shrink-0">
-                  {a.initials}
+                  {author.abbr}
                 </div>
-                <p className="text-sm text-primary/70">{a.name}</p>
+                <p className="text-sm text-primary/70">{author.name}</p>
               </div>
             ))}
           </div>
 
-          {/* Groupes rejoints */}
           <div className="bg-white rounded-2xl border border-beige-medium p-5">
             <p className="text-[10px] uppercase tracking-widest text-primary/40 mb-4 flex items-center gap-1.5">
               👥 Groupes rejoints
             </p>
             {profile.groups.length === 0 ? (
-              <p className="text-primary/30 text-sm italic text-center py-2">
-                Aucun groupe rejoint.
-              </p>
+              <p className="text-primary/30 text-sm italic text-center py-2">Aucun groupe rejoint.</p>
             ) : (
               <div className="flex flex-col gap-2 mb-3">
-                {profile.groups.slice(0, 3).map((g) => (
+                {profile.groups.slice(0, 3).map((group) => (
                   <Link
-                    key={g.id}
-                    to={`/groups/${g.id}`}
+                    key={group.id}
+                    to={`/groups/${group.id}`}
                     className="flex items-center justify-between text-sm text-primary/70 hover:text-secondary transition-colors py-1 border-b border-beige-medium last:border-0"
                   >
-                    <span className="truncate">{g.name}</span>
+                    <span className="truncate">{group.name}</span>
                     <span className="text-primary/30 ml-2">→</span>
                   </Link>
                 ))}
@@ -529,27 +389,18 @@ function UserProfilePage() {
             </Link>
           </div>
 
-          {/* Parcours de lecture */}
           <div
             className="rounded-2xl p-6 text-white"
-            style={{
-              background: "linear-gradient(to bottom, #6B2737, #2c1f14)",
-            }}
+            style={{ background: "linear-gradient(to bottom, #6B2737, #2c1f14)" }}
           >
-            <p className="text-[10px] uppercase tracking-widest text-white/40 mb-5">
-              Parcours de lecture
-            </p>
+            <p className="text-[10px] uppercase tracking-widest text-white/40 mb-5">Parcours de lecture</p>
             <div className="grid grid-cols-2 gap-4 mb-5">
               <div>
-                <p className="text-[9px] uppercase tracking-widest text-white/40 mb-1">
-                  Livres lus
-                </p>
+                <p className="text-[9px] uppercase tracking-widest text-white/40 mb-1">Livres lus</p>
                 <p className="text-3xl font-bold">{profile.reads}</p>
               </div>
               <div>
-                <p className="text-[9px] uppercase tracking-widest text-white/40 mb-1">
-                  Critiques
-                </p>
+                <p className="text-[9px] uppercase tracking-widest text-white/40 mb-1">Critiques</p>
                 <p className="text-3xl font-bold">{profile.reviews}</p>
               </div>
             </div>

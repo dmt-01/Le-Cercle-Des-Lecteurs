@@ -1,3 +1,5 @@
+import { BookDbRow } from "../types/Types";
+
 /**
  * Modèle représentant un livre de l'application.
  *
@@ -61,7 +63,7 @@ export default class Book {
    * Reconstruit une instance Book depuis un résultat Prisma enrichi.
    * Les relations authors/genres/tags sont aplaties pour la sérialisation.
    */
-  static fromRow(row: any): Book {
+  static fromRow(row: BookDbRow): Book {
     return new Book(
       row.id,
       row.title,
@@ -69,15 +71,15 @@ export default class Book {
       row.coverImage ?? undefined,
       row.description ?? undefined,
       row.publication_date?.toISOString() ?? undefined,
-      row.authors?.map((author: any) => ({
+      row.authors?.map((author: { author: { id: string; name: string } }) => ({
         id: author.author.id,
         name: author.author.name,
       })),
-      row.categorisations?.map((categorie: any) => ({
+      row.categorisations?.map((categorie: { genre: { id: string; name: string } }) => ({
         id: categorie.genre.id,
         name: categorie.genre.name,
       })),
-      row.thematisations?.map((theme: any) => ({
+      row.thematisations?.map((theme: { tag: { id: string; name: string } }) => ({
         id: theme.tag.id,
         name: theme.tag.name,
       })),

@@ -17,3 +17,34 @@ export interface UserDbRow {
   profile_image?: string;
   created_at: string;
 }
+
+export interface ReviewDbRow {
+  bookId: string;
+  userId: string;
+  createdAt: Date;
+  content?: string;
+  note?: number;
+}
+
+export interface BookDbRow {
+  id: string;
+  title: string;
+  created_at: Date;
+  coverImage?: string;
+  description?: string;
+  publication_date?: Date;
+  authors?: {
+    author: { id: string; name: string };
+  }[];
+  categorisations?: {
+    genre: { id: string; name: string };
+  }[];
+  thematisations?: {
+    tag: { id: string; name: string };
+  }[];
+  averageRating?: number;
+  reviewCount?: number;
+  _count?: {
+    reviews: number;
+  };
+}

@@ -205,7 +205,7 @@ function GroupsPage() {
   } = useGroups();
 
   return (
-    <div className="min-h-screen">
+    <div>
       {showModal && (
         <CreateGroupModal
           onClose={() => setShowModal(false)}

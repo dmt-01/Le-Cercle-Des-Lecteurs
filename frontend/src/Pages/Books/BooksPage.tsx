@@ -120,7 +120,7 @@ function BookCard({ book }: { book: Book }) {
           <div
             className="w-full h-full flex items-end p-4"
             style={{
-              background: "linear-gradient(rgb(58, 6, 18), rgba(73, 17, 17, 0.5)),url(/img/template_book.png) center/cover no-repeat",
+              background: "url(/img/template_book.png) center/cover no-repeat",
             }}
           >
           </div>

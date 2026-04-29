@@ -64,6 +64,12 @@ function Footer() {
           </Link>
         </nav>
       </div>
+
+      <div className="">
+        <a href="#root" className="text-white/50 text-sm hover:text-gold transition-colors">
+          Retour en haut de page
+        </a>
+      </div>
     </footer>
   );
 }

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiFetch } from "../services/api";
 import type { Group } from "../types";
+import { getErrorMessage } from "../utils/errors";
 
 /**
  * Fournit les données et handlers pour la page des cercles (GroupsPage).
@@ -49,7 +50,7 @@ export function useGroups() {
     apiFetch("/groups")
       .then((res) => setGroups(res.data ?? []))
       .catch((err) =>
-        setError(err?.message ?? "Impossible de charger les cercles."),
+        setError(getErrorMessage(err, "Impossible de charger les groupes.")),
       )
       .finally(() => setLoading(false));
   }

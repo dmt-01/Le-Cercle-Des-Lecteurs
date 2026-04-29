@@ -10,6 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from "react";
+import { getErrorMessage } from "../utils/errors";
 import { apiFetch } from "../services/api";
 
 /** Résumé d'une conversation affiché dans la sidebar */
@@ -115,7 +116,7 @@ export function useMessages() {
         if (convs.length > 0) setSelected(convs[0]);
       })
       .catch((err) =>
-        setError(err?.message ?? "Impossible de charger les messages."),
+        setError(getErrorMessage(err, "Impossible de charger les conversations") || "Erreur inconnue"),
       )
       .finally(() => setLoading(false));
   }
@@ -132,7 +133,7 @@ export function useMessages() {
     setMessages([]);
     apiFetch(`/messages/${selected.partner.id}`)
       .then((res) => setMessages(res.data ?? []))
-      .catch(() => {});
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les messages") || "Erreur inconnue"));
   }, [selected?.partner.id]);
 
   // 8. EFFECT : scroll automatique vers le bas à chaque nouveau message
@@ -183,7 +184,9 @@ export function useMessages() {
             : conv,
         ),
       );
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible d'envoyer le message") || "Erreur inconnue");
+    }
     setSending(false);
   }
 

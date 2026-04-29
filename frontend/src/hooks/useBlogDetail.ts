@@ -4,6 +4,7 @@
 // Charge l'article par son id et maintient l'état du champ de commentaire.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import { useParams } from "react-router";
@@ -23,6 +24,7 @@ export function useBlogDetail() {
   // 2. STATE — Données de l'article
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   // 2.1 STATE — Champ de commentaire (soumission non encore implémentée)
   const [comment, setComment] = useState("");
 
@@ -31,9 +33,9 @@ export function useBlogDetail() {
     if (!id) return;
     apiFetch(`/blog/${id}`)
       .then((res) => setPost(res.data ?? null))
-      .catch(() => {})
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger l'article.")))
       .finally(() => setLoading(false));
   }, [id]);
 
-  return { post, loading, comment, setComment };
+  return { post, loading, comment, setComment, error };
 }

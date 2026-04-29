@@ -15,6 +15,7 @@ import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import { useParams } from "react-router";
+import { getErrorMessage } from "../utils/errors";
 
 /**
  * Fournit les données et handlers pour la page de profil (UserProfilePage).
@@ -77,7 +78,7 @@ export function useUserProfile() {
         }
       })
       .catch((err) =>
-        setError(err?.message ?? "Impossible de charger le profil."),
+        setError(getErrorMessage(err, "Impossible de charger le profil") || "Erreur inconnue"),
       )
       .finally(() => setLoading(false));
   }
@@ -105,7 +106,9 @@ export function useUserProfile() {
         await apiFetch(`/users/${id}/follow`, { method: "POST" });
         setFollowing(true);
       }
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de suivre l'utilisateur") || "Erreur inconnue");
+    }
     setFollowLoading(false);
   }
 

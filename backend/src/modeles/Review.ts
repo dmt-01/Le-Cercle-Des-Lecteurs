@@ -1,5 +1,3 @@
-import {ReviewDbRow } from "../types/Types";
-
 /**
  * Modèle représentant une review (avis) laissée par un utilisateur sur un livre.
  *
@@ -37,7 +35,7 @@ export default class Review {
   /**
    * Reconstruit une instance Review depuis un résultat Prisma.
    */
-  static fromRow(row: ReviewDbRow): Review {
+  static fromRow(row: any): Review {
     return new Review(
       row.bookId,
       row.userId,

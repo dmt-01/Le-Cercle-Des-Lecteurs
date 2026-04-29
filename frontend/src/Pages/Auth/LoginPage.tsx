@@ -50,23 +50,23 @@ function LoginPage() {
     <div className="min-h-screen flex">
       {/* ── Panneau gauche — image + accroche ── */}
       <div
-        className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(to bottom, #2c1f14e0, #6B2737cc), url('/hero-books.jpg') center/cover no-repeat",
-        }}
+        className="hidden md:flex md:w-1/2 flex-col justify-center align-center p-12 text-white relative overflow-hidden bg-[#4A0E0E] z-1"
       >
-        <Link to="/" className="text-gold italic font-sansSerif text-xl">
-          Le Cercle des lecteurs
-        </Link>
+      <div className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url(/img/template_connexion.png)",
+          backgroundColor: "linear-gradient(rgba(58, 6, 18, 1), rgba(73, 17, 17, 0), rgba(73, 17, 17, 0)),",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.2,
+        }}
+      ></div>
 
         <div>
-          <h1 className="text-5xl font-serif leading-tight mb-6">
-            Redécouvrez le plaisir
-            <br />
-            de la lecture lente.
+          <h1 className="text-6xl font-serif leading-tight mb-6">
+            Redécouvrez le plaisir de la lecture lente.
           </h1>
-          <p className="text-white/70 text-base leading-relaxed max-w-sm mb-10">
+          <p className="text-white/70 text-lg leading-relaxed max-w-sm mb-10">
             Un espace privé pour les bibliophiles exigeants. Partagez vos
             découvertes, construisez votre catalogue idéal et échangez avec des
             curateurs passionnés.

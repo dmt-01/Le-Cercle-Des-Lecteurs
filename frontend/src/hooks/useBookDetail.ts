@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { Book, Review, Tab } from "../types";
+import { getErrorMessage } from "../utils/errors";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
@@ -29,6 +30,7 @@ export function useBookDetail() {
   // 2. STATE — Données du livre
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [error, setError] = useState<string | null>(null);
   // 2.1 STATE — Onglet actif sur la page de détail
   const [tab, setTab] = useState<Tab>("resume");
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ export function useBookDetail() {
         setBook(bookRes.data ?? null);
         setReviews(reviewsRes.data ?? []);
       })
-      .catch(() => {})
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données du livre.")))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -62,7 +64,7 @@ export function useBookDetail() {
         );
         setInWishlist(inList);
       })
-      .catch(() => {});
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger la wishlist.")));
   }, [user, id]);
 
   /**
@@ -85,7 +87,9 @@ export function useBookDetail() {
         });
         setInWishlist(true);
       }
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de mettre à jour la wishlist."));
+    }
     setActionLoading(false);
   }
 
@@ -99,7 +103,9 @@ export function useBookDetail() {
     try {
       await apiFetch(`/books/${id}/read`, { method: "POST" });
       setIsRead((prev) => !prev);
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de mettre à jour le statut du livre."));
+    }
     setActionLoading(false);
   }
 
@@ -114,5 +120,6 @@ export function useBookDetail() {
     actionLoading,
     handleWishlist,
     handleToggleRead,
+    error,
   };
 }

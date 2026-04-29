@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import type { CorsOptions } from "cors";
-import router from "./src/routes";
+import router from "./src/routes/_index";
 
 /**
  * Point d'entrée du serveur Express.

@@ -1,5 +1,3 @@
-import { BookDbRow } from "../types/Types";
-
 /**
  * Modèle représentant un livre de l'application.
  *
@@ -63,7 +61,7 @@ export default class Book {
    * Reconstruit une instance Book depuis un résultat Prisma enrichi.
    * Les relations authors/genres/tags sont aplaties pour la sérialisation.
    */
-  static fromRow(row: BookDbRow): Book {
+  static fromRow(row: any): Book {
     return new Book(
       row.id,
       row.title,

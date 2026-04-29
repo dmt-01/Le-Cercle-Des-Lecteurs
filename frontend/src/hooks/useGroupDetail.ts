@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useParams, useNavigate } from "react-router";
+import { getErrorMessage } from "../utils/errors";
 import { useAuth } from "../context/AuthContext";
 import type { GroupMessage } from "../types";
 import { useEffect, useState } from "react";
@@ -57,13 +58,14 @@ export function useGroupDetail() {
   // 3. STATE — Champ de message et état d'envoi
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // 4. EFFECT : chargement du groupe quand l'id change
   useEffect(() => {
     if (!id) return;
     apiFetch(`/groups/${id}`)
       .then((res) => setGroup(res.data ?? null))
-      .catch(() => {})
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données du groupe")))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -90,7 +92,9 @@ export function useGroupDetail() {
       // 6.1 Rechargement complet pour mettre à jour membres et compteur
       const res = await apiFetch(`/groups/${id}`);
       setGroup(res.data ?? null);
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de rejoindre le groupe"));
+    }
     setActionLoading(false);
   }
 
@@ -106,7 +110,9 @@ export function useGroupDetail() {
       // 7.1 Rechargement pour mettre à jour la liste des membres
       const res = await apiFetch(`/groups/${id}`);
       setGroup(res.data ?? null);
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de quitter le groupe"));
+    }
     setActionLoading(false);
   }
 
@@ -129,7 +135,9 @@ export function useGroupDetail() {
         prev ? { ...prev, messages: [...prev.messages, msg] } : prev,
       );
       setNewMessage("");
-    } catch {}
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible d'envoyer le message"));
+    }
     setSending(false);
   }
 
@@ -146,5 +154,6 @@ export function useGroupDetail() {
     handleJoin,
     handleLeave,
     handleSendMessage,
+    error
   };
 }

@@ -34,7 +34,7 @@ function EventsPage() {
                 key={tab}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   index === 0
-                    ? "bg-primary text-white"
+                    ? "bg-secondary text-white"
                     : "bg-white border border-beige-medium text-primary/50 cursor-not-allowed opacity-60"
                 }`}
                 disabled={index !== 0}
@@ -108,7 +108,7 @@ function EventsPage() {
                     </div>
                     <Link
                       to={`/events/${event.id}`}
-                      className="bg-primary text-white text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full hover:bg-primary/80 transition-colors shrink-0 whitespace-nowrap"
+                      className="bg-secondary text-white text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full hover:bg-secondary-hover transition-colors shrink-0 whitespace-nowrap"
                     >
                       S'inscrire
                     </Link>
@@ -126,7 +126,7 @@ function EventsPage() {
           className="rounded-2xl overflow-hidden p-10 flex items-end gap-8 min-h-[260px] relative"
           style={{
             background:
-              "linear-gradient(to right, #1A1A2Eee, #2c1f14bb), url('/hero-books.jpg') center/cover no-repeat",
+              "linear-gradient(to right, rgb(58, 6, 18), rgba(73, 17, 17, 0.5)), url('/hero-books.jpg') center/cover no-repeat",
           }}
         >
           <div className="flex flex-col gap-4 max-w-lg">

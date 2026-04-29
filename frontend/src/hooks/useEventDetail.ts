@@ -5,6 +5,7 @@
 // Formate la date et l'heure de l'événement pour l'affichage.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import type { Event, Book } from "../types";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
@@ -26,6 +27,7 @@ export function useEventDetail() {
   const [event, setEvent] = useState<Event | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 3. EFFECT : chargement de l'événement et des livres en parallèle
   // Les livres ne sont pas liés à l'événement : c'est une sélection générique
@@ -37,7 +39,7 @@ export function useEventDetail() {
         // On limite à 4 livres pour la section "Lectures recommandées"
         setBooks((booksRes.data ?? []).slice(0, 4));
       })
-      .catch(() => {})
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données de l'événement.")))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -56,5 +58,5 @@ export function useEventDetail() {
       })
     : "";
 
-  return { event, books, loading, formattedDate, formattedTime };
+  return { event, books, loading, formattedDate, formattedTime, error };
 }

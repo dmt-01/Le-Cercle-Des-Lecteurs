@@ -5,6 +5,7 @@
 // Le premier article (sans filtre actif) est mis en avant en "hero".
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import type { BlogPost } from "../types";
@@ -36,7 +37,7 @@ export function useBlog() {
     apiFetch("/blog")
       .then((res) => setPosts(res.data ?? []))
       .catch((err) =>
-        setError(err?.message ?? "Impossible de charger les articles."),
+        setError(getErrorMessage(err, "Impossible de charger les articles.")),
       )
       .finally(() => setLoading(false));
   }

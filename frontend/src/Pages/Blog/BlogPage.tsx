@@ -181,12 +181,7 @@ function BlogPage() {
               </p>
             </div>
 
-            <div
-              className="rounded-2xl p-6 flex flex-col gap-4"
-              style={{
-                background: "linear-gradient(to bottom, #1A1A2E, #2c1f14)",
-              }}
-            >
+            <div className="rounded-2xl p-6 flex flex-col gap-4 bg-secondary">
               <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">
                 Newsletter
               </p>
@@ -202,7 +197,7 @@ function BlogPage() {
                 placeholder="votre@email.fr"
                 className="bg-white/10 border border-white/20 text-white placeholder:text-white/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
               />
-              <button className="bg-secondary text-white text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-secondary-hover transition-colors">
+              <button className="bg-beige-light text-secondary text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-secondary-hover transition-colors">
                 S'abonner
               </button>
               <p className="text-white/30 text-[9px] text-center">

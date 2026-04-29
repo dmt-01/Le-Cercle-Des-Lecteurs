@@ -74,27 +74,29 @@ function SignupPage() {
   return (
     <div className="min-h-screen flex">
       {/* ── Panneau gauche — image + accroche ── */}
-      <div
-        className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(to bottom, #2c1f14e0, #6B2737cc), url('/hero-books.jpg') center/cover no-repeat",
-        }}
-      >
-        <Link to="/" className="text-gold italic font-sansSerif text-xl">
-          Le Cercle des lecteurs
-        </Link>
+      <div className="hidden md:flex md:w-1/2 flex-col justify-center align-center p-12 text-white relative overflow-hidden bg-secondary">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: "url(/img/template_inscription.png)",
+            backgroundColor:
+              "linear-gradient(rgba(58, 6, 18, 1), rgba(73, 17, 17, 0), rgba(73, 17, 17, 0)),",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.2,
+          }}
+        ></div>
 
         <div>
           <span className="border border-white/30 text-white/60 text-[10px] uppercase tracking-widest px-3 py-1 rounded-full mb-6 inline-block">
             Invitation exclusive
           </span>
-          <h1 className="text-5xl font-serif italic leading-tight mb-6">
+          <h1 className="text-6xl font-serif italic leading-tight mb-6">
             Rejoignez le salon
             <br />
             littéraire numérique.
           </h1>
-          <p className="text-white/70 text-base leading-relaxed max-w-sm mb-10">
+          <p className="text-white/70 text-lg leading-relaxed max-w-sm mb-10">
             Un espace hors du temps pour ceux qui considèrent la lecture comme
             un art de vivre. Partagez vos découvertes, cultivez votre
             bibliothèque idéale.

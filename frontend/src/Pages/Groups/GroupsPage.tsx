@@ -100,8 +100,8 @@ function CreateGroupModal({
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!name.trim()) return;
     setCreating(true);
     setError(null);
@@ -144,7 +144,7 @@ function CreateGroupModal({
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               placeholder="Ex : Les Amateurs de Proust"
               required
               maxLength={100}
@@ -158,7 +158,7 @@ function CreateGroupModal({
             </label>
             <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(event) => setDescription(event.target.value)}
               placeholder="Décrivez l'esprit de votre cercle..."
               rows={3}
               maxLength={500}
@@ -190,7 +190,19 @@ function CreateGroupModal({
 
 function GroupsPage() {
   const navigate = useNavigate();
-  const { groups, loading, error, joining, joined, showModal, setShowModal, handleJoin, handleCreateClick, handleGroupCreated, load } = useGroups();
+  const {
+    groups,
+    loading,
+    error,
+    joining,
+    joined,
+    showModal,
+    setShowModal,
+    handleJoin,
+    handleCreateClick,
+    handleGroupCreated,
+    load,
+  } = useGroups();
 
   return (
     <div className="min-h-screen">
@@ -219,7 +231,7 @@ function GroupsPage() {
           </div>
           <button
             onClick={handleCreateClick}
-            className="flex items-center gap-2 bg-primary text-white text-sm font-semibold px-5 py-3 rounded-full hover:bg-primary/80 transition-colors shrink-0 mt-2 whitespace-nowrap"
+            className="flex items-center gap-2 bg-secondary text-white text-sm font-semibold px-5 py-3 rounded-full hover:bg-secondary-hover transition-colors shrink-0 mt-2 whitespace-nowrap"
           >
             <span className="text-base leading-none">⊕</span> Créer un groupe
           </button>
@@ -286,8 +298,20 @@ function GroupsPage() {
           </div>
 
           <div className="hidden md:flex items-end gap-3 shrink-0 pb-2">
-            <div className="w-24 h-36 rounded-lg bg-gradient-to-br from-[#1a5c3a] to-[#2c8c5c] shadow-lg -rotate-6" />
-            <div className="w-20 h-28 rounded-lg bg-gradient-to-br from-[#c97a3a] to-[#e8a87c] shadow-lg rotate-3" />
+            <div
+              className="w-24 h-36 rounded-lg bg-gradient-to-br from-[#1a5c3a] to-[#2c8c5c] shadow-lg -rotate-6"
+              style={{
+                background:
+                  "url(/img/template_book.png) center/cover no-repeat",
+              }}
+            />
+            <div
+              className="w-20 h-28 rounded-lg bg-gradient-to-br from-[#c97a3a] to-[#e8a87c] shadow-lg rotate-3"
+              style={{
+                background:
+                  "url(/img/template_book.png) center/cover no-repeat",
+              }}
+            />
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@
 // Charge tous les événements et les regroupe par mois pour l'affichage.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import type { Event } from "../types";
@@ -53,7 +54,7 @@ export function useEvents() {
     apiFetch("/events")
       .then((res) => setEvents(res.data ?? []))
       .catch((err) =>
-        setError(err?.message ?? "Impossible de charger les événements."),
+        setError(getErrorMessage(err, "Impossible de charger les événements")),
       )
       .finally(() => setLoading(false));
   }

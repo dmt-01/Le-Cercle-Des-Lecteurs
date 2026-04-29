@@ -52,10 +52,10 @@ function BookCard({ book }: { book: Book }) {
           <div
             className="w-full h-full flex items-end justify-center"
             style={{
-              background: "url(/img/template_book.png) center/cover no-repeat",
+              background: "linear-gradient(rgba(42, 0, 2, 0), rgba(42, 0, 2, 0.90)), url(/img/template_book.png) center/cover no-repeat",
             }}
           >
-            <span className="text-black text-center p-2">{book.title}</span>
+            <span className="text-white text-center p-2">{book.title}</span>
           </div>
         )}
       </div>
@@ -174,8 +174,7 @@ function HomePage() {
                 <div
                   className="w-full h-full from-secondary to-primary"
                   style={{
-                    background:
-                      "url(/img/template_book.png) center/cover no-repeat",
+                    background: "linear-gradient(rgba(42, 0, 2, 0), rgba(42, 0, 2, 0.90)), url(/img/template_book.png) center/cover no-repeat",
                   }}
                 />
               )}
@@ -215,8 +214,7 @@ function HomePage() {
                     <div
                       className="w-full h-full flex items-end p-3"
                       style={{
-                        background:
-                          "url(/img/template_book.png) center/cover no-repeat",
+                        background: "linear-gradient(rgba(42, 0, 2, 0), rgba(42, 0, 2, 0.90)), url(/img/template_book.png) center/cover no-repeat",
                       }}
                     >
                       <p className="text-primary text-xs font-medium">

@@ -120,12 +120,9 @@ function BookCard({ book }: { book: Book }) {
           <div
             className="w-full h-full flex items-end p-4"
             style={{
-              background: "url(/img/template_book.png) center/cover no-repeat",
+              background: "linear-gradient(rgb(58, 6, 18), rgba(73, 17, 17, 0.5)),url(/img/template_book.png) center/cover no-repeat",
             }}
           >
-            <p className="text-primary text-sm font-serif italic line-clamp-3">
-              {book.title}
-            </p>
           </div>
         )}
       </div>

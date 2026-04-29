@@ -10,6 +10,7 @@
 // la recherche ne part que lorsque l'utilisateur soumet le formulaire.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
@@ -48,6 +49,7 @@ export function useBooks() {
   const [allGenres, setAllGenres] = useState<string[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // 5. EFFECT : chargement unique de tous les genres disponibles pour le select
   // On charge 100 livres pour couvrir tous les genres du catalogue
@@ -63,7 +65,7 @@ export function useBooks() {
         ] as string[];
         setAllGenres(genres.sort());
       })
-      .catch(() => {});
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les genres.")));
   }, []);
 
   // 6. EFFECT : synchronisation avec les paramètres d'URL
@@ -114,7 +116,7 @@ export function useBooks() {
     };
 
     run()
-      .catch(() => setBooks([]))
+      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les livres.")))
       .finally(() => setLoading(false));
   }, [appliedSearch, appliedGenre, appliedNote, page]);
 
@@ -150,5 +152,6 @@ export function useBooks() {
     setPage,
     appliedSearch,
     handleFilter,
+    error,
   };
 }

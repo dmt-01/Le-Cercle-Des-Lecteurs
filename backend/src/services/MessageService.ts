@@ -3,7 +3,12 @@ import { AppError } from "../libs/AppError";
 
 const messageRepository = new MessageRepository();
 
+/** Service gérant la logique métier liée à la messagerie privée. */
 export default class MessageService {
+  /**
+   * Retourne la liste des conversations d'un utilisateur (dernier message par interlocuteur).
+   * @param userId - UUID de l'utilisateur connecté
+   */
   async listConversations(userId: string) {
     const rows = await messageRepository.findConversations(userId);
     return rows.map((msg) => {
@@ -20,6 +25,11 @@ export default class MessageService {
     });
   }
 
+  /**
+   * Retourne tous les messages échangés avec un interlocuteur et marque les non-lus comme lus.
+   * @param userId    - UUID de l'utilisateur connecté
+   * @param partnerId - UUID de l'interlocuteur
+   */
   async getConversation(userId: string, partnerId: string) {
     await messageRepository.markAsRead(partnerId, userId);
     const rows = await messageRepository.findConversation(userId, partnerId);
@@ -33,6 +43,12 @@ export default class MessageService {
     }));
   }
 
+  /**
+   * Envoie un message privé. Interdit l'envoi à soi-même.
+   * @param senderId   - UUID de l'expéditeur
+   * @param receiverId - UUID du destinataire
+   * @param content    - Contenu du message
+   */
   async send(senderId: string, receiverId: string, content: string) {
     if (senderId === receiverId) {
       throw new AppError(

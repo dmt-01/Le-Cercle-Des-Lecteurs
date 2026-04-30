@@ -5,7 +5,9 @@ import { AppError } from "../libs/AppError";
 const eventRepository = new EventRepository();
 const groupRepository = new GroupRepository();
 
+/** Service gérant la logique métier liée aux événements littéraires. */
 export default class EventService {
+  /** Retourne tous les événements à venir avec leur groupe organisateur. */
   async list() {
     const rows = await eventRepository.findAll();
     return rows.map((e) => ({
@@ -18,6 +20,10 @@ export default class EventService {
     }));
   }
 
+  /**
+   * Retourne le détail d'un événement.
+   * @param id - UUID de l'événement
+   */
   async getById(id: string) {
     const row = await eventRepository.findById(id);
     if (!row) throw new AppError("Événement introuvable", 404);
@@ -31,6 +37,11 @@ export default class EventService {
     };
   }
 
+  /**
+   * Crée un événement pour un club. Réservé aux admins et modérateurs.
+   * @param data   - Données de l'événement (titre, description, date, lien, groupId)
+   * @param userId - UUID de l'utilisateur qui crée l'événement (doit être admin/modérateur)
+   */
   async create(
     data: {
       title: string;

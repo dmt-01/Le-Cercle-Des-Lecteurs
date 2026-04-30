@@ -82,6 +82,18 @@ export default class UserRepository {
   }
 
   /**
+   * Vérifie si un utilisateur en suit un autre.
+   * @param userId   - UUID du suiveur potentiel
+   * @param targetId - UUID de la cible
+   */
+  async isFollowing(userId: string, targetId: string): Promise<boolean> {
+    const follow = await prisma.follow.findUnique({
+      where: { userId_userFollowedId: { userId, userFollowedId: targetId } },
+    });
+    return !!follow;
+  }
+
+  /**
    * Crée une relation de follow entre deux utilisateurs.
    * @returns true si créé, false si déjà suivi
    */

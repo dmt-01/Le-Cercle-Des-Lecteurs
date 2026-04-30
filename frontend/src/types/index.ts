@@ -29,6 +29,8 @@ export interface PublicProfile {
   reads: number;
   reviews: number;
   groups: { id: string; name: string }[];
+  /** true si l'utilisateur connecté suit déjà ce profil — absent si non connecté */
+  is_following?: boolean;
 }
 
 /** Auteur d'un livre */

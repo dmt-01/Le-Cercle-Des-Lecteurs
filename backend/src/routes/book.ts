@@ -74,10 +74,20 @@ bookRouter.delete("/:id", requireAuth, (req, res) => {
   controller.remove();
 });
 
+/**
+ * POST /books/:id/read
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. BookController.toggleRead() — bascule l'état "lu" pour l'utilisateur connecté
+ */
 bookRouter.post("/:id/read", requireAuth, (req, res) => {
   new BookController(req, res).toggleRead();
 });
 
+/**
+ * POST /books/:id/like
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. BookController.toggleLike() — bascule l'état "favori" pour l'utilisateur connecté
+ */
 bookRouter.post("/:id/like", requireAuth, (req, res) => {
   new BookController(req, res).toggleLike();
 });

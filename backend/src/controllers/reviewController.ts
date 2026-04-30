@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const reviewService = new ReviewService();
 
+/** Contrôleur gérant les requêtes HTTP pour les avis (reviews) sur les livres. */
 export default class ReviewController extends Controller {
+  /** GET /books/:bookId/reviews — Retourne les reviews d'un livre. Réponses : 200 | 500 */
   async list() {
     try {
       const bookId = this.request.params.bookId as string;
@@ -16,6 +18,7 @@ export default class ReviewController extends Controller {
     }
   }
 
+  /** POST /books/:bookId/reviews — Crée ou met à jour la review de l'utilisateur. Réponses : 200 | 400 */
   async upsert() {
     try {
       const bookId = this.request.params.bookId as string;
@@ -34,6 +37,7 @@ export default class ReviewController extends Controller {
     }
   }
 
+  /** DELETE /books/:bookId/reviews — Supprime la review de l'utilisateur. Réponses : 200 | 404 | 500 */
   async remove() {
     try {
       const bookId = this.request.params.bookId as string;

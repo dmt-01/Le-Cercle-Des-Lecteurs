@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const messageService = new MessageService();
 
+/** Contrôleur gérant les requêtes HTTP pour la messagerie privée. */
 export default class MessageController extends Controller {
+  /** GET /messages — Retourne la liste des conversations de l'utilisateur connecté. Réponses : 200 | 500 */
   async listConversations() {
     try {
       const userId = this.request.userId!;
@@ -16,6 +18,7 @@ export default class MessageController extends Controller {
     }
   }
 
+  /** GET /messages/:userId — Retourne les messages échangés avec un utilisateur. Réponses : 200 | 500 */
   async getConversation() {
     try {
       const userId = this.request.userId!;
@@ -28,6 +31,7 @@ export default class MessageController extends Controller {
     }
   }
 
+  /** POST /messages/:userId — Envoie un message privé. Réponses : 201 | 400 */
   async send() {
     try {
       const senderId = this.request.userId!;

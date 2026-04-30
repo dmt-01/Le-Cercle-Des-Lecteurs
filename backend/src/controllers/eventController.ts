@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const eventService = new EventService();
 
+/** Contrôleur gérant les requêtes HTTP pour les événements littéraires. */
 export default class EventController extends Controller {
+  /** GET /events — Retourne tous les événements à venir. Réponses : 200 | 500 */
   async list() {
     try {
       const data = await eventService.list();
@@ -15,6 +17,7 @@ export default class EventController extends Controller {
     }
   }
 
+  /** GET /events/:id — Retourne le détail d'un événement. Réponses : 200 | 404 | 500 */
   async getById() {
     try {
       const id = this.request.params.id as string;
@@ -26,6 +29,7 @@ export default class EventController extends Controller {
     }
   }
 
+  /** POST /events — Crée un événement (admin/modérateur du club). Réponses : 201 | 403 | 400 */
   async create() {
     try {
       const userId = this.request.userId!;

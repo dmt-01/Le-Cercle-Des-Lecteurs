@@ -1,50 +1,14 @@
 import UserRepository from "../repositories/userRepository";
 import { AppError } from "../libs/AppError";
 import User from "../modeles/User";
-import { Request } from "express";
 
 const userRepository = new UserRepository();
 
 /**
  * Service gérant la logique métier liée aux utilisateurs.
- *
- * Contient :
- *  - Un constructeur pour instancier un objet User en mémoire
- *  - Des méthodes statiques pour les opérations côté base de données
+ * Toutes les méthodes sont statiques — cette classe n'est jamais instanciée.
  */
 export default class UserService {
-  protected username: string;
-  protected email: string;
-  protected password_hash: string;
-  protected bio?: string;
-  protected profile_image?: string;
-  protected created_at: string;
-
-  /**
-   * Crée une instance de UserService (représentation en mémoire d'un utilisateur).
-   * @param username      - Pseudo de l'utilisateur
-   * @param email         - Adresse email
-   * @param password_hash - Hash argon2 du mot de passe
-   * @param bio           - Biographie (optionnelle)
-   * @param profile_image - URL de l'image de profil (optionnelle)
-   * @param created_at    - Date de création ISO (générée automatiquement si absente)
-   */
-  constructor(
-    username: string,
-    email: string,
-    password_hash: string,
-    bio?: string,
-    profile_image?: string,
-    created_at?: string,
-  ) {
-    this.username = username;
-    this.email = email;
-    this.password_hash = password_hash;
-    this.bio = bio;
-    this.profile_image = profile_image;
-    this.created_at = created_at ?? new Date().toISOString();
-  }
-
   /**
    * Crée un nouvel utilisateur en base de données via le repository.
    * @param data - Données de l'utilisateur à insérer
@@ -65,32 +29,9 @@ export default class UserService {
   }
 
   /**
-   * Valide qu'une requête d'authentification contient bien un email et un mot de passe.
-   * @param request - Objet requête Express
-   * @returns Un objet { success, data } ou { success, message } en cas d'échec
+   * Retourne le profil complet de l'utilisateur connecté.
+   * @param userId - UUID de l'utilisateur
    */
-  static async validateAuthRequest(request: Request) {
-    const { email, password } = request.body ?? {};
-
-    if (
-      !request.body ||
-      !email ||
-      !password ||
-      typeof email !== "string" ||
-      typeof password !== "string"
-    ) {
-      return {
-        success: false,
-        message: "Email et mot de passe requis",
-      };
-    }
-
-    return {
-      success: true,
-      data: { email, password },
-    };
-  }
-
   static async getMe(userId: string) {
     const found = await userRepository.findById(userId);
     if (!found) throw new AppError("Utilisateur introuvable", 404);
@@ -106,6 +47,11 @@ export default class UserService {
     ).serialize();
   }
 
+  /**
+   * Met à jour les informations du profil de l'utilisateur connecté.
+   * @param userId - UUID de l'utilisateur
+   * @param data   - Champs à modifier (partiels)
+   */
   static async updateMe(
     userId: string,
     data: { username?: string; bio?: string; profileImage?: string },
@@ -124,9 +70,15 @@ export default class UserService {
     ).serialize();
   }
 
-  static async getPublicProfile(id: string) {
+  static async getPublicProfile(id: string, viewerId?: string) {
     const found = await userRepository.findByIdWithStats(id);
     if (!found) throw new AppError("Utilisateur introuvable", 404);
+
+    // Vérifie si l'appelant connecté suit déjà cet utilisateur
+    const is_following =
+      viewerId && viewerId !== id
+        ? await userRepository.isFollowing(viewerId, id)
+        : false;
 
     return {
       id: found.id,
@@ -139,9 +91,15 @@ export default class UserService {
       reads: found._count.reading,
       reviews: found._count.reviews,
       groups: found.memberships.map((m) => m.group),
+      is_following,
     };
   }
 
+  /**
+   * Abonne un utilisateur à un autre. Interdit de se suivre soi-même.
+   * @param userId         - UUID de l'utilisateur qui s'abonne
+   * @param userFollowedId - UUID de l'utilisateur suivi
+   */
   static async follow(userId: string, userFollowedId: string) {
     if (userId === userFollowedId) {
       throw new AppError("Vous ne pouvez pas vous suivre vous-même", 400);
@@ -151,6 +109,11 @@ export default class UserService {
     if (!done) throw new AppError("Vous suivez déjà cet utilisateur", 409);
   }
 
+  /**
+   * Désabonne un utilisateur d'un autre.
+   * @param userId         - UUID de l'utilisateur qui se désabonne
+   * @param userFollowedId - UUID de l'utilisateur à ne plus suivre
+   */
   static async unfollow(userId: string, userFollowedId: string) {
     const done = await userRepository.unfollow(userId, userFollowedId);
     if (!done) throw new AppError("Vous ne suivez pas cet utilisateur", 404);

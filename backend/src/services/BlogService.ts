@@ -3,7 +3,9 @@ import { AppError } from "../libs/AppError";
 
 const blogRepository = new BlogRepository();
 
+/** Service gérant la logique métier liée aux articles de blog. */
 export default class BlogService {
+  /** Retourne la liste de tous les articles avec leur auteur, du plus récent au plus ancien. */
   async list() {
     const rows = await blogRepository.findAll();
     return rows.map((a) => ({
@@ -15,6 +17,10 @@ export default class BlogService {
     }));
   }
 
+  /**
+   * Retourne le détail complet d'un article (avec contenu).
+   * @param id - UUID de l'article
+   */
   async getById(id: string) {
     const row = await blogRepository.findById(id);
     if (!row) throw new AppError("Article introuvable", 404);
@@ -28,6 +34,10 @@ export default class BlogService {
     };
   }
 
+  /**
+   * Publie un nouvel article de blog.
+   * @param data - Données de l'article (titre, contenu, catégorie optionnelle, auteur)
+   */
   async create(data: {
     title: string;
     content: string;

@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const wishlistService = new WishlistService();
 
+/** Contrôleur gérant les requêtes HTTP pour la wishlist et la bibliothèque personnelle. */
 export default class WishlistController extends Controller {
+  /** GET /wishlist — Retourne les livres de la wishlist de l'utilisateur connecté. Réponses : 200 | 500 */
   async list() {
     try {
       const userId = this.request.userId!;
@@ -16,6 +18,7 @@ export default class WishlistController extends Controller {
     }
   }
 
+  /** POST /wishlist — Ajoute ou met à jour un livre dans la wishlist. Réponses : 200 | 400 */
   async add() {
     try {
       const userId = this.request.userId!;
@@ -33,6 +36,7 @@ export default class WishlistController extends Controller {
     }
   }
 
+  /** DELETE /wishlist/:bookId — Retire un livre de la wishlist. Réponses : 200 | 404 | 500 */
   async remove() {
     try {
       const userId = this.request.userId!;

@@ -1,5 +1,3 @@
-import { UserDbRow } from "../types/Types";
-
 /**
  * Modèle représentant un utilisateur de l'application.
  *
@@ -27,7 +25,7 @@ export default class User {
    * @param created_at    - Date de création ISO (générée automatiquement si absente)
    */
   constructor(
-    id?: string, // @ts-ignore
+    id: string | undefined,
     username: string,
     email: string,
     password_hash: string,
@@ -43,22 +41,6 @@ export default class User {
     this.profile_image = profile_image;
     this.created_at = created_at ?? new Date().toISOString();
   }
-
-  /**
-   * Reconstruit une instance User à partir d'une ligne retournée par la base de données.
-   * @param row - Enregistrement brut issu de Prisma ou d'une requête SQL
-   */
-  static fromRow = (row: UserDbRow): User => {
-    return new User(
-      row.id,
-      row.username,
-      row.email,
-      row.password_hash,
-      row.bio,
-      row.profile_image,
-      row.created_at,
-    );
-  };
 
   /**
    * Sérialise l'utilisateur pour l'envoyer en réponse HTTP.

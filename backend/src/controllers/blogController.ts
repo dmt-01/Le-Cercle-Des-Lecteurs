@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const blogService = new BlogService();
 
+/** Contrôleur gérant les requêtes HTTP pour les articles de blog. */
 export default class BlogController extends Controller {
+  /** GET /blog — Retourne la liste de tous les articles. Réponses : 200 | 500 */
   async list() {
     try {
       const data = await blogService.list();
@@ -15,6 +17,7 @@ export default class BlogController extends Controller {
     }
   }
 
+  /** GET /blog/:id — Retourne le détail d'un article. Réponses : 200 | 404 | 500 */
   async getById() {
     try {
       const id = this.request.params.id as string;
@@ -26,6 +29,7 @@ export default class BlogController extends Controller {
     }
   }
 
+  /** POST /blog — Publie un nouvel article (authentifié). Réponses : 201 | 400 */
   async create() {
     try {
       const userId = this.request.userId!;

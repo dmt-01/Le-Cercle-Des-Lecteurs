@@ -4,7 +4,7 @@ import {
   updateUserSchema,
 } from "../validators/userValidators";
 import UserController from "../controllers/userController";
-import { requireAuth } from "../middlewares/requireAuth";
+import { requireAuth, optionalAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";
 import { Router } from "express";
 
@@ -34,7 +34,7 @@ userRouter.put("/me", requireAuth, validate(updateUserSchema), (req, res) => {
   new UserController(req, res).updateMe();
 });
 
-userRouter.get("/:id", (req, res) => {
+userRouter.get("/:id", optionalAuth, (req, res) => {
   new UserController(req, res).getPublicProfile();
 });
 

@@ -3,7 +3,9 @@ import { AppError } from "../libs/AppError";
 
 const groupRepository = new GroupRepository();
 
+/** Service gérant la logique métier liée aux cercles de lecture. */
 export default class GroupService {
+  /** Retourne tous les clubs publics avec leur nombre de membres et de messages. */
   async list() {
     const rows = await groupRepository.findAll();
     return rows.map((g) => ({
@@ -17,6 +19,10 @@ export default class GroupService {
     }));
   }
 
+  /**
+   * Retourne le détail d'un club avec ses membres et ses 50 derniers messages.
+   * @param id - UUID du club
+   */
   async getById(id: string) {
     const row = await groupRepository.findById(id);
     if (!row) throw new AppError("Club introuvable", 404);
@@ -39,6 +45,10 @@ export default class GroupService {
     };
   }
 
+  /**
+   * Crée un nouveau club et inscrit son créateur comme admin.
+   * @param data - Données du club + userId du créateur
+   */
   async create(data: {
     name: string;
     description?: string;
@@ -56,6 +66,11 @@ export default class GroupService {
     };
   }
 
+  /**
+   * Inscrit un utilisateur dans un club (vérifie que le club existe).
+   * @param groupId - UUID du club
+   * @param userId  - UUID de l'utilisateur
+   */
   async join(groupId: string, userId: string) {
     const group = await groupRepository.findById(groupId);
     if (!group) throw new AppError("Club introuvable", 404);
@@ -64,11 +79,23 @@ export default class GroupService {
     if (!result) throw new AppError("Vous êtes déjà membre de ce club", 409);
   }
 
+  /**
+   * Retire un utilisateur d'un club.
+   * @param groupId - UUID du club
+   * @param userId  - UUID de l'utilisateur
+   */
   async leave(groupId: string, userId: string) {
     const left = await groupRepository.leave(groupId, userId);
     if (!left) throw new AppError("Vous n'êtes pas membre de ce club", 404);
   }
 
+  /**
+   * Envoie un message dans le fil de discussion d'un club.
+   * Vérifie que l'expéditeur est bien membre avant d'envoyer.
+   * @param groupId - UUID du club
+   * @param userId  - UUID de l'expéditeur
+   * @param content - Contenu du message
+   */
   async sendMessage(groupId: string, userId: string, content: string) {
     const isMember = await groupRepository.isMember(groupId, userId);
     if (!isMember)

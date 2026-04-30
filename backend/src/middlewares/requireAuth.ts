@@ -4,6 +4,47 @@ import Token from "../modeles/Token";
 import jwt from "jsonwebtoken";
 
 /**
+ * Middleware d'authentification optionnelle.
+ *
+ * Même logique que requireAuth, mais ne bloque pas si le cookie est absent ou invalide.
+ * Utile pour les routes publiques qui personnalisent leur réponse selon l'utilisateur connecté
+ * (ex : GET /users/:id retourne is_following si l'appelant est connecté).
+ *
+ * Utilisation sur une route :
+ *   router.get("/:id", optionalAuth, (req, res) => { ... });
+ */
+export async function optionalAuth(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) {
+  try {
+    const rawJwt: string | undefined = req.cookies.refresh_token;
+    if (!rawJwt) return next();
+
+    const secret = process.env.JWT_REFRESH_SECRET;
+    if (!secret) return next();
+
+    try {
+      jwt.verify(rawJwt, secret);
+    } catch {
+      return next();
+    }
+
+    const hash = Token.hashJwt(rawJwt);
+    const tokenRepository = new TokenRepository();
+    const storedToken = await tokenRepository.findByHash(hash);
+
+    if (!storedToken || new Date() > storedToken.expiresAt) return next();
+
+    req.userId = storedToken.userId;
+    next();
+  } catch {
+    next();
+  }
+}
+
+/**
  * Middleware de protection des routes authentifiées.
  *
  * Vérifie que la requête provient d'un utilisateur connecté en :

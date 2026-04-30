@@ -1,3 +1,5 @@
+import { BookRow } from "../types/Types";
+
 /**
  * Modèle représentant un livre de l'application.
  *
@@ -61,25 +63,25 @@ export default class Book {
    * Reconstruit une instance Book depuis un résultat Prisma enrichi.
    * Les relations authors/genres/tags sont aplaties pour la sérialisation.
    */
-  static fromRow(row: any): Book {
+  static fromRow(row: BookRow): Book {
     return new Book(
       row.id,
       row.title,
-      row.created_at?.toISOString() ?? row.created_at,
+      row.created_at?.toISOString() ?? String(row.created_at),
       row.coverImage ?? undefined,
       row.description ?? undefined,
       row.publication_date?.toISOString() ?? undefined,
-      row.authors?.map((author: { author: { id: string; name: string } }) => ({
-        id: author.author.id,
-        name: author.author.name,
+      row.authors?.map((bookAuthor) => ({
+        id: bookAuthor.author.id,
+        name: bookAuthor.author.name,
       })),
-      row.categorisations?.map((categorie: { genre: { id: string; name: string } }) => ({
-        id: categorie.genre.id,
-        name: categorie.genre.name,
+      row.categorisations?.map((bookGenre) => ({
+        id: bookGenre.genre.id,
+        name: bookGenre.genre.name,
       })),
-      row.thematisations?.map((theme: { tag: { id: string; name: string } }) => ({
-        id: theme.tag.id,
-        name: theme.tag.name,
+      row.thematisations?.map((bookTag) => ({
+        id: bookTag.tag.id,
+        name: bookTag.tag.name,
       })),
       row.averageRating ?? undefined,
       row.reviewCount ?? row._count?.reviews ?? undefined,

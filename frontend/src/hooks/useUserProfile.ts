@@ -65,7 +65,10 @@ export function useUserProfile() {
 
     Promise.all(calls)
       .then(([profileRes, wishlistRes]) => {
-        setProfile(profileRes.data ?? null);
+        const fetchedProfile: PublicProfile | null = profileRes.data ?? null;
+        setProfile(fetchedProfile);
+        // 4.4 Initialise l'état "suivre" depuis la réponse backend (is_following)
+        setFollowing(fetchedProfile?.is_following ?? false);
         if (wishlistRes) {
           const items: WishlistItem[] = wishlistRes.data ?? [];
           // 4.3 Séparation en deux sections distinctes selon le statut

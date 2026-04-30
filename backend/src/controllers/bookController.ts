@@ -4,7 +4,9 @@ import { AppError } from "../libs/AppError";
 
 const bookService = new BookService();
 
+/** Contrôleur gérant les requêtes HTTP pour les livres. */
 export default class BookController extends Controller {
+  /** GET /books — Liste paginée avec filtres (genre, auteur, note). Réponses : 200 | 500 */
   async list() {
     try {
       const params = this.request.validatedQuery as {
@@ -22,6 +24,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** GET /books/:id — Retourne le détail complet d'un livre. Réponses : 200 | 404 | 500 */
   async getById() {
     try {
       const id = this.request.params.id as string;
@@ -33,6 +36,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** POST /books — Crée un livre (authentifié). Réponses : 201 | 400 */
   async create() {
     try {
       const data = await bookService.create(this.request.body);
@@ -43,6 +47,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** PUT /books/:id — Met à jour un livre (authentifié). Réponses : 200 | 400 | 404 */
   async update() {
     try {
       const id = this.request.params.id as string;
@@ -56,6 +61,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** DELETE /books/:id — Supprime un livre (authentifié). Réponses : 200 | 404 | 500 */
   async remove() {
     try {
       const id = this.request.params.id as string;
@@ -67,6 +73,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** GET /books/search?q= — Recherche par titre ou auteur. Réponses : 200 | 500 */
   async search() {
     try {
       const { q } = this.request.validatedQuery as { q: string };
@@ -78,6 +85,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** POST /books/:id/read — Bascule l'état "lu" du livre pour l'utilisateur connecté. Réponses : 200 | 400 */
   async toggleRead() {
     try {
       const userId = this.request.userId!;
@@ -90,6 +98,7 @@ export default class BookController extends Controller {
     }
   }
 
+  /** POST /books/:id/like — Bascule le like du livre pour l'utilisateur connecté. Réponses : 200 | 400 */
   async toggleLike() {
     try {
       const userId = this.request.userId!;

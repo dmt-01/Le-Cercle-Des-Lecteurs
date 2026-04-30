@@ -9,6 +9,9 @@ import Token from "../modeles/Token";
 import User from "../modeles/User";
 import argon2 from "argon2";
 
+const userRepository = new UserRepository();
+const tokenRepository = new TokenRepository();
+
 /**
  * Contrôleur gérant l'authentification des utilisateurs.
  * Hérite de Controller qui expose this.request et this.response.
@@ -37,7 +40,6 @@ export default class UserController extends Controller {
       } = this.request.body;
 
       // 1.1 USER : Vérifier qu'aucun utilisateur n'existe déjà avec cet email
-      const userRepository = new UserRepository();
       const existingUser = await userRepository.findByEmail(data.email);
 
       if (existingUser) {
@@ -67,7 +69,6 @@ export default class UserController extends Controller {
       const token = Token.create(createdUser.id, jwt);
 
       // 2.2 TOKEN : Enregistrer le token en base
-      const tokenRepository = new TokenRepository();
       await tokenRepository.create(token);
 
       // 3 RESPONSE : Attacher le cookie et renvoyer les données de l'utilisateur
@@ -109,7 +110,6 @@ export default class UserController extends Controller {
       const data: { email: string; password: string } = this.request.body;
 
       // 1.1 USER : Rechercher l'utilisateur par email
-      const userRepository = new UserRepository();
       const foundUser = await userRepository.findByEmail(data.email);
 
       if (!foundUser) {
@@ -136,7 +136,6 @@ export default class UserController extends Controller {
       const token = Token.create(foundUser.id, jwt);
 
       // 2.2 TOKEN : Enregistrer le token en base
-      const tokenRepository = new TokenRepository();
       await tokenRepository.create(token);
 
       // 3 RESPONSE : Attacher le cookie et renvoyer les données de l'utilisateur
@@ -176,7 +175,6 @@ export default class UserController extends Controller {
       const userId = this.request.userId!;
 
       // 1.0 USER : Charger l'utilisateur depuis la base
-      const userRepository = new UserRepository();
       const foundUser = await userRepository.findById(userId);
 
       if (!foundUser) {
@@ -190,7 +188,6 @@ export default class UserController extends Controller {
       const token = Token.create(foundUser.id, jwt);
 
       // 2.2 TOKEN : Remplacer l'ancien token en base (rotation)
-      const tokenRepository = new TokenRepository();
       await tokenRepository.replaceForUser(token);
 
       // 3 RESPONSE : Mettre à jour le cookie et renvoyer les données utilisateur
@@ -228,7 +225,6 @@ export default class UserController extends Controller {
     try {
       const userId = this.request.userId!;
 
-      const tokenRepository = new TokenRepository();
       await tokenRepository.deleteByUserId(userId);
 
       CookieService.clearRefreshCookie(this.response);
@@ -255,6 +251,7 @@ export default class UserController extends Controller {
     }
   }
 
+  /** PUT /users/me — Met à jour le profil de l'utilisateur connecté. Réponses : 200 | 404 | 400 */
   async updateMe() {
     try {
       const userId = this.request.userId!;
@@ -268,10 +265,13 @@ export default class UserController extends Controller {
     }
   }
 
+  /** GET /users/:id — Retourne le profil public d'un utilisateur. Réponses : 200 | 404 | 500 */
   async getPublicProfile() {
     try {
       const id = this.request.params.id as string;
-      const data = await UserService.getPublicProfile(id);
+      // viewerId est injecté par optionalAuth s'il est connecté, undefined sinon
+      const viewerId = this.request.userId;
+      const data = await UserService.getPublicProfile(id, viewerId);
       return this.response.status(200).json({ data });
     } catch (error: any) {
       const status = error instanceof AppError ? error.statusCode : 500;
@@ -279,6 +279,7 @@ export default class UserController extends Controller {
     }
   }
 
+  /** POST /users/:id/follow — Abonne l'utilisateur connecté à un autre. Réponses : 200 | 400 | 409 */
   async follow() {
     try {
       const userId = this.request.userId!;
@@ -291,6 +292,7 @@ export default class UserController extends Controller {
     }
   }
 
+  /** DELETE /users/:id/follow — Désabonne l'utilisateur connecté d'un autre. Réponses : 200 | 404 | 400 */
   async unfollow() {
     try {
       const userId = this.request.userId!;

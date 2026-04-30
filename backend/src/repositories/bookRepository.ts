@@ -1,9 +1,22 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../libs/prisma";
 
 /**
- * Include Prisma réutilisé pour charger toutes les relations d'un livre.
+ * Calcule la note moyenne à partir d'un tableau de reviews.
+ * Retourne null si aucune review n'a de note.
+ * @param reviews - Tableau d'objets contenant un champ note nullable
  */
-const bookIncludes = {
+function computeAverageRating(reviews: { note: number | null }[]): number | null {
+  const notedReviews = reviews.filter((review) => review.note !== null);
+  if (notedReviews.length === 0) return null;
+  return notedReviews.reduce((sum, review) => sum + review.note!, 0) / notedReviews.length;
+}
+
+/**
+ * Include Prisma réutilisé pour charger toutes les relations d'un livre.
+ * Exporté pour être partagé avec WishlistRepository.
+ */
+export const bookIncludes = {
   authors: { include: { author: true } },
   categorisations: { include: { genre: true } },
   thematisations: { include: { tag: true } },
@@ -18,7 +31,7 @@ export default class BookRepository {
   /**
    * Retourne une liste paginée de livres avec filtres optionnels.
    * @param options - page, limit, genre, tag, author
-   * @returns { books, total } — livres de la page + total pour la pagination
+   * @returns livres de la page + total pour la pagination
    */
   async findAll(options: {
     page?: number;
@@ -31,7 +44,7 @@ export default class BookRepository {
     const skip = (page - 1) * limit;
 
     // Construction des filtres dynamiques
-    const where: any = {};
+    const where: Prisma.BookWhereInput = {};
 
     if (genre) {
       where.categorisations = {
@@ -61,16 +74,10 @@ export default class BookRepository {
       prisma.book.count({ where }),
     ]);
 
-    // Calculer la note moyenne pour chaque livre
-    const booksWithRating = books.map((book) => {
-      const notedReviews = book.reviews.filter((r) => r.note !== null);
-      const averageRating =
-        notedReviews.length > 0
-          ? notedReviews.reduce((sum, r) => sum + r.note!, 0) /
-            notedReviews.length
-          : null;
-      return { ...book, averageRating };
-    });
+    const booksWithRating = books.map((book) => ({
+      ...book,
+      averageRating: computeAverageRating(book.reviews),
+    }));
 
     return { books: booksWithRating, total };
   }
@@ -98,16 +105,9 @@ export default class BookRepository {
 
     if (!book) return null;
 
-    // Calculer la note moyenne depuis les reviews chargées
-    const reviews = book.reviews;
-    const notedReviews = reviews.filter((r) => r.note !== null);
-    const averageRating =
-      notedReviews.length > 0
-        ? notedReviews.reduce((sum, r) => sum + r.note!, 0) /
-          notedReviews.length
-        : null;
+    const averageRating = computeAverageRating(book.reviews);
 
-    return { ...book, averageRating, reviewCount: reviews.length };
+    return { ...book, averageRating, reviewCount: book.reviews.length };
   }
 
   /**

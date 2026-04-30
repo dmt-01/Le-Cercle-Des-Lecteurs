@@ -4,16 +4,28 @@
  * retournées par la base de données (avant d'être encapsulées dans un modèle).
  */
 
+import { Prisma } from "@prisma/client";
+
 /**
- * Structure d'une ligne utilisateur retournée par la base de données.
- * Utilisée par User.fromRow() pour reconstruire une instance User depuis un résultat Prisma.
+ * Type exact des données renvoyées par le repository pour un livre enrichi.
+ * Reflète les includes définis dans bookIncludes + les champs calculés par le repository.
+ * Les propriétés optionnelles (averageRating, reviewCount) sont ajoutées par le repository.
  */
-export interface UserDbRow {
-  id: string;
-  username: string;
-  email: string;
-  password_hash: string;
-  bio?: string;
-  profile_image?: string;
-  created_at: string;
-}
+export type BookRow = Prisma.BookGetPayload<{
+  include: {
+    authors: { include: { author: true } };
+    categorisations: { include: { genre: true } };
+    thematisations: { include: { tag: true } };
+    _count: { select: { reviews: true } };
+  };
+}> & {
+  averageRating?: number | null;
+  reviewCount?: number;
+};
+
+/**
+ * Type exact des données renvoyées par le repository pour une review.
+ * Pas d'includes nécessaires — fromRow n'accède qu'aux champs scalaires.
+ * Les rows avec includes supplémentaires (ex: user) sont acceptés par le typage structurel.
+ */
+export type ReviewRow = Prisma.ReviewGetPayload<Record<string, never>>;

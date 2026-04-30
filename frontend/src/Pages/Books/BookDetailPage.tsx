@@ -7,10 +7,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useBookDetail } from "../../hooks/useBookDetail";
+import StarRating from "../../components/ui/StarRating";
 import { useAuth } from "../../context/AuthContext";
 import type { Tab } from "../../types";
 import { Link } from "react-router";
-import StarRating from "./BookdetailComponent/StarRating";
 
 function BookDetailPage() {
   const { user } = useAuth();
@@ -299,7 +299,7 @@ function BookDetailPage() {
                         {review.username}
                       </span>
                     </div>
-                    {review.note && <StarRating note={review.note} />}
+                    {review.note && <StarRating rating={review.note} />}
                   </div>
                   {review.content && (
                     <p className="text-sm text-primary/60 leading-relaxed">

@@ -105,17 +105,25 @@ function UserProfilePage() {
                   ✏ Éditer le profil
                 </button>
               ) : user ? (
-                <button
-                  onClick={handleFollow}
-                  disabled={followLoading}
-                  className={`text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors ${
-                    following
-                      ? "bg-white/10 text-white border border-white/30 hover:bg-white/20"
-                      : "bg-secondary text-white hover:bg-secondary-hover"
-                  }`}
-                >
-                  {following ? "Suivi ✓" : "+ Suivre"}
-                </button>
+                <>
+                  <button
+                    onClick={handleFollow}
+                    disabled={followLoading}
+                    className={`text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors ${
+                      following
+                        ? "bg-white/10 text-white border border-white/30 hover:bg-white/20"
+                        : "bg-secondary text-white hover:bg-secondary-hover"
+                    }`}
+                  >
+                    {following ? "Suivi ✓" : "+ Suivre"}
+                  </button>
+                  <Link
+                    to={`/messages?to=${profile.id}&username=${encodeURIComponent(profile.username)}`}
+                    className="text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                  >
+                    ✉ Message
+                  </Link>
+                </>
               ) : null}
             </div>
           </div>

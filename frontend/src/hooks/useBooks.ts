@@ -50,6 +50,8 @@ export function useBooks() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // 5. EFFECT : chargement unique de tous les genres disponibles pour le select
   // On charge 100 livres pour couvrir tous les genres du catalogue
@@ -118,7 +120,7 @@ export function useBooks() {
     run()
       .catch((err) => setError(getErrorMessage(err, "Impossible de charger les livres.")))
       .finally(() => setLoading(false));
-  }, [appliedSearch, appliedGenre, appliedNote, page]);
+  }, [appliedSearch, appliedGenre, appliedNote, page, refreshKey]);
 
   /**
    * Applique les valeurs du formulaire (drafts) comme filtres actifs.
@@ -130,6 +132,11 @@ export function useBooks() {
     setAppliedGenre(draftGenre);
     setAppliedNote(draftNote);
     setPage(1);
+  }
+
+  /** Force le rechargement de la liste (appelé après création d'un livre). */
+  function refreshBooks() {
+    setRefreshKey((k) => k + 1);
   }
 
   // 8. CALCUL : découpage de la liste pour l'affichage en page
@@ -153,5 +160,8 @@ export function useBooks() {
     appliedSearch,
     handleFilter,
     error,
+    showAddModal,
+    setShowAddModal,
+    refreshBooks,
   };
 }

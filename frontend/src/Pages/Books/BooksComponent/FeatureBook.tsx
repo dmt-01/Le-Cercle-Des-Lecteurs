@@ -1,5 +1,5 @@
+import StarRating from "../../../components/ui/StarRating";
 import type { Book } from "../../../types";
-import StarRating from "./StarRating";
 import { Link } from "react-router";
 
 /** Grande carte "hero" affichée pour le premier livre de la liste */

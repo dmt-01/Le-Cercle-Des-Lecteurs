@@ -1,16 +1,22 @@
-/** Affiche une rangée d'étoiles avec la note moyenne et son nombre de votes */
+/** Rangée d'étoiles avec note et nombre de votes optionnel */
 function StarRating({
   rating,
   count,
 }: {
   rating: number | null;
-  count: number;
+  count?: number;
 }) {
-  if (!rating || count === 0)
+  if (rating === null || count === 0) {
     return <span className="text-xs text-primary/30 italic">Aucun vote</span>;
+  }
+
   const rounded = Math.round(rating);
+
   return (
-    <div className="flex items-center gap-1">
+    <div
+      className="flex items-center gap-1"
+      aria-label={`Note : ${rating.toFixed(1)} sur 5`}
+    >
       <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((starValue) => (
           <span
@@ -21,7 +27,11 @@ function StarRating({
           </span>
         ))}
       </div>
-      <span className="text-xs text-primary/40">{rating.toFixed(1)}★</span>
+      {count !== undefined && (
+        <span className="text-xs text-primary/40">
+          ({count} vote{count > 1 ? "s" : ""})
+        </span>
+      )}
     </div>
   );
 }

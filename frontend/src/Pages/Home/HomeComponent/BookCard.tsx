@@ -1,6 +1,6 @@
+import StarRating from "../../../components/ui/StarRating";
 import type { Book } from "../../../types";
 import { Link } from "react-router";
-import StarRating from "./StarRating";
 
 /** Carte de livre utilisée dans la section "Recommandés pour vous" */
 function BookCard({ book }: { book: Book }) {
@@ -31,7 +31,7 @@ function BookCard({ book }: { book: Book }) {
           </p>
         )}
         <StarRating
-          note={Math.round(book.average_rating ?? 0)}
+          rating={book.average_rating ?? null}
           count={book.review_count ?? 0}
         />
         <p className="text-sm font-semibold text-primary mt-0.5 line-clamp-1">

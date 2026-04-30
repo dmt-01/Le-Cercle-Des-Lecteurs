@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import FeaturedBook from "./BooksComponent/FeatureBook";
+import ModalAddBook from "./BooksComponent/ModalAddBook";
 import Pagination from "./BooksComponent/Pagination";
 import BookCard from "./BooksComponent/BookCard";
 import { useBooks } from "../../hooks/useBooks";
@@ -39,20 +40,41 @@ function BooksPage() {
     setPage,
     appliedSearch,
     handleFilter,
+    showAddModal,
+    setShowAddModal,
+    refreshBooks,
   } = useBooks();
 
   return (
     <div className="min-h-screen">
+      {showAddModal && (
+        <ModalAddBook
+          onClose={() => setShowAddModal(false)}
+          onCreated={() => {
+            setShowAddModal(false);
+            refreshBooks();
+          }}
+        />
+      )}
+
       {/* ── En-tête ── */}
-      <div className="max-w-5xl mx-auto px-6 pt-12 pb-8">
-        <h1 className="text-5xl font-serif italic text-primary mb-3">
-          La Bibliothèque
-        </h1>
-        <p className="text-primary/50 text-sm leading-relaxed max-w-lg">
-          Parcourez notre sélection rigoureuse d'ouvrages classiques et
-          contemporains, choisis pour leur profondeur et leur souffle
-          littéraire.
-        </p>
+      <div className="max-w-5xl mx-auto px-6 pt-12 pb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-5xl font-serif italic text-primary mb-3">
+            La Bibliothèque
+          </h1>
+          <p className="text-primary/50 text-sm leading-relaxed max-w-lg">
+            Parcourez notre sélection rigoureuse d'ouvrages classiques et
+            contemporains, choisis pour leur profondeur et leur souffle
+            littéraire.
+          </p>
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="shrink-0 flex items-center gap-2 bg-secondary text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-secondary-hover transition-colors mt-2"
+        >
+          + Ajouter un livre
+        </button>
       </div>
 
       {/* ── Filtres ── */}

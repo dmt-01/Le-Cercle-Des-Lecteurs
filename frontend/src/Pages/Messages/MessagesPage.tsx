@@ -17,6 +17,8 @@ function MessagesPage() {
   const {
     selected,
     setSelected,
+    pendingPartner,
+    clearSelection,
     text,
     setText,
     loading,
@@ -31,6 +33,8 @@ function MessagesPage() {
     endRef,
   } = useMessages();
 
+  const chatPartner = selected?.partner ?? pendingPartner ?? null;
+
   return (
     <div
       className="max-w-5xl mx-auto px-6 py-8"
@@ -39,7 +43,7 @@ function MessagesPage() {
       <div className="h-full flex gap-5">
         {/* ── Sidebar — liste des conversations ── */}
         <div
-          className={`w-full md:w-72 shrink-0 flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden ${selected ? "hidden md:flex" : "flex"}`}
+          className={`w-full md:w-72 shrink-0 flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden ${chatPartner ? "hidden md:flex" : "flex"}`}
         >
           <div className="p-4 border-b border-beige-medium">
             <h1 className="text-xl font-serif italic text-primary mb-3">
@@ -105,21 +109,21 @@ function MessagesPage() {
         </div>
 
         {/* ── Zone de chat ── */}
-        {selected ? (
+        {chatPartner ? (
           <div className="flex-1 flex flex-col bg-white rounded-2xl border border-beige-medium overflow-hidden">
             <div className="flex items-center gap-3 px-4 py-4 border-b border-beige-medium">
               <button
-                onClick={() => setSelected(null)}
+                onClick={clearSelection}
                 className="md:hidden text-primary/40 hover:text-secondary transition-colors mr-1 text-lg leading-none"
               >
                 ←
               </button>
               <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-sm font-bold shrink-0">
-                {Initials(selected.partner.username)}
+                {Initials(chatPartner.username)}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-primary">
-                  {selected.partner.username}
+                  {chatPartner.username}
                 </p>
                 <p className="text-[9px] uppercase tracking-widest text-secondary">
                   Membre
@@ -152,7 +156,7 @@ function MessagesPage() {
                       >
                         {!msg.is_mine && (
                           <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-[10px] font-bold shrink-0">
-                            {Initials(selected.partner.username)}
+                            {Initials(chatPartner.username)}
                           </div>
                         )}
                         <div

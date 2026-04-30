@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getErrorMessage } from "../utils/errors";
+import { useSearchParams } from "react-router";
 import { apiFetch } from "../services/api";
 
 /** Résumé d'une conversation affiché dans la sidebar */
@@ -80,11 +81,15 @@ function groupByDay(messages: ChatMessage[]) {
  * • load                     — recharge la liste des conversations
  */
 export function useMessages() {
+  const [searchParams] = useSearchParams();
+
   // 1. STATE — Liste des conversations (sidebar)
   const [conversations, setConversations] = useState<Conversation[]>([]);
   // 1.1 STATE — Conversation sélectionnée (zone de chat)
   const [selected, setSelected] = useState<Conversation | null>(null);
-  // 1.2 STATE — Messages de la conversation sélectionnée
+  // 1.2 STATE — Partenaire en attente (nouvelle conv depuis un profil, pas encore dans la liste)
+  const [pendingPartner, setPendingPartner] = useState<{ id: string; username: string } | null>(null);
+  // 1.3 STATE — Messages de la conversation sélectionnée
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   // 2. STATE — Champ de saisie du message à envoyer
@@ -103,17 +108,29 @@ export function useMessages() {
 
   /**
    * Charge ou recharge la liste des conversations.
-   * Sélectionne automatiquement la première conversation.
+   * Si l'URL contient ?to=userId, ouvre directement cette conversation
+   * (ou crée un "partenaire en attente" si elle n'existe pas encore).
    */
   function load() {
     setLoading(true);
     setError(null);
+    const toId = searchParams.get("to");
+    const toUsername = searchParams.get("username");
     apiFetch("/messages")
       .then((res) => {
         const convs: Conversation[] = res.data ?? [];
         setConversations(convs);
-        // 5.1 Sélection automatique de la première conversation au chargement
-        if (convs.length > 0) setSelected(convs[0]);
+        if (toId) {
+          const existing = convs.find((c) => c.partner.id === toId);
+          if (existing) {
+            setSelected(existing);
+          } else if (toUsername) {
+            // Première conversation avec cette personne — pas encore dans la liste
+            setPendingPartner({ id: toId, username: toUsername });
+          }
+        } else if (convs.length > 0) {
+          setSelected(convs[0]);
+        }
       })
       .catch((err) =>
         setError(getErrorMessage(err, "Impossible de charger les conversations") || "Erreur inconnue"),
@@ -148,16 +165,16 @@ export function useMessages() {
    * • Met à jour le dernier message dans la sidebar
    */
   async function handleSend() {
-    if (!text.trim() || !selected || sending) return;
+    const partnerId = selected?.partner.id ?? pendingPartner?.id;
+    if (!text.trim() || !partnerId || sending) return;
     const content = text.trim();
     setSending(true);
-    setText(""); // 8.1 Vide immédiatement le champ pour ne pas bloquer l'utilisateur
+    setText("");
     try {
-      const res = await apiFetch(`/messages/${selected.partner.id}`, {
+      const res = await apiFetch(`/messages/${partnerId}`, {
         method: "POST",
         body: JSON.stringify({ content }),
       });
-      // 8.2 Construit le message local à partir de la réponse API
       const newMsg: ChatMessage = {
         id: res.data.id,
         content: res.data.content,
@@ -166,28 +183,37 @@ export function useMessages() {
         is_mine: true,
         sender: res.data.sender,
       };
-      // 8.3 Ajout optimiste du message en fin de fil
-      setMessages((prev) => [...prev, newMsg]);
-      // 8.4 Mise à jour du dernier message dans la sidebar pour la conversation active
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.partner.id === selected.partner.id
-            ? {
-                ...conv,
-                last_message: {
-                  content,
-                  sent_at: res.data.sent_at,
-                  read: false,
-                  is_mine: true,
-                },
-              }
-            : conv,
-        ),
-      );
+
+      if (selected) {
+        // Conversation existante — mise à jour optimiste
+        setMessages((prev) => [...prev, newMsg]);
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.partner.id === selected.partner.id
+              ? { ...conv, last_message: { content, sent_at: res.data.sent_at, read: false, is_mine: true } }
+              : conv,
+          ),
+        );
+      } else {
+        // Première conversation — recharge la liste et sélectionne la nouvelle conv
+        const res2 = await apiFetch("/messages");
+        const convs: Conversation[] = res2.data ?? [];
+        setConversations(convs);
+        const newConv = convs.find((c) => c.partner.id === partnerId);
+        if (newConv) setSelected(newConv);
+        setPendingPartner(null);
+        setMessages([newMsg]);
+      }
     } catch (err) {
       setError(getErrorMessage(err, "Impossible d'envoyer le message") || "Erreur inconnue");
     }
     setSending(false);
+  }
+
+  /** Ferme le chat actif (conversation réelle ou en attente). */
+  function clearSelection() {
+    setSelected(null);
+    setPendingPartner(null);
   }
 
   // 9. CALCUL : filtrage des conversations par nom d'utilisateur (insensible à la casse)
@@ -213,6 +239,8 @@ export function useMessages() {
     filtered,
     grouped,
     handleSend,
+    clearSelection,
+    pendingPartner,
     load,
     endRef,
   };

@@ -83,7 +83,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
 
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-primary/40 mb-1.5">
-              URL de la couverture
+              URL de la couverture (optionnel)
             </label>
             <input
               type="url"
@@ -96,7 +96,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
 
           <div>
             <label className="block text-[10px] uppercase tracking-widest text-primary/40 mb-1.5">
-              Date de publication
+              Date de publication (optionnel)
             </label>
             <input
               type="date"

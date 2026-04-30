@@ -45,7 +45,7 @@ function SignupPage() {
    * Soumet le formulaire d'inscription.
    * Bloque si les CGU ne sont pas acceptées ou si le mot de passe est invalide.
    */
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!acceptTerms) {
       setError("Vous devez accepter les Conditions Générales pour continuer.");

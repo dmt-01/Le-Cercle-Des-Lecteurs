@@ -32,7 +32,7 @@ function LoginPage() {
    * Soumet le formulaire de connexion.
    * En cas de succès, redirige vers la page demandée initialement.
    */
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setLoading(true);

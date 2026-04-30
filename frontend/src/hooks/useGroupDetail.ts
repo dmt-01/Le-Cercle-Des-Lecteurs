@@ -120,7 +120,7 @@ export function useGroupDetail() {
    * Envoie un message dans le fil de discussion du groupe.
    * Ajoute le message en local immédiatement pour un affichage instantané.
    */
-  async function handleSendMessage(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSendMessage(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!newMessage.trim() || !id || !user) return;
     setSending(true);

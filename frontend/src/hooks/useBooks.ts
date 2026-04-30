@@ -126,7 +126,7 @@ export function useBooks() {
    * Applique les valeurs du formulaire (drafts) comme filtres actifs.
    * Remet la pagination à la page 1 pour éviter d'atterrir sur une page inexistante.
    */
-  function handleFilter(event: React.FormEvent<HTMLFormElement>) {
+  function handleFilter(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setAppliedSearch(draftSearch);
     setAppliedGenre(draftGenre);

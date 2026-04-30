@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "dev": "NODE_ENV=dev tsx watch index.ts",
     "preprod": "NODE_ENV=preprod tsx watch index.ts",
     "start": "NODE_ENV=prod node dist/index.js",
@@ -36,8 +37,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.6.0",
     "@types/pg": "^8.20.0",
+    "@types/supertest": "^7.2.0",
+    "jest": "^30.3.0",
     "prisma": "^7.7.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.5"
   }
 }

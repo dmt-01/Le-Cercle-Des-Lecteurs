@@ -22,6 +22,7 @@ function GroupCard({
     <div
       onClick={() => onNavigate(group.id)}
       className="bg-white rounded-2xl overflow-hidden border border-beige-medium flex flex-col cursor-pointer hover:border-secondary/30 hover:shadow-sm transition-all"
+      aria-label={`Voir les détails du cercle ${group.name}`}
     >
       <div
         className="relative h-48 flex items-center justify-center"
@@ -61,6 +62,7 @@ function GroupCard({
               event.stopPropagation();
               onJoin(group.id);
             }}
+            aria-label={`Rejoindre le cercle ${group.name}`}
             disabled={joining || joined}
             className={`border text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors ${
               joined

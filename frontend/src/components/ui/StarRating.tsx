@@ -21,7 +21,7 @@ function StarRating({
         {[1, 2, 3, 4, 5].map((starValue) => (
           <span
             key={starValue}
-            className={starValue <= rounded ? "text-gold" : "text-beige-medium"}
+            className={starValue <= rounded ? "text-[#A45C09]" : "text-beige-medium"}
           >
             ★
           </span>

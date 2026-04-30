@@ -36,6 +36,7 @@ function Pagination({
         onClick={() => onChange(page - 1)}
         disabled={page === 1}
         className="w-9 h-9 flex items-center justify-center rounded-full border border-beige-medium text-primary/50 hover:border-secondary hover:text-secondary disabled:opacity-30 transition-colors"
+        aria-label="Page précédente"
       >
         ‹
       </button>
@@ -53,6 +54,7 @@ function Pagination({
                 ? "bg-secondary text-white"
                 : "border border-beige-medium text-primary/60 hover:border-secondary hover:text-secondary"
             }`}
+            aria-label={`Aller à la page ${item}`}
           >
             {item}
           </button>
@@ -62,6 +64,7 @@ function Pagination({
         onClick={() => onChange(page + 1)}
         disabled={page === totalPages}
         className="w-9 h-9 flex items-center justify-center rounded-full border border-beige-medium text-primary/50 hover:border-secondary hover:text-secondary disabled:opacity-30 transition-colors"
+        aria-label="Page suivante"
       >
         ›
       </button>

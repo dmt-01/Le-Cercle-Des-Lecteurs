@@ -72,6 +72,7 @@ function BooksPage() {
         <button
           onClick={() => setShowAddModal(true)}
           className="shrink-0 flex items-center gap-2 bg-secondary text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-secondary-hover transition-colors mt-2"
+          aria-label="Ajouter un livre"
         >
           + Ajouter un livre
         </button>
@@ -92,6 +93,7 @@ function BooksPage() {
               value={draftSearch}
               onChange={(event) => setDraftSearch(event.target.value)}
               placeholder="Ex: Marcel Proust..."
+              aria-label="Rechercher un titre ou auteur"
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
           </div>
@@ -104,6 +106,7 @@ function BooksPage() {
               value={draftGenre}
               onChange={(event) => setDraftGenre(event.target.value)}
               className="bg-beige rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30 cursor-pointer"
+              aria-label="Sélectionner un genre"
             >
               <option value="">Tous les genres</option>
               {allGenres.map((genre) => (
@@ -134,6 +137,7 @@ function BooksPage() {
           <button
             type="submit"
             className="bg-secondary text-white text-sm font-semibold px-6 py-2.5 rounded-lg hover:bg-secondary-hover transition-colors min-h-[44px]"
+            aria-label="Appliquer les filtres"
           >
             Filtrer
           </button>

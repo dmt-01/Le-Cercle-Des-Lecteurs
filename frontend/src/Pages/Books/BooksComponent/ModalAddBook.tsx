@@ -64,6 +64,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               onChange={(e) => setTitle(e.target.value)}
               required
               placeholder="Ex : Les Misérables"
+              aria-label="Titre du livre"
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
           </div>
@@ -77,6 +78,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="Résumé ou présentation du livre..."
+              aria-label="Description du livre"
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none"
             />
           </div>
@@ -90,6 +92,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               value={coverImage}
               onChange={(e) => setCoverImage(e.target.value)}
               placeholder="https://..."
+              aria-label="URL de la couverture (optionnel)"
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
             />
           </div>
@@ -103,6 +106,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               value={publicationDate}
               onChange={(e) => setPublicationDate(e.target.value)}
               className="w-full bg-beige rounded-lg px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30"
+              aria-label="Date de publication (optionnel)"
             />
           </div>
 
@@ -113,6 +117,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               type="button"
               onClick={onClose}
               className="flex-1 bg-beige text-primary text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-beige-medium transition-colors"
+              aria-label="Annuler l'ajout d'un nouveau livre"
             >
               Annuler
             </button>
@@ -120,6 +125,7 @@ function ModalAddBook({ onClose, onCreated }: Props) {
               type="submit"
               disabled={loading || !title.trim()}
               className="flex-1 bg-secondary text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-secondary-hover transition-colors disabled:opacity-50"
+              aria-label="Ajouter le livre"
             >
               {loading ? "Ajout en cours..." : "Ajouter"}
             </button>

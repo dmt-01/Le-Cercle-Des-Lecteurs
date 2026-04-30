@@ -147,6 +147,7 @@ function BlogDetailPage() {
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               placeholder="Partagez votre avis sur cet article..."
+              aria-label="Commentaire"
               rows={3}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none mb-3"
             />
@@ -154,6 +155,7 @@ function BlogDetailPage() {
               <button
                 disabled
                 className="bg-primary/20 text-primary/40 text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-xl cursor-not-allowed"
+                aria-label="Publier le commentaire"
               >
                 Publier
               </button>

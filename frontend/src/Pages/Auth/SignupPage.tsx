@@ -130,6 +130,7 @@ function SignupPage() {
             <Link
               to="/login"
               className="text-secondary font-semibold hover:underline"
+              aria-label="Aller à la page de connexion"
             >
               S'identifier
             </Link>
@@ -282,6 +283,7 @@ function SignupPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-secondary text-white font-semibold text-sm uppercase tracking-widest py-4 rounded-xl hover:bg-secondary-hover transition-colors disabled:opacity-50 min-h-[52px] mt-2"
+              aria-label="Ouvrir les portes du Cercle"
             >
               {loading ? "Inscription..." : "Ouvrir les portes du Cercle →"}
             </button>

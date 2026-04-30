@@ -130,7 +130,8 @@ function GroupDetailPage() {
             <div className="flex flex-col gap-4 mb-4">
               {group.messages.map((msg, index) => (
                 <div key={index} className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-xs font-bold uppercase shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-xs font-bold uppercase shrink-0" 
+                       aria-label={`Avatar de ${msg.user.username}`}>
                     {msg.user.username[0]}
                   </div>
                   <div className="flex-1">
@@ -163,6 +164,7 @@ function GroupDetailPage() {
                 value={newMessage}
                 onChange={(event) => setNewMessage(event.target.value)}
                 placeholder="Partagez vos réflexions..."
+                aria-label="Écrire un message à partager avec les membres du cercle"
                 className="flex-1 text-sm text-primary placeholder:text-primary/30 outline-none bg-transparent"
               />
               <button
@@ -183,6 +185,7 @@ function GroupDetailPage() {
                     <Link
                       to="/login"
                       className="text-secondary hover:underline"
+                      aria-label="Connectez-vous pour rejoindre ce cercle"
                     >
                       Connectez-vous
                     </Link>{" "}
@@ -222,13 +225,15 @@ function GroupDetailPage() {
                   to={`/users/${member.user.id}`}
                   title={member.user.username}
                 >
-                  <div className="w-full aspect-square rounded-lg bg-secondary/20 flex items-center justify-center text-secondary text-sm font-bold uppercase hover:bg-secondary/30 transition-colors">
+                  <div className="w-full aspect-square rounded-lg bg-secondary/20 flex items-center justify-center text-secondary text-sm font-bold uppercase hover:bg-secondary/30 transition-colors" 
+                       aria-label={`Avatar de ${member.user.username}`}>
                     {member.user.username[0]}
                   </div>
                 </Link>
               ))}
               {extraMembers > 0 && (
-                <div className="w-full aspect-square rounded-lg bg-beige-medium flex items-center justify-center text-primary/50 text-xs font-medium">
+                <div className="w-full aspect-square rounded-lg bg-beige-medium flex items-center justify-center text-primary/50 text-xs font-medium" 
+                     aria-label={`et ${extraMembers} autres membres`}>
                   +{extraMembers}
                 </div>
               )}

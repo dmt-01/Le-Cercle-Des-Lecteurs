@@ -170,6 +170,7 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full bg-secondary text-white font-semibold text-sm uppercase tracking-widest py-4 rounded-xl hover:bg-secondary-hover transition-colors disabled:opacity-50 min-h-[52px] mt-2"
+              aria-label="Se connecter"
             >
               {loading ? "Connexion..." : "Se connecter"}
             </button>
@@ -180,6 +181,7 @@ function LoginPage() {
             <Link
               to="/signup"
               className="text-secondary font-semibold hover:underline"
+              aria-label="Créer un compte"
             >
               Créer un compte
             </Link>

@@ -162,7 +162,7 @@ function BlogPage() {
                       Les Illusions Perdues
                     </p>
                     <p className="text-xs text-primary/40">Honoré de Balzac</p>
-                    <p className="text-gold text-sm mt-1">★★★★</p>
+                    <p className="text-[#A45C09] text-sm mt-1">★★★★</p>
                   </div>
                   <span className="text-[9px] uppercase tracking-widest text-secondary font-semibold border border-secondary/30 px-2 py-1 rounded w-fit cursor-not-allowed">
                     Acheter
@@ -189,7 +189,8 @@ function BlogPage() {
               <input
                 type="email"
                 placeholder="votre@email.fr"
-                className="bg-white/10 border border-white/20 text-white placeholder:text-white/30 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+                aria-label="Adresse e-mail pour s'abonner à la newsletter"
+                className="bg-beige-light border border-white/20 text-secondary placeholder:text-secondary rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
               />
               <button className="bg-beige-light text-secondary text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-xl hover:bg-secondary-hover transition-colors">
                 S'abonner

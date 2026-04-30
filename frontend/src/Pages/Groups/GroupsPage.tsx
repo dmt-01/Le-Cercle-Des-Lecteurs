@@ -55,6 +55,7 @@ function GroupsPage() {
           <button
             onClick={handleCreateClick}
             className="flex items-center gap-2 bg-secondary text-white text-sm font-semibold px-5 py-3 rounded-full hover:bg-secondary-hover transition-colors shrink-0 mt-2 whitespace-nowrap"
+            aria-label="Créer un nouveau cercle de lecture"
           >
             <span className="text-base leading-none">⊕</span> Créer un groupe
           </button>
@@ -106,7 +107,8 @@ function GroupsPage() {
               deux âmes à travers le temps."
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-base font-bold uppercase shrink-0">
+              <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-base font-bold uppercase shrink-0" 
+                   aria-label="Avatar de Elena Marquès">
                 E
               </div>
               <div>

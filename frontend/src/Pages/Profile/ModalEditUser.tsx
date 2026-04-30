@@ -62,6 +62,7 @@ function EditProfileModal({
               required
               maxLength={50}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-secondary/30"
+              aria-label="Nom de l'utilisateur"
             />
           </div>
 
@@ -73,6 +74,7 @@ function EditProfileModal({
               value={bio}
               onChange={(event) => setBio(event.target.value)}
               placeholder="Parlez-nous de vous et de vos lectures..."
+              aria-label="Biographie"
               rows={4}
               maxLength={300}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none"
@@ -84,6 +86,7 @@ function EditProfileModal({
               type="button"
               onClick={onClose}
               className="flex-1 border border-beige-medium text-primary text-sm font-semibold py-3 rounded-xl hover:border-secondary/40 transition-colors"
+              aria-label="Annuler les modifications et fermer la fenêtre"
             >
               Annuler
             </button>
@@ -91,6 +94,7 @@ function EditProfileModal({
               type="submit"
               disabled={saving || !username.trim()}
               className="flex-1 bg-secondary text-white text-sm font-semibold py-3 rounded-xl hover:bg-secondary-hover transition-colors disabled:opacity-50"
+              aria-label="Enregistrer les modifications"
             >
               {saving ? "Enregistrement..." : "Enregistrer"}
             </button>

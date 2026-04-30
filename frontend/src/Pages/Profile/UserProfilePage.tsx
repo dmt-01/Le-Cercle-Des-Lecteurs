@@ -42,7 +42,9 @@ function UserProfilePage() {
     return (
       <div className="max-w-5xl mx-auto px-6 py-20 text-center">
         <p className="text-primary/50 mb-4">Profil introuvable.</p>
-        <Link to="/" className="text-secondary hover:underline text-sm">← Retour à l'accueil</Link>
+        <Link to="/" className="text-secondary hover:underline text-sm" aria-label="Retour à l'accueil">
+          ← Retour à l'accueil
+        </Link>
       </div>
     );
   }
@@ -101,6 +103,7 @@ function UserProfilePage() {
                 <button
                   onClick={() => setShowEditModal(true)}
                   className="flex items-center gap-2 bg-white/10 border border-white/20 text-white text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg hover:bg-white/20 transition-colors"
+                  aria-label="Éditer le profil"
                 >
                   ✏ Éditer le profil
                 </button>
@@ -114,12 +117,14 @@ function UserProfilePage() {
                         ? "bg-white/10 text-white border border-white/30 hover:bg-white/20"
                         : "bg-secondary text-white hover:bg-secondary-hover"
                     }`}
+                    aria-label={following ? `Ne plus suivre ${profile.username}` : `Suivre ${profile.username}`}
                   >
                     {following ? "Suivi ✓" : "+ Suivre"}
                   </button>
                   <Link
                     to={`/messages?to=${profile.id}&username=${encodeURIComponent(profile.username)}`}
                     className="text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                    aria-label={`Envoyer un message à ${profile.username}`}
                   >
                     ✉ Message
                   </Link>
@@ -156,7 +161,7 @@ function UserProfilePage() {
                   <p className="text-[10px] uppercase tracking-widest text-secondary font-medium mb-1">Ma Bibliothèque</p>
                   <h2 className="text-2xl font-serif italic text-primary">Lectures en cours & Finies</h2>
                 </div>
-                <Link to="/wishlist" className="text-xs uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors">
+                <Link to="/wishlist" className="text-xs uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors" aria-label="Voir toute la liste de souhaits">
                   Voir tout
                 </Link>
               </div>

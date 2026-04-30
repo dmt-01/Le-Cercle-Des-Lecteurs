@@ -17,12 +17,14 @@ function NotFoundPage() {
         <Link
           to="/"
           className="bg-primary text-white text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full hover:bg-primary/80 transition-colors"
+          aria-label="Retour à l'accueil"
         >
           Retour à l'accueil
         </Link>
         <Link
           to="/books"
           className="border border-beige-medium text-primary/60 text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full hover:border-secondary hover:text-secondary transition-colors"
+          aria-label="Parcourir les livres"
         >
           Parcourir les livres
         </Link>

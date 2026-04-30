@@ -119,6 +119,7 @@ function EventDetailPage() {
           <Link
             to={`/groups/${event.group.id}`}
             className="text-[10px] uppercase tracking-widest text-secondary font-semibold hover:underline"
+            aria-label={`Voir le cercle ${event.group.name}`}
           >
             Voir le cercle →
           </Link>
@@ -132,6 +133,7 @@ function EventDetailPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full block text-center bg-secondary text-white text-sm font-semibold px-5 py-3 rounded-xl hover:bg-secondary-hover transition-colors mb-4"
+                aria-label="Je participe"
               >
                 Je participe →
               </a>
@@ -139,6 +141,7 @@ function EventDetailPage() {
               <button
                 disabled
                 className="w-full bg-primary/20 text-primary/40 text-sm font-semibold px-5 py-3 rounded-xl cursor-not-allowed mb-4"
+                aria-label="Inscription à venir"
               >
                 Inscription à venir
               </button>

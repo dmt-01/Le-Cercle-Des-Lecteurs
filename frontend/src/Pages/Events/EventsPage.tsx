@@ -37,6 +37,7 @@ function EventsPage() {
                     ? "bg-secondary text-white"
                     : "bg-white border border-beige-medium text-primary/50 cursor-not-allowed opacity-60"
                 }`}
+                aria-label={`Filtrer les événements par type: ${tab}`}
                 disabled={index !== 0}
               >
                 {tab}
@@ -109,6 +110,7 @@ function EventsPage() {
                     <Link
                       to={`/events/${event.id}`}
                       className="bg-secondary text-white text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full hover:bg-secondary-hover transition-colors shrink-0 whitespace-nowrap"
+                      aria-label={`S'inscrire à l'événement ${event.title}`} 
                     >
                       S'inscrire
                     </Link>
@@ -141,7 +143,7 @@ function EventsPage() {
             <p className="text-white/40 text-xs uppercase tracking-widest">
               24–30 Novembre
             </p>
-            <button className="bg-white text-primary text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full w-fit hover:bg-beige transition-colors">
+            <button className="bg-white text-primary text-xs font-semibold uppercase tracking-widest px-5 py-2.5 rounded-full w-fit hover:bg-beige transition-colors" aria-label="Découvrir le programme">
               Découvrir le programme
             </button>
           </div>

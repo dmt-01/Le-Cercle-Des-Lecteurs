@@ -8,6 +8,7 @@ function FeaturedBook({ book }: { book: Book }) {
     <Link
       to={`/books/${book.id}`}
       className="flex gap-8 bg-white rounded-2xl overflow-hidden border border-beige-medium hover:border-secondary/30 transition-colors group"
+      aria-label={`Voir les détails du livre ${book.title}`}
     >
       <div className="relative shrink-0 w-48 bg-beige-medium">
         {book.cover_image ? (
@@ -50,7 +51,8 @@ function FeaturedBook({ book }: { book: Book }) {
             {book.description}
           </p>
         )}
-        <span className="inline-flex items-center gap-2 bg-secondary text-white text-xs uppercase tracking-widest px-4 py-2.5 rounded-lg w-fit mt-2 group-hover:bg-secondary-hover transition-colors">
+        <span className="inline-flex items-center gap-2 bg-secondary text-white text-xs uppercase tracking-widest px-4 py-2.5 rounded-lg w-fit mt-2 group-hover:bg-secondary-hover transition-colors"
+          aria-label={`Voir les détails du livre ${book.title}`}>
           Voir le détail
         </span>
       </div>

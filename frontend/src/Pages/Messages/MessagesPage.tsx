@@ -56,6 +56,7 @@ function MessagesPage() {
               <input
                 type="text"
                 placeholder="Filtrer les discussions"
+                aria-label="Rechercher un partenaire de conversation"
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
                 className="w-full bg-beige border border-beige-medium rounded-xl pl-8 pr-3 py-2 text-xs text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
@@ -184,7 +185,7 @@ function MessagesPage() {
             </div>
 
             <div className="px-4 py-3 border-t border-beige-medium flex items-center gap-3">
-              <button className="text-primary/30 hover:text-secondary transition-colors text-lg leading-none">
+              <button className="text-primary/30 hover:text-secondary transition-colors text-lg leading-none" aria-label="Ajouter un message">
                 ⊕
               </button>
               <input
@@ -198,6 +199,7 @@ function MessagesPage() {
                   }
                 }}
                 placeholder="Écrire votre message..."
+                aria-label="Écrire un message"
                 className="flex-1 bg-beige border border-beige-medium rounded-xl px-4 py-2.5 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
               />
               <button

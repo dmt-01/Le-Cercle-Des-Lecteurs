@@ -5,7 +5,7 @@ import { Link } from "react-router";
 /** Carte de livre utilisée dans la section "Recommandés pour vous" */
 function BookCard({ book }: { book: Book }) {
   return (
-    <Link to={`/books/${book.id}`} className="flex flex-col gap-2 group">
+    <Link to={`/books/${book.id}`} className="flex flex-col gap-2 group" aria-label={`Voir les détails du livre ${book.title}`}>
       <div className="aspect-[2/3] bg-beige-medium rounded-lg overflow-hidden">
         {book.cover_image ? (
           <img

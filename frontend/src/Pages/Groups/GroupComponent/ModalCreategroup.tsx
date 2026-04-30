@@ -60,6 +60,7 @@ function CreateGroupModal({
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Ex : Les Amateurs de Proust"
+              aria-label="Nom du groupe"
               required
               maxLength={100}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30"
@@ -74,6 +75,7 @@ function CreateGroupModal({
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               placeholder="Décrivez l'esprit de votre cercle..."
+              aria-label="Description du groupe"
               rows={3}
               maxLength={500}
               className="w-full bg-beige border border-beige-medium rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:ring-2 focus:ring-secondary/30 resize-none"
@@ -85,6 +87,7 @@ function CreateGroupModal({
               type="button"
               onClick={onClose}
               className="flex-1 border border-beige-medium text-primary text-sm font-semibold py-3 rounded-xl hover:border-secondary/40 transition-colors"
+              aria-label="Annuler la création du cercle de lecture"
             >
               Annuler
             </button>
@@ -92,6 +95,7 @@ function CreateGroupModal({
               type="submit"
               disabled={creating || !name.trim()}
               className="flex-1 bg-secondary text-white text-sm font-semibold py-3 rounded-xl hover:bg-secondary-hover transition-colors disabled:opacity-50"
+              aria-label="Créer le cercle de lecture"
             >
               {creating ? "Création..." : "Créer le cercle"}
             </button>

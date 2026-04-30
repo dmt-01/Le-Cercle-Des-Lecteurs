@@ -179,6 +179,7 @@ function BookDetailPage() {
                       ? "bg-secondary/10 text-secondary border border-secondary/30 hover:bg-secondary/20"
                       : "bg-secondary text-white hover:bg-secondary-hover"
                   }`}
+                  aria-label={`Ajouter ${book.title} à ma wishlist`}
                 >
                   <span>{inWishlist ? "✓" : "+"}</span>
                   {inWishlist ? "Dans ma wishlist" : "Ajouter à ma wishlist"}
@@ -191,6 +192,7 @@ function BookDetailPage() {
                       ? "bg-gold/10 text-gold border-gold/30 hover:bg-gold/20"
                       : "bg-white text-primary border-beige-medium hover:border-secondary/40"
                   }`}
+                  aria-label={`Marquer ${book.title} comme lu`}
                 >
                   <span>{isRead ? "✓" : "📖"}</span>
                   {isRead ? "Lu" : "Marquer comme lu"}
@@ -200,6 +202,7 @@ function BookDetailPage() {
               <Link
                 to="/login"
                 className="bg-secondary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-secondary-hover transition-colors"
+                aria-label="Connectez-vous pour interagir"
               >
                 Connectez-vous pour interagir
               </Link>
@@ -217,6 +220,7 @@ function BookDetailPage() {
                       ? "border-secondary text-secondary"
                       : "border-transparent text-primary/40 hover:text-primary/70"
                   }`}
+                  aria-label={`Afficher la section ${tabItem === "resume" ? "Résumé" : tabItem.charAt(0).toUpperCase() + tabItem.slice(1)}`}
                 >
                   {tabItem === "resume"
                     ? "Résumé"
@@ -270,6 +274,7 @@ function BookDetailPage() {
                   <Link
                     to="/events"
                     className="text-[10px] uppercase tracking-widest text-secondary font-semibold hover:underline"
+                    aria-label="Voir les événements à venir"
                   >
                     Voir les événements →
                   </Link>

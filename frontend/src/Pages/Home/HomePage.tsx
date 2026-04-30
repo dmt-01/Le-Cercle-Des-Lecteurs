@@ -44,12 +44,14 @@ function HomePage() {
           <Link
             to="/groups"
             className="bg-secondary text-white px-6 py-3 rounded-full font-medium hover:bg-secondary-hover transition-colors min-h-[44px] flex items-center"
+            aria-label="Explorer les groupes de lecture"
           >
             Explorer le club
           </Link>
           <Link
             to="/books"
             className="border border-white/50 text-white px-6 py-3 rounded-full font-medium hover:bg-white/10 transition-colors min-h-[44px] flex items-center"
+            aria-label="Découvrir nos collections"
           >
             Nos collections
           </Link>
@@ -76,6 +78,7 @@ function HomePage() {
           <Link
             to="/books"
             className="text-xs uppercase tracking-widest text-primary/50 hover:text-secondary transition-colors"
+            aria-label="Découvrir tous les livres"
           >
             Tout voir
           </Link>
@@ -86,6 +89,7 @@ function HomePage() {
             <Link
               to={`/books/${featured.id}`}
               className="col-span-1 row-span-2 relative rounded-xl overflow-hidden group min-h-[400px]"
+              aria-label={`Voir les détails du livre ${featured.title}`}
             >
               {featured.cover_image ? (
                 <img
@@ -126,6 +130,7 @@ function HomePage() {
                   key={book.id}
                   to={`/books/${book.id}`}
                   className="relative rounded-xl overflow-hidden aspect-[3/4] group"
+                  aria-label={`Voir les détails du livre ${book.title}`}
                 >
                   {book.cover_image ? (
                     <img
@@ -180,6 +185,7 @@ function HomePage() {
               <Link
                 to="/profile"
                 className="hover:text-secondary transition-colors"
+                aria-label="Modifier mes goûts littéraires"
               >
                 Modifier mes goûts
               </Link>
@@ -226,6 +232,7 @@ function HomePage() {
                 <Link
                   to="/events"
                   className="block text-center bg-beige-medium text-primary text-xs font-medium px-4 py-2.5 rounded-lg hover:bg-beige-medium/70 transition-colors min-h-[44px] flex items-center justify-center"
+                  aria-label="Voir tous les événements"
                 >
                   Voir tous les événements
                 </Link>
@@ -246,6 +253,7 @@ function HomePage() {
                   key={event.id}
                   to="/events"
                   className="flex items-center gap-5 bg-white rounded-xl px-5 py-4 border border-beige-medium hover:border-secondary/30 transition-colors group"
+                  aria-label={`Voir les détails de l'événement ${event.title}`}
                 >
                   <div className="flex flex-col items-center justify-center w-12 shrink-0 border-gold border-2 rounded-lg p-1">
                     <span className="text-[10px] uppercase tracking-widest text-secondary font-medium">
@@ -289,6 +297,7 @@ function HomePage() {
               <Link
                 to="/events"
                 className="text-center text-xs uppercase tracking-widest text-primary/40 hover:text-secondary transition-colors py-2"
+                aria-label="Voir tous les événements"
               >
                 Voir tous les événements →
               </Link>

@@ -10,22 +10,7 @@ import { useBookDetail } from "../../hooks/useBookDetail";
 import { useAuth } from "../../context/AuthContext";
 import type { Tab } from "../../types";
 import { Link } from "react-router";
-
-/** Rangée d'étoiles pour l'affichage d'une note dans les avis */
-function StarRating({ note }: { note: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((starValue) => (
-        <span
-          key={starValue}
-          className={starValue <= note ? "text-gold" : "text-beige-medium"}
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  );
-}
+import StarRating from "./BookdetailComponent/StarRating";
 
 function BookDetailPage() {
   const { user } = useAuth();

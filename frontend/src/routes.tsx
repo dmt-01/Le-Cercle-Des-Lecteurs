@@ -1,5 +1,10 @@
-import { AboutPage, ContactPage, PrivacyPage, TermsPage, HelpPage } from "./Pages/Static/StaticPage";
+
+import { PrivacyPage } from "./Pages/Static/StaticPage/PrivacyPage";
+import { ContactPage } from "./Pages/Static/StaticPage/ContactPage";
+import { AboutPage } from "./Pages/Static/StaticPage/AboutPage";
+import { TermsPage } from "./Pages/Static/StaticPage/TermsPage";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
+import { HelpPage } from "./Pages/Static/StaticPage/HelpPage";
 import UserProfilePage from "./Pages/Profile/UserProfilePage";
 import GroupDetailPage from "./Pages/Groups/GroupDetailPage";
 import EventDetailPage from "./Pages/Events/EventDetailPage";

@@ -11,11 +11,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { PublicProfile, WishlistItem } from "../types";
+import { getErrorMessage } from "../utils/errors";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../services/api";
 import { useParams } from "react-router";
-import { getErrorMessage } from "../utils/errors";
 
 /**
  * Fournit les données et handlers pour la page de profil (UserProfilePage).

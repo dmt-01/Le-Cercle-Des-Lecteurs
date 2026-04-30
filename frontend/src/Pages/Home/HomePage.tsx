@@ -5,89 +5,12 @@
 // Toute la logique de chargement est déléguée à useHome().
 // ─────────────────────────────────────────────────────────────────────────────
 
+import FormatEventDate from "./HomeComponent/FormatEventDate";
 import { useAuth } from "../../context/AuthContext";
-import type { Book, Event } from "../../types";
+import BookCard from "./HomeComponent/BookCard";
 import { useHome } from "../../hooks/useHome";
+import type { Event } from "../../types";
 import { Link } from "react-router";
-
-/** Affiche une rangée d'étoiles et le nombre de votes pour un livre */
-function StarRating({ note, count }: { note: number; count: number }) {
-  if (count === 0) {
-    return <span className="text-xs text-primary/30 italic">Aucun vote</span>;
-  }
-  return (
-    <div
-      className="flex items-center gap-1"
-      aria-label={`Note : ${note} sur 5`}
-    >
-      <div className="flex gap-0.5">
-        {[1, 2, 3, 4, 5].map((starValue) => (
-          <span
-            key={starValue}
-            className={starValue <= note ? "text-gold" : "text-beige-medium"}
-          >
-            ★
-          </span>
-        ))}
-      </div>
-      <span className="text-xs text-primary/40">
-        ({count} vote{count > 1 ? "s" : ""})
-      </span>
-    </div>
-  );
-}
-
-/** Carte de livre utilisée dans la section "Recommandés pour vous" */
-function BookCard({ book }: { book: Book }) {
-  return (
-    <Link to={`/books/${book.id}`} className="flex flex-col gap-2 group">
-      <div className="aspect-[2/3] bg-beige-medium rounded-lg overflow-hidden">
-        {book.cover_image ? (
-          <img
-            src={book.cover_image}
-            alt={`Couverture de ${book.title}`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div
-            className="w-full h-full flex items-end justify-center"
-            style={{
-              background: "linear-gradient(rgba(42, 0, 2, 0), rgba(42, 0, 2, 0.90)), url(/img/template_book.png) center/cover no-repeat",
-            }}
-          >
-            <span className="text-white text-center p-2">{book.title}</span>
-          </div>
-        )}
-      </div>
-      <div>
-        {book.genres[0] && (
-          <p className="text-xs uppercase tracking-widest text-secondary font-medium mb-0.5">
-            {book.genres[0].name}
-          </p>
-        )}
-        <StarRating
-          note={Math.round(book.average_rating ?? 0)}
-          count={book.review_count ?? 0}
-        />
-        <p className="text-sm font-semibold text-primary mt-0.5 line-clamp-1">
-          {book.title}
-        </p>
-        {book.authors[0] && (
-          <p className="text-xs text-primary/50">{book.authors[0].name}</p>
-        )}
-      </div>
-    </Link>
-  );
-}
-
-/** Formate une date d'événement en { month, day } pour les mini-calendriers de la section "À venir" */
-function formatEventDate(dateStr: string) {
-  const date = new Date(dateStr);
-  return {
-    month: date.toLocaleString("fr-FR", { month: "short" }).toUpperCase(),
-    day: String(date.getDate()).padStart(2, "0"),
-  };
-}
 
 function HomePage() {
   const { user } = useAuth();
@@ -317,7 +240,7 @@ function HomePage() {
               </p>
             )}
             {events.map((event: Event) => {
-              const { month, day } = formatEventDate(event.event_date);
+              const { month, day } = FormatEventDate(event.event_date);
               return (
                 <Link
                   key={event.id}

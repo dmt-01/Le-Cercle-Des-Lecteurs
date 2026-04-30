@@ -1,7 +1,7 @@
 ## ─── Démarrage ───────────────────────────────────────────────────────────────
 
 # Mode développement (hot reload, volumes, adminer)
-startdev: kill
+startdev: kill-dev
 	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev up --build
 
 # Mode préproduction (build réel, adminer disponible)
@@ -15,7 +15,7 @@ startprod:
 ## ─── Arrêt ────────────────────────────────────────────────────────────────────
 
 # Arrête et supprime les containers + volumes du mode dev.
-kill:
+kill-dev:
 	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev down -v
 
 # Arrête la préproduction

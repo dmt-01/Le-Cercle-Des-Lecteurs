@@ -8,38 +8,9 @@
 
 import ErrorMessage from "../../components/ui/ErrorMessage";
 import { useMessages } from "../../hooks/useMessages";
-
-/** Renvoie les deux premières lettres d'un nom en majuscules, pour les avatars. */
-function initials(name: string) {
-  return name.slice(0, 2).toUpperCase();
-}
-
-/** Formate une heure de message en "HH:MM" pour l'affichage sous chaque bulle. */
-function timeLabel(dateStr: string) {
-  return new Date(dateStr).toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-/**
- * Formate la date du dernier message d'une conversation pour la sidebar.
- * Aujourd'hui → heure, hier → "Hier", sinon → "j mois" (ex : "3 janv.").
- */
-function convTime(dateStr: string) {
-  const date = new Date(dateStr);
-  const today = new Date();
-  if (date.toDateString() === today.toDateString()) {
-    return date.toLocaleTimeString("fr-FR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  if (date.toDateString() === yesterday.toDateString()) return "Hier";
-  return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
-}
+import TimeLabel from "./MessageComponent/TimeLabel";
+import ConvTime from "./MessageComponent/ConvTime";
+import Initials from "./MessageComponent/Initials";
 
 /** Page de messagerie : sidebar conversations + zone de chat en temps réel. */
 function MessagesPage() {
@@ -111,7 +82,7 @@ function MessagesPage() {
                   }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-xs font-bold shrink-0">
-                    {initials(conv.partner.username)}
+                    {Initials(conv.partner.username)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-0.5">
@@ -119,7 +90,7 @@ function MessagesPage() {
                         {conv.partner.username}
                       </p>
                       <p className="text-[10px] text-primary/30 shrink-0 ml-2">
-                        {convTime(conv.last_message.sent_at)}
+                        {ConvTime(conv.last_message.sent_at)}
                       </p>
                     </div>
                     <p className="text-xs text-primary/40 truncate">
@@ -144,7 +115,7 @@ function MessagesPage() {
                 ←
               </button>
               <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-sm font-bold shrink-0">
-                {initials(selected.partner.username)}
+                {Initials(selected.partner.username)}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-primary">
@@ -181,7 +152,7 @@ function MessagesPage() {
                       >
                         {!msg.is_mine && (
                           <div className="w-7 h-7 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-[10px] font-bold shrink-0">
-                            {initials(selected.partner.username)}
+                            {Initials(selected.partner.username)}
                           </div>
                         )}
                         <div
@@ -197,7 +168,7 @@ function MessagesPage() {
                             {msg.content}
                           </div>
                           <p className="text-[10px] text-primary/30">
-                            {timeLabel(msg.sent_at)}
+                            {TimeLabel(msg.sent_at)}
                           </p>
                         </div>
                       </div>

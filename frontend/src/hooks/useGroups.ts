@@ -5,12 +5,12 @@
 // et l'ouverture de la modal de création d'un nouveau groupe.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { getErrorMessage } from "../utils/errors";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { apiFetch } from "../services/api";
 import type { Group } from "../types";
-import { getErrorMessage } from "../utils/errors";
 
 /**
  * Fournit les données et handlers pour la page des cercles (GroupsPage).

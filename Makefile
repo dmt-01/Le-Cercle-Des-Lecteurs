@@ -1,35 +1,45 @@
-# Makefile pour gérer les commandes
+## ─── Démarrage ───────────────────────────────────────────────────────────────
 
-# Pour démarrer l'application en mode développement
+# Mode développement (hot reload, volumes, adminer)
 startdev: kill
-	docker compose --env-file .env.dev up --build
+	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev up --build
 
-# Pour démarrer l'application en mode préproduction
+# Mode préproduction (build réel, adminer disponible)
 startpreprod:
-	docker compose -f compose.preprod.yml --env-file .env.preprod up --build
+	docker compose -f compose.yml -f compose.preprod.yml --env-file .env.preprod up --build
 
-# Pour démarrer l'application en mode production
+# Mode production (build réel, sans adminer)
 startprod:
-	docker compose -f compose.prod.yml --env-file .env.prod up --build
+	docker compose --env-file .env.prod up --build
 
-# Pour arrêter les containers et supprimer les volumes associés
+## ─── Arrêt ────────────────────────────────────────────────────────────────────
+
+# Arrête et supprime les containers + volumes du mode dev.
 kill:
-	docker compose --env-file .env.dev down -v
+	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev down -v
 
-# Pour peupler la base de données
+# Arrête la préproduction
+kill-preprod:
+	docker compose -f compose.yml -f compose.preprod.yml --env-file .env.preprod down
+
+# Arrête la production
+kill-prod:
+	docker compose --env-file .env.prod down
+
+## ─── Base de données (dev) ────────────────────────────────────────────────────
+
+# Peupler la base avec les données de test
 seed:
-	cd backend && docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm seed
+	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm seed
 
-# Pour lancer les migrations
+# Appliquer les migrations en base
 migrate:
-	cd backend && docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma migrate deploy
+	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma migrate deploy
 
-generate:
-	cd backend && docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma generate
-
-# Pour migrer les modification prisma en local
+# Créer une nouvelle migration (dans le container dev)
 migrate-dev:
-	cd backend && pnpm prisma migrate dev --name "migration" --schema ./prisma/schema.prisma
+	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma migrate dev --name "migration" --schema ./prisma/schema.prisma
 
-deploy-prisma: migrate-dev migrate generate seed
+# Déploiement complet Prisma (migration + génération + seed)
+deploy-prisma: migrate-dev migrate seed
 	@echo "✅ Prisma déployé et BDD peuplée !"

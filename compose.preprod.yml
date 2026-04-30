@@ -1,0 +1,23 @@
+###############################################################################
+# compose.preprod.yml — surcharge préproduction
+#
+# Utilisé avec : docker compose -f compose.yml -f compose.preprod.yml --env-file .env.preprod up --build
+#
+# Surcharge compose.yml (prod) pour la preprod :
+#  - Ajoute Adminer pour déboguer la base
+#  - Force NODE_ENV=preprod sur le backend
+#  - Utilise les mêmes Dockerfiles qu'en prod (vrai build, pas de hot reload)
+###############################################################################
+
+services:
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT}:8080"
+    depends_on:
+      - db
+
+  backend:
+    environment:
+      NODE_ENV: preprod

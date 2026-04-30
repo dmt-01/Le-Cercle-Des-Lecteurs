@@ -1,0 +1,30 @@
+# ─── Stage 1 : Build ──────────────────────────────────────────────────────────
+# Installe toutes les dépendances, génère le client Prisma et compile TypeScript
+FROM node:23-alpine3.21 AS builder
+
+WORKDIR /app
+
+COPY package*.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
+
+COPY . .
+
+# Génère le client Prisma et compile TypeScript → dist/
+RUN pnpm prisma generate && pnpm build
+
+# ─── Stage 2 : Run ────────────────────────────────────────────────────────────
+# Image finale allégée : ne contient que le code compilé et les dépendances
+FROM node:23-alpine3.21
+
+WORKDIR /app
+
+# Copie uniquement ce qui est nécessaire au runtime
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
+
+EXPOSE 3000
+
+# Lance les migrations puis démarre le serveur compilé
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/index.js"]

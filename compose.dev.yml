@@ -1,0 +1,48 @@
+###############################################################################
+# compose.dev.yml — surcharge développement
+#
+# Utilisé avec : docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev up --build
+#
+# Ce fichier SURCHARGE compose.yml pour le mode dev :
+#  - Remplace les Dockerfiles prod par les Dockerfiles dev (tsx watch, vite dev)
+#  - Monte les sources locales en volumes pour le hot reload
+#  - Expose le port de la base de données en local
+#  - Ajoute Adminer pour inspecter la base
+###############################################################################
+
+services:
+  db:
+    restart: always
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "${ADMINER_PORT}:8080"
+    depends_on:
+      - db
+
+  backend:
+    restart: always
+    build:
+      context: backend
+      dockerfile: Dockerfile        # Dockerfile dev (tsx watch — hot reload)
+    volumes:
+      - ./backend:/app              # Monte les sources locales pour le hot reload
+      - /app/node_modules           # Préserve node_modules installé dans l'image
+    environment:
+      NODE_ENV: dev
+
+  frontend:
+    restart: always
+    network_mode: host              # Bypass l'allocateur de ports Docker (bug connu sur Linux)
+    build:
+      context: frontend
+      dockerfile: Dockerfile        # Dockerfile dev (vite dev server)
+    volumes:
+      - ./frontend:/app             # Monte les sources locales pour le hot reload
+      - /app/node_modules           # Préserve node_modules installé dans l'image
+    environment:
+      VITE_API_BASE_URL: ${FRONTEND_VITE_API_BASE_URL}

@@ -1,3 +1,7 @@
+/**
+ * Extrait un message lisible depuis une erreur inconnue.
+ * Tente d'abord `err.message`, puis le fallback fourni.
+ */
 export function getErrorMessage(err: unknown, fallback: string) {
   if (err instanceof Error) return err.message;
 

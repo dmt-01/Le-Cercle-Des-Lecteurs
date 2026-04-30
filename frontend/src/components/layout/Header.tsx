@@ -5,7 +5,7 @@ function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleSearch = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const search = (
       event.currentTarget.elements.namedItem("search") as HTMLInputElement

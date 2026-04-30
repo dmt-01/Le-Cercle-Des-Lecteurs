@@ -3,6 +3,7 @@ type Props = {
   onRetry?: () => void;
 };
 
+/** Message d'erreur centré avec bouton "Réessayer" optionnel. */
 function ErrorMessage({
   message = "Une erreur est survenue.",
   onRetry,

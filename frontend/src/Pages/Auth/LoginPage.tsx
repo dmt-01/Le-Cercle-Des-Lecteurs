@@ -32,7 +32,7 @@ function LoginPage() {
    * Soumet le formulaire de connexion.
    * En cas de succès, redirige vers la page demandée initialement.
    */
-  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setLoading(true);
@@ -54,8 +54,7 @@ function LoginPage() {
       >
       <div className="absolute inset-0 z-0"
         style={{
-          backgroundImage: "url(/img/template_connexion.png)",
-          backgroundColor: "linear-gradient(rgba(58, 6, 18, 1), rgba(73, 17, 17, 0), rgba(73, 17, 17, 0)),",
+          backgroundImage: "linear-gradient(rgba(58, 6, 18, 1), rgba(73, 17, 17, 0), rgba(73, 17, 17, 0)), url(/img/template_connexion.png)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           opacity: 0.2,

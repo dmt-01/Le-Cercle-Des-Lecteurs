@@ -21,7 +21,7 @@ function Header() {
     setMenuOpen(false);
   }, [location.pathname]);
 
-  function handleSearch(event: React.FormEvent<HTMLFormElement>) {
+  function handleSearch(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const search = (
       event.currentTarget.elements.namedItem("search") as HTMLInputElement
@@ -39,7 +39,7 @@ function Header() {
       </a>
 
       <header className="bg-primary w-full relative z-40">
-        <div className="flex items-center px-4 lg:px-8 py-3 gap-4">
+        <div className="flex items-center px-4 lg:px-30 py-3 gap-4">
 
           {/* ── Burger (mobile uniquement) ── */}
           <button
@@ -71,7 +71,7 @@ function Header() {
           {/* ── Navigation principale (desktop uniquement) ── */}
           <nav
             aria-label="Navigation principale"
-            className="hidden lg:flex items-center gap-6 flex-1"
+            className="hidden lg:flex items-center justify-center gap-6 flex-1"
           >
             {NAV_LINKS.map(({ to, label, end }) => (
               <NavLink

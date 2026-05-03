@@ -43,3 +43,17 @@ migrate-dev:
 # Déploiement complet Prisma (migration + génération + seed)
 deploy-prisma: migrate-dev migrate seed
 	@echo "✅ Prisma déployé et BDD peuplée !"
+
+## ─── Tests ────────────────────────────────────────────────────────────────────
+
+# Tests backend (le container dev doit être démarré)
+test-back:
+	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm test --run
+
+# Tests frontend (exécutés en local, sans Docker)
+test-front:
+	cd frontend && pnpm test --run
+
+# Tous les tests : backend puis frontend
+test: test-back test-front
+	@echo "✅ Tous les tests ont été exécutés !"

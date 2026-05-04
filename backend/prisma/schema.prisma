@@ -1,0 +1,253 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum GroupeRole {
+  member
+  moderator
+  admin
+}
+
+model User {
+  id               String               @id @default(uuid()) @map("id_user")
+  username         String               @unique @db.VarChar(50)
+  email            String               @unique @db.VarChar(255)
+  passwordHash     String               @map("password_hash") @db.VarChar(255)
+  bio              String?
+  profileImage     String?              @map("profile_image") @db.VarChar(255)
+  created_at       DateTime             @default(now())
+  reviews          Review[]
+  blogs            Blog[]
+  sentMessages     Message[]            @relation("MessageSender")
+  receivedMessages Message[]            @relation("MessageReceiver")
+  groupMessages    GroupMessage[]
+  recommendations  BookRecommendation[]
+  badges           UserBadge[]
+  memberships      GroupMember[]
+  reading          Read[]
+  likes            Like[]
+  wishlists        Wishlist[]
+  following        Follow[]
+  followers        Follow[]             @relation("FollowRelation")
+  tokens           Token[]
+}
+
+model Book {
+  id               String               @id @default(uuid()) @map("id_book")
+  title            String               @db.VarChar(255)
+  coverImage       String?              @map("cover_image") @db.VarChar(255)
+  description      String?
+  publication_date DateTime?
+  created_at       DateTime             @default(now())
+  reviews          Review[]
+  recommendations  BookRecommendation[]
+  categorisations  BookGenre[]
+  thematisations   BookTag[]
+  authors          BookAuthor[]
+  readers          Read[]
+  likers           Like[]
+  wishlists        Wishlist[]
+}
+
+model Author {
+  id        String       @id @default(uuid()) @map("id_author")
+  name      String       @db.VarChar(255)
+  biography String?
+  books     BookAuthor[]
+}
+
+model Genre {
+  id    String      @id @default(uuid()) @map("id_genre")
+  name  String      @unique @db.VarChar(50)
+  books BookGenre[]
+}
+
+model Badge {
+  id          String      @id @default(uuid()) @map("id_badge")
+  name        String      @unique @db.VarChar(100)
+  description String?
+  userBadges  UserBadge[]
+}
+
+model Group {
+  id          String         @id @default(uuid()) @map("id_group")
+  name        String         @unique @db.VarChar(100)
+  description String?
+  created_at  DateTime       @default(now())
+  accessClub  Boolean        @default(false) @map("access_club")
+  messages    GroupMessage[]
+  events      Event[]
+  members     GroupMember[]
+}
+
+model Tag {
+  id    String    @id @default(uuid()) @map("id_tag")
+  name  String    @unique @db.VarChar(100)
+  books BookTag[]
+}
+
+model Review {
+  content   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  note      Int?
+  bookId    String   @map("book_id")
+  userId    String   @map("user_id")
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([bookId, userId])
+}
+
+model Blog {
+  id        String   @id @default(uuid()) @map("id_blog")
+  title     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  content   String?
+  category  String?
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model GroupMessage {
+  id        String   @id @default(uuid()) @map("id_group_message")
+  createdAt DateTime @default(now()) @map("created_at")
+  content   String
+  groupId   String   @map("group_id")
+  userId    String   @map("user_id")
+  group     Group    @relation(fields: [groupId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model BookRecommendation {
+  score  Int
+  bookId String @map("book_id")
+  userId String @map("user_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([bookId, userId])
+}
+
+model Message {
+  id         String   @id @default(uuid()) @map("id_message")
+  content    String
+  sentAt     DateTime @default(now()) @map("sent_at")
+  read       Boolean  @default(false)
+  senderId   String   @map("sender_id")
+  receiverId String   @map("receiver_id")
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id])
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+}
+
+model Event {
+  id          String   @id @default(uuid()) @map("id_event")
+  title       String
+  description String
+  eventDate   DateTime @map("event_date")
+  link        String?
+  groupId     String   @map("group_id")
+  group       Group    @relation(fields: [groupId], references: [id])
+}
+
+model UserBadge {
+  earnedAt DateTime @default(now()) @map("earned_at")
+  badgeId  String   @map("badge_id")
+  userId   String   @map("user_id")
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@id([badgeId, userId])
+}
+
+model BookGenre {
+  bookId  String @map("book_id")
+  genreId String @map("genre_id")
+  book    Book   @relation(fields: [bookId], references: [id])
+  genre   Genre  @relation(fields: [genreId], references: [id])
+
+  @@id([bookId, genreId])
+}
+
+model BookTag {
+  bookId String @map("book_id")
+  tagId  String @map("tag_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([bookId, tagId])
+}
+
+model BookAuthor {
+  bookId   String @map("book_id")
+  authorId String @map("author_id")
+  book     Book   @relation(fields: [bookId], references: [id])
+  author   Author @relation(fields: [authorId], references: [id])
+
+  @@id([bookId, authorId])
+}
+
+model GroupMember {
+  role    GroupeRole @default(member)
+  groupId String     @map("group_id")
+  userId  String     @map("user_id")
+  group   Group      @relation(fields: [groupId], references: [id])
+  user    User       @relation(fields: [userId], references: [id])
+
+  @@id([groupId, userId])
+}
+
+model Read {
+  bookId String @map("book_id")
+  userId String @map("user_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([bookId, userId])
+}
+
+model Like {
+  bookId String @map("book_id")
+  userId String @map("user_id")
+  book   Book   @relation(fields: [bookId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@id([bookId, userId])
+}
+
+model Follow {
+  userId         String
+  userFollowedId String
+  user           User   @relation(fields: [userId], references: [id])
+  userFollowed   User   @relation("FollowRelation", fields: [userFollowedId], references: [id])
+
+  @@id([userId, userFollowedId])
+}
+
+model Wishlist {
+  createdAt DateTime @default(now()) @map("created_at")
+  status    String
+  bookId    String   @map("book_id")
+  userId    String   @map("user_id")
+  book      Book     @relation(fields: [bookId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([bookId, userId])
+}
+
+model Token {
+  id        Int      @id @default(autoincrement()) @map("id_token")
+  userId    String   @map("user_id")
+  tokenHash String   @map("token_hash") @db.VarChar(64)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id])
+}

@@ -31,15 +31,17 @@ export function useBlog() {
    * Charge ou recharge tous les articles depuis l'API.
    * Exposé pour permettre un bouton "Réessayer" en cas d'erreur.
    */
-  function load() {
+  async function load() {
     setLoading(true);
     setError(null);
-    apiFetch("/blog")
-      .then((res) => setPosts(res.data ?? []))
-      .catch((err) =>
-        setError(getErrorMessage(err, "Impossible de charger les articles.")),
-      )
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiFetch("/blog");
+      setPosts(res.data ?? []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de charger les articles."));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 2. EFFECT : chargement initial au montage

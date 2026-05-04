@@ -33,14 +33,22 @@ export function useEventDetail() {
   // Les livres ne sont pas liés à l'événement : c'est une sélection générique
   useEffect(() => {
     if (!id) return;
-    Promise.all([apiFetch(`/events/${id}`), apiFetch("/books?limit=4")])
-      .then(([eventRes, booksRes]) => {
+    const run = async () => {
+      try {
+        const [eventRes, booksRes] = await Promise.all([
+          apiFetch(`/events/${id}`),
+          apiFetch("/books?limit=4"),
+        ]);
         setEvent(eventRes.data ?? null);
         // On limite à 4 livres pour la section "Lectures recommandées"
         setBooks((booksRes.data ?? []).slice(0, 4));
-      })
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données de l'événement.")))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les données de l'événement."));
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, [id]);
 
   // 4. CALCUL : formatage de la date et de l'heure pour l'affichage

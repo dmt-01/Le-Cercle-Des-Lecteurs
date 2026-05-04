@@ -63,10 +63,17 @@ export function useGroupDetail() {
   // 4. EFFECT : chargement du groupe quand l'id change
   useEffect(() => {
     if (!id) return;
-    apiFetch(`/groups/${id}`)
-      .then((res) => setGroup(res.data ?? null))
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données du groupe")))
-      .finally(() => setLoading(false));
+    const run = async () => {
+      try {
+        const res = await apiFetch(`/groups/${id}`);
+        setGroup(res.data ?? null);
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les données du groupe"));
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, [id]);
 
   // 5. CALCUL : données dérivées pour l'affichage des membres

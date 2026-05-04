@@ -44,27 +44,39 @@ export function useBookDetail() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    Promise.all([apiFetch(`/books/${id}`), apiFetch(`/books/${id}/reviews`)])
-      .then(([bookRes, reviewsRes]) => {
+    const run = async () => {
+      try {
+        const [bookRes, reviewsRes] = await Promise.all([
+          apiFetch(`/books/${id}`),
+          apiFetch(`/books/${id}/reviews`),
+        ]);
         setBook(bookRes.data ?? null);
         setReviews(reviewsRes.data ?? []);
-      })
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les données du livre.")))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les données du livre."));
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, [id]);
 
   // 5. EFFECT : vérification de la présence du livre dans la wishlist
   // Ne s'exécute que si l'utilisateur est connecté
   useEffect(() => {
     if (!user || !id) return;
-    apiFetch("/wishlist")
-      .then((res) => {
+    const run = async () => {
+      try {
+        const res = await apiFetch("/wishlist");
         const inList = (res.data ?? []).some(
           (wishlistBook: Book) => wishlistBook.id === id,
         );
         setInWishlist(inList);
-      })
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger la wishlist.")));
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger la wishlist."));
+      }
+    };
+    run();
   }, [user, id]);
 
   /**

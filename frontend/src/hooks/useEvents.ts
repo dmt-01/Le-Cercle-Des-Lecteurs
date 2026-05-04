@@ -48,15 +48,17 @@ export function useEvents() {
    * Charge ou recharge tous les événements depuis l'API.
    * Exposé pour le bouton "Réessayer" en cas d'erreur réseau.
    */
-  function load() {
+  async function load() {
     setLoading(true);
     setError(null);
-    apiFetch("/events")
-      .then((res) => setEvents(res.data ?? []))
-      .catch((err) =>
-        setError(getErrorMessage(err, "Impossible de charger les événements")),
-      )
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiFetch("/events");
+      setEvents(res.data ?? []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de charger les événements"));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 2. EFFECT : chargement initial au montage

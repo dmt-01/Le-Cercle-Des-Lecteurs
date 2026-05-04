@@ -111,31 +111,31 @@ export function useMessages() {
    * Si l'URL contient ?to=userId, ouvre directement cette conversation
    * (ou crée un "partenaire en attente" si elle n'existe pas encore).
    */
-  function load() {
+  async function load() {
     setLoading(true);
     setError(null);
     const toId = searchParams.get("to");
     const toUsername = searchParams.get("username");
-    apiFetch("/messages")
-      .then((res) => {
-        const convs: Conversation[] = res.data ?? [];
-        setConversations(convs);
-        if (toId) {
-          const existing = convs.find((c) => c.partner.id === toId);
-          if (existing) {
-            setSelected(existing);
-          } else if (toUsername) {
-            // Première conversation avec cette personne — pas encore dans la liste
-            setPendingPartner({ id: toId, username: toUsername });
-          }
-        } else if (convs.length > 0) {
-          setSelected(convs[0]);
+    try {
+      const res = await apiFetch("/messages");
+      const convs: Conversation[] = res.data ?? [];
+      setConversations(convs);
+      if (toId) {
+        const existing = convs.find((c) => c.partner.id === toId);
+        if (existing) {
+          setSelected(existing);
+        } else if (toUsername) {
+          // Première conversation avec cette personne — pas encore dans la liste
+          setPendingPartner({ id: toId, username: toUsername });
         }
-      })
-      .catch((err) =>
-        setError(getErrorMessage(err, "Impossible de charger les conversations") || "Erreur inconnue"),
-      )
-      .finally(() => setLoading(false));
+      } else if (convs.length > 0) {
+        setSelected(convs[0]);
+      }
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de charger les conversations") || "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 6. EFFECT : chargement initial des conversations au montage
@@ -148,9 +148,15 @@ export function useMessages() {
   useEffect(() => {
     if (!selected) return;
     setMessages([]);
-    apiFetch(`/messages/${selected.partner.id}`)
-      .then((res) => setMessages(res.data ?? []))
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les messages") || "Erreur inconnue"));
+    const run = async () => {
+      try {
+        const res = await apiFetch(`/messages/${selected.partner.id}`);
+        setMessages(res.data ?? []);
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les messages") || "Erreur inconnue");
+      }
+    };
+    run();
   }, [selected?.partner.id]);
 
   // 8. EFFECT : scroll automatique vers le bas à chaque nouveau message

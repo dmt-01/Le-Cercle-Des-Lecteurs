@@ -44,15 +44,17 @@ export function useGroups() {
    * Charge ou recharge la liste des groupes depuis l'API.
    * Exposé pour le bouton "Réessayer" en cas d'erreur.
    */
-  function load() {
+  async function load() {
     setLoading(true);
     setError(null);
-    apiFetch("/groups")
-      .then((res) => setGroups(res.data ?? []))
-      .catch((err) =>
-        setError(getErrorMessage(err, "Impossible de charger les groupes.")),
-      )
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiFetch("/groups");
+      setGroups(res.data ?? []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de charger les groupes."));
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 4. EFFECT : chargement initial au montage

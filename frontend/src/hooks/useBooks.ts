@@ -56,8 +56,9 @@ export function useBooks() {
   // 5. EFFECT : chargement unique de tous les genres disponibles pour le select
   // On charge 100 livres pour couvrir tous les genres du catalogue
   useEffect(() => {
-    apiFetch("/books?limit=100")
-      .then((res) => {
+    const run = async () => {
+      try {
+        const res = await apiFetch("/books?limit=100");
         const genres = [
           ...new Set(
             (res.data ?? []).flatMap((book: Book) =>
@@ -66,8 +67,11 @@ export function useBooks() {
           ),
         ] as string[];
         setAllGenres(genres.sort());
-      })
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les genres.")));
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les genres."));
+      }
+    };
+    run();
   }, []);
 
   // 6. EFFECT : synchronisation avec les paramètres d'URL
@@ -83,43 +87,47 @@ export function useBooks() {
   useEffect(() => {
     setLoading(true);
     const run = async () => {
-      let results: Book[] = [];
-      let pages = 1;
+      try {
+        let results: Book[] = [];
+        let pages = 1;
 
-      if (appliedSearch.trim()) {
-        // 7.1 RECHERCHE FULL-TEXT : l'endpoint /search ne pagine pas côté serveur
-        const res = await apiFetch(
-          `/books/search?q=${encodeURIComponent(appliedSearch.trim())}`,
-        );
-        results = res.data ?? [];
-        // On applique le filtre genre côté client car le endpoint search ne le supporte pas
-        if (appliedGenre)
-          results = results.filter((book) =>
-            book.genres.some((genre) => genre.name === appliedGenre),
+        if (appliedSearch.trim()) {
+          // 7.1 RECHERCHE FULL-TEXT : l'endpoint /search ne pagine pas côté serveur
+          const res = await apiFetch(
+            `/books/search?q=${encodeURIComponent(appliedSearch.trim())}`,
           );
-      } else {
-        // 7.2 LISTE PAGINÉE : utilise la pagination serveur avec genre en paramètre
-        const params = new URLSearchParams({ page: String(page), limit: "12" });
-        if (appliedGenre) params.set("genre", appliedGenre);
-        const res = await apiFetch(`/books?${params}`);
-        results = res.data ?? [];
-        pages = res.pagination?.totalPages ?? 1;
-      }
+          results = res.data ?? [];
+          // On applique le filtre genre côté client car le endpoint search ne le supporte pas
+          if (appliedGenre)
+            results = results.filter((book) =>
+              book.genres.some((genre) => genre.name === appliedGenre),
+            );
+        } else {
+          // 7.2 LISTE PAGINÉE : utilise la pagination serveur avec genre en paramètre
+          const params = new URLSearchParams({ page: String(page), limit: "12" });
+          if (appliedGenre) params.set("genre", appliedGenre);
+          const res = await apiFetch(`/books?${params}`);
+          results = res.data ?? [];
+          pages = res.pagination?.totalPages ?? 1;
+        }
 
-      // 7.3 FILTRE NOTE : appliqué côté client sur les résultats déjà chargés
-      if (appliedNote > 0) {
-        results = results.filter(
-          (book) => (book.average_rating ?? 0) >= appliedNote,
-        );
-      }
+        // 7.3 FILTRE NOTE : appliqué côté client sur les résultats déjà chargés
+        if (appliedNote > 0) {
+          results = results.filter(
+            (book) => (book.average_rating ?? 0) >= appliedNote,
+          );
+        }
 
-      setBooks(results);
-      setTotalPages(pages);
+        setBooks(results);
+        setTotalPages(pages);
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les livres."));
+      } finally {
+        setLoading(false);
+      }
     };
 
-    run()
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les livres.")))
-      .finally(() => setLoading(false));
+    run();
   }, [appliedSearch, appliedGenre, appliedNote, page, refreshKey]);
 
   /**

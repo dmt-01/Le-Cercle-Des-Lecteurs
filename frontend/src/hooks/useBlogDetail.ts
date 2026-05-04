@@ -31,10 +31,17 @@ export function useBlogDetail() {
   // 3. EFFECT : chargement de l'article quand l'id change
   useEffect(() => {
     if (!id) return;
-    apiFetch(`/blog/${id}`)
-      .then((res) => setPost(res.data ?? null))
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger l'article.")))
-      .finally(() => setLoading(false));
+    const run = async () => {
+      try {
+        const res = await apiFetch(`/blog/${id}`);
+        setPost(res.data ?? null);
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger l'article."));
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, [id]);
 
   return { post, loading, comment, setComment, error };

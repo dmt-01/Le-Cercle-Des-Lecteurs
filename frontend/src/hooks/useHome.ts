@@ -27,15 +27,24 @@ export function useHome() {
   // 2. EFFECT : chargement initial au montage du composant
   // Les deux appels sont indépendants, ils partent en parallèle
   useEffect(() => {
-    // 2.1 BOOKS : 8 livres suffisent pour remplir toutes les sections de la home
-    apiFetch("/books?limit=8")
-      .then((res) => setBooks(res.data ?? []))
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les livres")));
+    const run = async () => {
+      // 2.1 BOOKS : 8 livres suffisent pour remplir toutes les sections de la home
+      try {
+        const res = await apiFetch("/books?limit=8");
+        setBooks(res.data ?? []);
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les livres"));
+      }
 
-    // 2.2 EVENTS : on limite à 3 événements pour la section "À venir"
-    apiFetch("/events")
-      .then((res) => setEvents((res.data ?? []).slice(0, 3)))
-      .catch((err) => setError(getErrorMessage(err, "Impossible de charger les événements")));
+      // 2.2 EVENTS : on limite à 3 événements pour la section "À venir"
+      try {
+        const res = await apiFetch("/events");
+        setEvents((res.data ?? []).slice(0, 3));
+      } catch (err) {
+        setError(getErrorMessage(err, "Impossible de charger les événements"));
+      }
+    };
+    run();
   }, []);
 
   // 3. CALCUL : découpage de la liste de livres en sections d'affichage

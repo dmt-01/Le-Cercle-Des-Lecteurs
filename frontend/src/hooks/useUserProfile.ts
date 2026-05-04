@@ -53,37 +53,36 @@ export function useUserProfile() {
    * Charge le profil et, si c'est le profil propre, la wishlist en parallèle.
    * La wishlist n'est chargée que pour soi-même (données privées).
    */
-  function load() {
+  async function load() {
     if (!id) return;
     setLoading(true);
     setError(null);
+    try {
+      // 4.1 PROFIL PUBLIC : toujours chargé
+      const calls: Promise<any>[] = [apiFetch(`/users/${id}`)];
+      // 4.2 WISHLIST : uniquement pour son propre profil
+      if (isOwnProfile) calls.push(apiFetch("/wishlist"));
 
-    // 4.1 PROFIL PUBLIC : toujours chargé
-    const calls: Promise<any>[] = [apiFetch(`/users/${id}`)];
-    // 4.2 WISHLIST : uniquement pour son propre profil
-    if (isOwnProfile) calls.push(apiFetch("/wishlist"));
-
-    Promise.all(calls)
-      .then(([profileRes, wishlistRes]) => {
-        const fetchedProfile: PublicProfile | null = profileRes.data ?? null;
-        setProfile(fetchedProfile);
-        // 4.4 Initialise l'état "suivre" depuis la réponse backend (is_following)
-        setFollowing(fetchedProfile?.is_following ?? false);
-        if (wishlistRes) {
-          const items: WishlistItem[] = wishlistRes.data ?? [];
-          // 4.3 Séparation en deux sections distinctes selon le statut
-          setLibrary(
-            items.filter(
-              (item) => item.status === "En cours" || item.status === "Lu",
-            ),
-          );
-          setWishlist(items.filter((item) => item.status === "À lire"));
-        }
-      })
-      .catch((err) =>
-        setError(getErrorMessage(err, "Impossible de charger le profil") || "Erreur inconnue"),
-      )
-      .finally(() => setLoading(false));
+      const [profileRes, wishlistRes] = await Promise.all(calls);
+      const fetchedProfile: PublicProfile | null = profileRes.data ?? null;
+      setProfile(fetchedProfile);
+      // 4.4 Initialise l'état "suivre" depuis la réponse backend (is_following)
+      setFollowing(fetchedProfile?.is_following ?? false);
+      if (wishlistRes) {
+        const items: WishlistItem[] = wishlistRes.data ?? [];
+        // 4.3 Séparation en deux sections distinctes selon le statut
+        setLibrary(
+          items.filter(
+            (item) => item.status === "En cours" || item.status === "Lu",
+          ),
+        );
+        setWishlist(items.filter((item) => item.status === "À lire"));
+      }
+    } catch (err) {
+      setError(getErrorMessage(err, "Impossible de charger le profil") || "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // 5. EFFECT : rechargement quand l'id change (navigation entre profils)

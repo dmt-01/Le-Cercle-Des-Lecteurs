@@ -169,7 +169,7 @@ make migrate-dev    # Crée une nouvelle migration (mode dev)
 **Backend** (Vitest) :
 
 ```bash
-docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm test
+docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm test
 ```
 
 **Frontend** (Vitest + Testing Library + MSW) :

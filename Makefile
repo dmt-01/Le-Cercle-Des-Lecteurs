@@ -30,15 +30,15 @@ kill-prod:
 
 # Peupler la base avec les données de test
 seed:
-	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm seed
+	docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm seed
 
 # Appliquer les migrations en base
 migrate:
-	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma migrate deploy
+	docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm prisma migrate deploy
 
 # Créer une nouvelle migration (dans le container dev)
 migrate-dev:
-	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm prisma migrate dev --name "migration" --schema ./prisma/schema.prisma
+	docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm prisma migrate dev --name "migration" --schema ./prisma/schema.prisma
 
 # Déploiement complet Prisma (migration + génération + seed)
 deploy-prisma: migrate-dev migrate seed
@@ -48,7 +48,7 @@ deploy-prisma: migrate-dev migrate seed
 
 # Tests backend (le container dev doit être démarré)
 test-back:
-	docker exec -it projetlecercledeslecteursavecclement-backend-1 pnpm test --run
+	docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm test --run
 
 # Tests frontend (exécutés en local, sans Docker)
 test-front:

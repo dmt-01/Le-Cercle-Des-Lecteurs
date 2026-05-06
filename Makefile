@@ -44,6 +44,10 @@ migrate-dev:
 deploy-prisma: migrate-dev migrate seed
 	@echo "✅ Prisma déployé et BDD peuplée !"
 
+# Déploiement production (sans toucher à la base de données)
+deploy:
+	DOCKER_BUILDKIT=1 docker compose --env-file .env.prod up -d --build --no-deps backend frontend
+
 ## ─── Tests ────────────────────────────────────────────────────────────────────
 
 # Tests backend (le container dev doit être démarré)

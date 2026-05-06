@@ -76,5 +76,4 @@ jobs:
             set -e
             cd /var/www/Le-Cercle-Des-Lecteurs
             git pull origin main
-            make kill-prod
-            make startprod
+            make deploy

@@ -6,15 +6,22 @@ import {
 import UserController from "../controllers/userController";
 import { requireAuth, optionalAuth } from "../middlewares/requireAuth";
 import { validate } from "../middlewares/validate";
+import rateLimit from "express-rate-limit";
 import { Router } from "express";
 
 const userRouter = Router();
 
-userRouter.post("/signup", validate(signupSchema), (req, res) => {
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: { message: "Trop de tentatives, veuillez réessayer dans une minute." },
+});
+
+userRouter.post("/signup", authLimiter, validate(signupSchema), (req, res) => {
   new UserController(req, res).signup();
 });
 
-userRouter.post("/signin", validate(signinSchema), (req, res) => {
+userRouter.post("/signin", authLimiter, validate(signinSchema), (req, res) => {
   new UserController(req, res).signin();
 });
 

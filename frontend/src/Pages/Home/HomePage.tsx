@@ -33,7 +33,7 @@ function HomePage() {
           Le salon littéraire privé
         </p>
         <h1 className="text-5xl md:text-6xl font-serif italic text-white mb-6 leading-tight">
-          TOTO test
+          Lisez, partagez, discutez
         </h1>
         <p className="text-white/70 text-base max-w-md leading-relaxed mb-10">
           Rejoignez une communauté d'érudits et de passionnés. Découvrez des

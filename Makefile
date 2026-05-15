@@ -1,16 +1,23 @@
+## ─── Installation locale ─────────────────────────────────────────────────────
+
+# Installe les dépendances et génère le client Prisma en local (après un clone)
+install:
+	cd backend && pnpm install && pnpm prisma generate && pnpm build
+	cd frontend && pnpm install
+
 ## ─── Démarrage ───────────────────────────────────────────────────────────────
 
 # Mode développement (hot reload, volumes, adminer)
 startdev: kill-dev
-	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev up --build
+	docker compose -f compose.yml -f compose.dev.yml --env-file .env.dev up --build -d
 
 # Mode préproduction (build réel, adminer disponible)
 startpreprod:
-	docker compose -f compose.yml -f compose.preprod.yml --env-file .env.preprod up --build
+	docker compose -f compose.yml -f compose.preprod.yml --env-file .env.preprod up --build -d
 
 # Mode production (build réel, sans adminer)
 startprod:
-	docker compose --env-file .env.prod up --build
+	docker compose --env-file .env.prod up --build -d
 
 ## ─── Arrêt ────────────────────────────────────────────────────────────────────
 
@@ -61,3 +68,9 @@ test-front:
 # Tous les tests : backend puis frontend
 test: test-back test-front
 	@echo "✅ Tous les tests ont été exécutés !"
+
+# Rapport de couverture pour les tests backend et frontend
+test-coverage:
+	cd backend && pnpm test:coverage
+	cd frontend && pnpm test:coverage
+	@echo "✅ Rapport de couverture généré !"

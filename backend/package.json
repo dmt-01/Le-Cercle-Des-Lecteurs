@@ -46,5 +46,14 @@
     "typescript": "^6.0.2",
     "vitest": "^4.1.5",
     "@vitest/coverage-v8": "^4.1.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "argon2",
+      "esbuild",
+      "prisma",
+      "unrs-resolver"
+    ]
   }
 }

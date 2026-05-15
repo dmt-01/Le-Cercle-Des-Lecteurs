@@ -1,6 +1,5 @@
 import GroupService from "../services/GroupService";
 import { Controller } from "../libs/Controller";
-import { AppError } from "../libs/AppError";
 
 const groupService = new GroupService();
 
@@ -11,9 +10,8 @@ export default class GroupController extends Controller {
     try {
       const data = await groupService.list();
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -23,9 +21,8 @@ export default class GroupController extends Controller {
       const id = this.request.params.id as string;
       const data = await groupService.getById(id);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -45,9 +42,8 @@ export default class GroupController extends Controller {
         userId,
       });
       return this.response.status(201).json({ message: "Club créé", data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -60,9 +56,8 @@ export default class GroupController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Vous avez rejoint le club" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -75,9 +70,8 @@ export default class GroupController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Vous avez quitté le club" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -91,9 +85,8 @@ export default class GroupController extends Controller {
       return this.response
         .status(201)
         .json({ message: "Message envoyé", data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 }

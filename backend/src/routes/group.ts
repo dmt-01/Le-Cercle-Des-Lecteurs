@@ -9,33 +9,58 @@ import { Router } from "express";
 
 const groupRouter = Router();
 
-groupRouter.get("/", (req, res) => {
-  new GroupController(req, res).list();
+/**
+ * GET /groups
+ * GroupController.list() — retourne tous les cercles de lecture publics
+ */
+groupRouter.get("/", (req, res, next) => {
+  new GroupController(req, res, next).list();
 });
 
-groupRouter.get("/:id", (req, res) => {
-  new GroupController(req, res).getById();
+/**
+ * GET /groups/:id
+ * GroupController.getById() — retourne le détail d'un groupe avec membres et messages
+ */
+groupRouter.get("/:id", (req, res, next) => {
+  new GroupController(req, res, next).getById();
 });
 
-groupRouter.post("/", requireAuth, validate(createGroupSchema), (req, res) => {
-  new GroupController(req, res).create();
+/**
+ * POST /groups
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. validate(createGroupSchema) — valide name, description et accessClub
+ * 3. GroupController.create() — crée le groupe, le créateur devient administrateur
+ */
+groupRouter.post("/", requireAuth, validate(createGroupSchema), (req, res, next) => {
+  new GroupController(req, res, next).create();
 });
 
-groupRouter.post("/:id/join", requireAuth, (req, res) => {
-  new GroupController(req, res).join();
+/**
+ * POST /groups/:id/join
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. GroupController.join() — ajoute l'utilisateur connecté comme membre du groupe
+ */
+groupRouter.post("/:id/join", requireAuth, (req, res, next) => {
+  new GroupController(req, res, next).join();
 });
 
-groupRouter.delete("/:id/leave", requireAuth, (req, res) => {
-  new GroupController(req, res).leave();
+/**
+ * DELETE /groups/:id/leave
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. GroupController.leave() — retire l'utilisateur connecté des membres du groupe
+ */
+groupRouter.delete("/:id/leave", requireAuth, (req, res, next) => {
+  new GroupController(req, res, next).leave();
 });
 
-groupRouter.post(
-  "/:id/messages",
-  requireAuth,
-  validate(sendGroupMessageSchema),
-  (req, res) => {
-    new GroupController(req, res).sendMessage();
-  },
-);
+/**
+ * POST /groups/:id/messages
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. validate(sendGroupMessageSchema) — valide le champ content
+ * 3. GroupController.sendMessage() — envoie un message dans le fil du groupe
+ */
+groupRouter.post("/:id/messages", requireAuth, validate(sendGroupMessageSchema), (req, res, next) => {
+  new GroupController(req, res, next).sendMessage();
+});
 
 export default groupRouter;

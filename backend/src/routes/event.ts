@@ -6,16 +6,30 @@ import { Router } from "express";
 
 const eventRouter = Router();
 
-eventRouter.get("/", (req, res) => {
-  new EventController(req, res).list();
+/**
+ * GET /events
+ * EventController.list() — retourne tous les événements à venir
+ */
+eventRouter.get("/", (req, res, next) => {
+  new EventController(req, res, next).list();
 });
 
-eventRouter.get("/:id", (req, res) => {
-  new EventController(req, res).getById();
+/**
+ * GET /events/:id
+ * EventController.getById() — retourne le détail d'un événement avec le livre associé
+ */
+eventRouter.get("/:id", (req, res, next) => {
+  new EventController(req, res, next).getById();
 });
 
-eventRouter.post("/", requireAuth, validate(createEventSchema), (req, res) => {
-  new EventController(req, res).create();
+/**
+ * POST /events
+ * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 2. validate(createEventSchema) — valide title, description, eventDate, groupId
+ * 3. EventController.create() — crée un événement rattaché à un groupe
+ */
+eventRouter.post("/", requireAuth, validate(createEventSchema), (req, res, next) => {
+  new EventController(req, res, next).create();
 });
 
 export default eventRouter;

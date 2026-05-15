@@ -1,6 +1,5 @@
 import MessageService from "../services/MessageService";
 import { Controller } from "../libs/Controller";
-import { AppError } from "../libs/AppError";
 
 const messageService = new MessageService();
 
@@ -12,9 +11,8 @@ export default class MessageController extends Controller {
       const userId = this.request.userId!;
       const data = await messageService.listConversations(userId);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -25,9 +23,8 @@ export default class MessageController extends Controller {
       const partnerId = this.request.params.userId as string;
       const data = await messageService.getConversation(userId, partnerId);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -41,9 +38,8 @@ export default class MessageController extends Controller {
       return this.response
         .status(201)
         .json({ message: "Message envoyé", data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 }

@@ -14,7 +14,9 @@ const app = express();
 const PORT = 3000;
 
 const env = process.env.NODE_ENV;
-console.log(`Environnement : ${env}`);
+if (env == "dev") {
+  console.log(`Environnement : ${env}`);
+}
 
 /**
  * Configuration CORS — définit quelles origines peuvent appeler l'API.
@@ -47,7 +49,9 @@ app.use(express.json());
 app.use("/api", router);
 
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
+  if (env == "dev") {
+    console.log(`Serveur démarré sur le port ${PORT}`);
+  }
 });
 
 export default app;

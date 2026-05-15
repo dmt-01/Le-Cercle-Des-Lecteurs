@@ -1,6 +1,6 @@
 # ─── Stage 1 : Build ──────────────────────────────────────────────────────────
 # Installe les dépendances et compile le projet React en fichiers statiques
-FROM node:23-alpine3.21 AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 

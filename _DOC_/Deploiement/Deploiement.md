@@ -32,7 +32,15 @@ make --version
 
 ## 1. Déploiement en développement
 
-### Étape 1 — Créer le fichier d'environnement
+### Étape 1 — Installer les dépendances en local
+
+```bash
+make install
+```
+
+Installe les dépendances backend et frontend, génère le client Prisma et compile le backend. À exécuter une seule fois après un clone.
+
+### Étape 2 — Créer le fichier d'environnement
 
 ```bash
 cp .env.example .env.dev
@@ -40,7 +48,7 @@ cp .env.example .env.dev
 
 Éditer `.env.dev` avec les valeurs locales. Les valeurs par défaut fonctionnent telles quelles pour un environnement local.
 
-### Étape 2 — Démarrer les containers
+### Étape 3 — Démarrer les containers
 
 ```bash
 make startdev
@@ -48,7 +56,7 @@ make startdev
 
 Démarre : base de données, backend (hot reload via `tsx watch`), frontend (Vite dev server), Adminer.
 
-### Étape 3 — Peupler la base de données (première fois uniquement)
+### Étape 4 — Peupler la base de données (première fois uniquement)
 
 ```bash
 make seed
@@ -394,6 +402,13 @@ docker exec -i le-cercle-des-lecteurs-db-1 \
 ## 8. Commandes utiles
 
 ```bash
+# Installation locale (après un clone)
+make install        # Installe les dépendances, génère Prisma, compile le backend
+
+# Tests
+make test           # Lance tous les tests (backend + frontend)
+make test-coverage  # Génère le rapport de couverture (backend + frontend)
+
 # Voir les containers actifs
 docker ps
 

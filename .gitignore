@@ -3,3 +3,4 @@
 .env.preprod
 .env.prod
 doc
+.vscode

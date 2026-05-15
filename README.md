@@ -116,6 +116,10 @@ Cela insère les données de démonstration (utilisateurs, livres, groupes, év�
 ## Commandes disponibles
 
 ```bash
+# Installation locale (après un clone)
+make install        # Installe les dépendances, génère le client Prisma, compile le backend et démarre le frontend
+
+# Démarrage (Docker)
 make startdev       # Démarre l'environnement de développement (hot reload)
 make kill-dev       # Arrête et supprime les containers + volumes dev
 
@@ -125,9 +129,14 @@ make kill-preprod   # Arrête la préproduction
 make startprod      # Démarre en mode production
 make kill-prod      # Arrête la production
 
+# Base de données
 make seed           # Insère les données de démonstration
 make migrate        # Applique les migrations Prisma
 make migrate-dev    # Crée une nouvelle migration (mode dev)
+
+# Tests
+make test           # Lance tous les tests (backend + frontend)
+make test-coverage  # Génère le rapport de couverture de code (backend + frontend)
 ```
 
 ---
@@ -166,18 +175,19 @@ make migrate-dev    # Crée une nouvelle migration (mode dev)
 
 ## Lancer les tests
 
-**Backend** (Vitest) :
+**Tous les tests d'un coup** (le container dev doit être démarré) :
 
 ```bash
-docker exec -it projetlecercledeslecteursaveclaurent-backend-1 pnpm test
+make test
 ```
 
-**Frontend** (Vitest + Testing Library + MSW) :
+**Rapport de couverture** (exécuté en local, sans Docker) :
 
 ```bash
-cd frontend
-pnpm test
+make test-coverage
 ```
+
+Les rapports HTML sont générés dans `backend/coverage/` et `frontend/coverage/`.
 
 ---
 

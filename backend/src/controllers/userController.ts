@@ -4,7 +4,6 @@ import { CookieService } from "../services/CookieService";
 import { TokenService } from "../services/TokenService";
 import UserService from "../services/userService";
 import { Controller } from "../libs/Controller";
-import { AppError } from "../libs/AppError";
 import Token from "../modeles/Token";
 import User from "../modeles/User";
 import argon2 from "argon2";
@@ -88,8 +87,8 @@ export default class UserController extends Controller {
         message: "Inscription réussie",
         data: userInstance.serialize(),
       });
-    } catch (error: any) {
-      this.response.status(400).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -155,8 +154,8 @@ export default class UserController extends Controller {
         message: "Connexion réussie",
         data: userInstance.serialize(),
       });
-    } catch (error: any) {
-      this.response.status(400).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -207,8 +206,8 @@ export default class UserController extends Controller {
         message: "Token rafraîchi",
         data: userInstance.serialize(),
       });
-    } catch (error: any) {
-      this.response.status(400).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -230,8 +229,8 @@ export default class UserController extends Controller {
       CookieService.clearRefreshCookie(this.response);
 
       return this.response.status(200).json({ message: "Déconnexion réussie" });
-    } catch (error: any) {
-      this.response.status(400).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -245,9 +244,8 @@ export default class UserController extends Controller {
       const userId = this.request.userId!;
       const data = await UserService.getMe(userId);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -259,9 +257,8 @@ export default class UserController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Profil mis à jour", data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -273,9 +270,8 @@ export default class UserController extends Controller {
       const viewerId = this.request.userId;
       const data = await UserService.getPublicProfile(id, viewerId);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -286,9 +282,8 @@ export default class UserController extends Controller {
       const userFollowedId = this.request.params.id as string;
       await UserService.follow(userId, userFollowedId);
       return this.response.status(200).json({ message: "Utilisateur suivi" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -301,9 +296,8 @@ export default class UserController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Utilisateur non suivi" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 }

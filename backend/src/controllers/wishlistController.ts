@@ -1,6 +1,5 @@
 import WishlistService from "../services/WishlistService";
 import { Controller } from "../libs/Controller";
-import { AppError } from "../libs/AppError";
 
 const wishlistService = new WishlistService();
 
@@ -12,9 +11,8 @@ export default class WishlistController extends Controller {
       const userId = this.request.userId!;
       const data = await wishlistService.list(userId);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -30,9 +28,8 @@ export default class WishlistController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Livre ajouté à la wishlist" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -45,9 +42,8 @@ export default class WishlistController extends Controller {
       return this.response
         .status(200)
         .json({ message: "Livre retiré de la wishlist" });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 }

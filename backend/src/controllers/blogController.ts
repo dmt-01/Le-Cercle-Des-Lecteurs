@@ -1,6 +1,5 @@
 import BlogService from "../services/BlogService";
 import { Controller } from "../libs/Controller";
-import { AppError } from "../libs/AppError";
 
 const blogService = new BlogService();
 
@@ -11,9 +10,8 @@ export default class BlogController extends Controller {
     try {
       const data = await blogService.list();
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -23,9 +21,8 @@ export default class BlogController extends Controller {
       const id = this.request.params.id as string;
       const data = await blogService.getById(id);
       return this.response.status(200).json({ data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 500;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 
@@ -47,9 +44,8 @@ export default class BlogController extends Controller {
       return this.response
         .status(201)
         .json({ message: "Article publié", data });
-    } catch (error: any) {
-      const status = error instanceof AppError ? error.statusCode : 400;
-      return this.response.status(status).json({ message: error.message });
+    } catch (error) {
+      this.next(error);
     }
   }
 }

@@ -1,9 +1,10 @@
-import express from "express";
-import cors from "cors";
+import { errorHandler } from "./src/middlewares/errorHandler";
 import cookieParser from "cookie-parser";
-import helmet from "helmet";
-import type { CorsOptions } from "cors";
 import router from "./src/routes/_index";
+import type { CorsOptions } from "cors";
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
 
 /**
  * Point d'entrée du serveur Express.
@@ -47,6 +48,9 @@ app.use(express.json());
 
 // Monte toutes les routes de l'application (définies dans src/routes/index.ts)
 app.use("/api", router);
+
+// Middleware de gestion des erreurs centralisé — doit être enregistré EN DERNIER
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   if (env == "dev") {

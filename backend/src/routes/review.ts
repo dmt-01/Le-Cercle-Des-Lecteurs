@@ -14,9 +14,8 @@ const reviewRouter = Router({ mergeParams: true });
  * GET /books/:bookId/reviews
  * ReviewController.list() — retourne toutes les reviews du livre avec le username de l'auteur
  */
-reviewRouter.get("/", (req, res) => {
-  const controller = new ReviewController(req, res);
-  controller.list();
+reviewRouter.get("/", (req, res, next) => {
+  new ReviewController(req, res, next).list();
 });
 
 /**
@@ -25,13 +24,8 @@ reviewRouter.get("/", (req, res) => {
  * 2. validate(upsertReviewSchema) — vérifie que content ou note est fourni
  * 3. ReviewController.upsert() — crée ou met à jour la review (une par user par livre)
  */
-reviewRouter.post(
-  "/",
-  requireAuth,
-  validate(upsertReviewSchema),
-  (req, res) => {
-    const controller = new ReviewController(req, res);
-    controller.upsert();
+reviewRouter.post("/", requireAuth, validate(upsertReviewSchema), (req, res, next) => {
+    new ReviewController(req, res, next).upsert();
   },
 );
 
@@ -40,9 +34,8 @@ reviewRouter.post(
  * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
  * 2. ReviewController.remove() — supprime la review de l'utilisateur connecté
  */
-reviewRouter.delete("/", requireAuth, (req, res) => {
-  const controller = new ReviewController(req, res);
-  controller.remove();
+reviewRouter.delete("/", requireAuth, (req, res, next) => {
+  new ReviewController(req, res, next).remove();
 });
 
 export default reviewRouter;

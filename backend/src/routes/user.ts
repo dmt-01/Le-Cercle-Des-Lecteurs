@@ -39,16 +39,16 @@ userRouter.post("/signin", authLimiter, validate(signinSchema), (req, res, next)
 
 /**
  * POST /users/refresh
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
- * 2. UserController.refresh() — génère un nouveau JWT et effectue la rotation du token
+ * 1. UserController.refresh() — vérifie le cookie refresh token, effectue la rotation,
+ *    et retourne un nouvel access token dans le body
  */
-userRouter.post("/refresh", requireAuth, (req, res, next) => {
+userRouter.post("/refresh", (req, res, next) => {
   new UserController(req, res, next).refresh();
 });
 
 /**
  * POST /users/logout
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 1. requireAuth — vérifie l'access token (Authorization: Bearer) et injecte userId dans req
  * 2. UserController.logout() — supprime le token en base et efface le cookie
  */
 userRouter.post("/logout", requireAuth, (req, res, next) => {
@@ -57,7 +57,7 @@ userRouter.post("/logout", requireAuth, (req, res, next) => {
 
 /**
  * GET /users/me
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 1. requireAuth — vérifie l'access token (Authorization: Bearer) et injecte userId dans req
  * 2. UserController.getMe() — retourne le profil de l'utilisateur connecté
  */
 userRouter.get("/me", requireAuth, (req, res, next) => {
@@ -66,7 +66,7 @@ userRouter.get("/me", requireAuth, (req, res, next) => {
 
 /**
  * PUT /users/me
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 1. requireAuth — vérifie l'access token (Authorization: Bearer) et injecte userId dans req
  * 2. validate(updateUserSchema) — valide les champs modifiables (username, bio, profileImage)
  * 3. UserController.updateMe() — met à jour le profil
  */
@@ -85,7 +85,7 @@ userRouter.get("/:id", optionalAuth, (req, res, next) => {
 
 /**
  * POST /users/:id/follow
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 1. requireAuth — vérifie l'access token (Authorization: Bearer) et injecte userId dans req
  * 2. UserController.follow() — abonne l'utilisateur connecté à l'utilisateur ciblé
  */
 userRouter.post("/:id/follow", requireAuth, (req, res, next) => {
@@ -94,7 +94,7 @@ userRouter.post("/:id/follow", requireAuth, (req, res, next) => {
 
 /**
  * DELETE /users/:id/follow
- * 1. requireAuth — vérifie le cookie JWT et injecte userId dans req
+ * 1. requireAuth — vérifie l'access token (Authorization: Bearer) et injecte userId dans req
  * 2. UserController.unfollow() — désabonne l'utilisateur connecté de l'utilisateur ciblé
  */
 userRouter.delete("/:id/follow", requireAuth, (req, res, next) => {

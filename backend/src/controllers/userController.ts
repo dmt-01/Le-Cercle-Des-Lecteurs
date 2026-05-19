@@ -6,6 +6,7 @@ import UserService from "../services/userService";
 import { Controller } from "../libs/Controller";
 import Token from "../modeles/Token";
 import User from "../modeles/User";
+import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 
 const userRepository = new UserRepository();
@@ -22,8 +23,8 @@ export default class UserController extends Controller {
    * • Reçoit un corps déjà validé par le middleware Zod
    * • Vérifie que l'email n'est pas déjà utilisé
    * • Hash le mot de passe et crée l'utilisateur en base
-   * • Signe un JWT de rafraîchissement et enregistre le token
-   * • Dépose le JWT en cookie httpOnly
+   * • Signe un refresh token (cookie httpOnly) et un access token (body)
+   * • Enregistre le refresh token en base
    *
    * Réponses : 409 | 400 | 201
    */
@@ -63,15 +64,16 @@ export default class UserController extends Controller {
           .json({ message: "Création de l'utilisateur impossible" });
       }
 
-      // 2.1 TOKEN : Signer le JWT et créer une instance du token
-      const jwt = TokenService.signRefreshToken({ sub: createdUser.id });
-      const token = Token.create(createdUser.id, jwt);
+      // 2.1 TOKEN : Signer les tokens et créer une instance du refresh token
+      const refreshJwt = TokenService.signRefreshToken({ sub: createdUser.id });
+      const accessToken = TokenService.signAccessToken({ sub: createdUser.id });
+      const token = Token.create(createdUser.id, refreshJwt);
 
-      // 2.2 TOKEN : Enregistrer le token en base
+      // 2.2 TOKEN : Enregistrer le refresh token en base
       await tokenRepository.create(token);
 
       // 3 RESPONSE : Attacher le cookie et renvoyer les données de l'utilisateur
-      CookieService.setRefreshCookie(this.response, jwt);
+      CookieService.setRefreshCookie(this.response, refreshJwt);
 
       const userInstance = new User(
         createdUser.id,
@@ -85,6 +87,7 @@ export default class UserController extends Controller {
 
       return this.response.status(201).json({
         message: "Inscription réussie",
+        accessToken,
         data: userInstance.serialize(),
       });
     } catch (error) {
@@ -98,8 +101,8 @@ export default class UserController extends Controller {
    * • Reçoit un corps déjà validé par le middleware Zod
    * • Vérifie l'existence de l'utilisateur par email
    * • Compare le mot de passe soumis avec le hash enregistré
-   * • Signe un nouveau JWT et enregistre le token
-   * • Dépose le JWT en cookie httpOnly
+   * • Signe un refresh token (cookie httpOnly) et un access token (body)
+   * • Enregistre le refresh token en base
    *
    * Réponses : 401 | 400 | 200
    */
@@ -130,15 +133,16 @@ export default class UserController extends Controller {
           .json({ message: "Email ou mot de passe incorrect" });
       }
 
-      // 2.1 TOKEN : Signer le JWT et créer une instance du token
-      const jwt = TokenService.signRefreshToken({ sub: foundUser.id });
-      const token = Token.create(foundUser.id, jwt);
+      // 2.1 TOKEN : Signer les tokens et créer une instance du refresh token
+      const refreshJwt = TokenService.signRefreshToken({ sub: foundUser.id });
+      const accessToken = TokenService.signAccessToken({ sub: foundUser.id });
+      const token = Token.create(foundUser.id, refreshJwt);
 
-      // 2.2 TOKEN : Enregistrer le token en base
+      // 2.2 TOKEN : Enregistrer le refresh token en base
       await tokenRepository.create(token);
 
       // 3 RESPONSE : Attacher le cookie et renvoyer les données de l'utilisateur
-      CookieService.setRefreshCookie(this.response, jwt);
+      CookieService.setRefreshCookie(this.response, refreshJwt);
 
       const userInstance = new User(
         foundUser.id,
@@ -152,6 +156,7 @@ export default class UserController extends Controller {
 
       return this.response.status(200).json({
         message: "Connexion réussie",
+        accessToken,
         data: userInstance.serialize(),
       });
     } catch (error) {
@@ -162,35 +167,60 @@ export default class UserController extends Controller {
   /**
    * Rafraîchissement du token de session
    *
-   * • Protégée par requireAuth (userId déjà vérifié et injecté)
-   * • Génère un nouveau JWT et remplace l'ancien token en base (rotation)
-   * • Met à jour le cookie httpOnly
+   * • Route publique — lit directement le cookie httpOnly (pas de requireAuth)
+   * • Vérifie le refresh token (signature + présence en base + expiry)
+   * • Génère un nouveau refresh token et un access token (rotation)
+   * • Met à jour le cookie httpOnly et renvoie le nouvel access token dans le body
    *
-   * Réponses : 401 (géré par requireAuth) | 404 | 200
+   * Réponses : 401 | 404 | 200
    */
   async refresh() {
     try {
-      // 0.0 REQUEST : Récupérer l'userId injecté par le middleware requireAuth
-      const userId = this.request.userId!;
+      // 0.0 COOKIE : Lire le refresh token depuis le cookie httpOnly
+      const rawRefreshJwt: string | undefined =
+        this.request.cookies.refresh_token;
+      if (!rawRefreshJwt) {
+        return this.response.status(401).json({ message: "Non authentifié" });
+      }
 
-      // 1.0 USER : Charger l'utilisateur depuis la base
-      const foundUser = await userRepository.findById(userId);
+      // 1.0 JWT : Vérifier la signature du refresh token
+      const secret = process.env.JWT_REFRESH_SECRET;
+      if (!secret) throw new Error("JWT_REFRESH_SECRET non défini");
+      try {
+        jwt.verify(rawRefreshJwt, secret);
+      } catch {
+        return this.response
+          .status(401)
+          .json({ message: "Token invalide ou expiré" });
+      }
 
+      // 2.0 TOKEN : Hasher et retrouver en base
+      const hash = Token.hashJwt(rawRefreshJwt);
+      const storedToken = await tokenRepository.findByHash(hash);
+      if (!storedToken || new Date() > storedToken.expiresAt) {
+        return this.response
+          .status(401)
+          .json({ message: "Token invalide ou expiré" });
+      }
+
+      // 3.0 USER : Charger l'utilisateur depuis la base
+      const foundUser = await userRepository.findById(storedToken.userId);
       if (!foundUser) {
         return this.response
           .status(404)
           .json({ message: "Utilisateur introuvable" });
       }
 
-      // 2.1 TOKEN : Signer un nouveau JWT et créer l'instance token
-      const jwt = TokenService.signRefreshToken({ sub: foundUser.id });
-      const token = Token.create(foundUser.id, jwt);
+      // 4.1 TOKEN : Émettre un nouveau refresh token + un access token
+      const newRefreshJwt = TokenService.signRefreshToken({ sub: foundUser.id });
+      const accessToken = TokenService.signAccessToken({ sub: foundUser.id });
+      const token = Token.create(foundUser.id, newRefreshJwt);
 
-      // 2.2 TOKEN : Remplacer l'ancien token en base (rotation)
+      // 4.2 TOKEN : Remplacer l'ancien token en base (rotation)
       await tokenRepository.replaceForUser(token);
 
-      // 3 RESPONSE : Mettre à jour le cookie et renvoyer les données utilisateur
-      CookieService.setRefreshCookie(this.response, jwt);
+      // 5 RESPONSE : Mettre à jour le cookie et renvoyer les données utilisateur
+      CookieService.setRefreshCookie(this.response, newRefreshJwt);
 
       const userInstance = new User(
         foundUser.id,
@@ -204,6 +234,7 @@ export default class UserController extends Controller {
 
       return this.response.status(200).json({
         message: "Token rafraîchi",
+        accessToken,
         data: userInstance.serialize(),
       });
     } catch (error) {

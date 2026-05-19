@@ -12,6 +12,15 @@
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
 
+// Access token stocké en mémoire (jamais en localStorage ni sessionStorage).
+// Initialisé après signin/signup, renouvelé automatiquement à chaque refresh.
+let _accessToken: string | null = null;
+
+/** Met à jour l'access token stocké en mémoire. */
+export function setAccessToken(token: string | null): void {
+  _accessToken = token;
+}
+
 /**
  * Effectue une requête HTTP vers l'API backend.
  *
@@ -31,12 +40,13 @@ export async function apiFetch(
 ) {
   const url = `${API_BASE_URL}${endpoint}`;
 
-  // 1. REQUÊTE : envoi avec les credentials et le header JSON
+  // 1. REQUÊTE : envoi avec les credentials, le header JSON et l'access token si disponible
   const response = await fetch(url, {
     ...options,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(_accessToken ? { Authorization: `Bearer ${_accessToken}` } : {}),
       ...(options.headers || {}),
     },
   });
@@ -55,7 +65,9 @@ export async function apiFetch(
     });
 
     if (refreshResponse.ok) {
-      // 3.1 Refresh réussi : on rejoue la requête originale
+      // 3.1 Refresh réussi : on stocke le nouvel access token puis on rejoue la requête
+      const refreshData = await refreshResponse.json();
+      setAccessToken(refreshData.accessToken);
       return apiFetch(endpoint, options, true);
     } else {
       // 3.2 Refresh échoué : session définitivement expirée

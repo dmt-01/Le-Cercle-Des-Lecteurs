@@ -7,6 +7,8 @@ export default defineConfig({
     env: {
       JWT_REFRESH_SECRET: "test-secret-for-vitest",
       JWT_REFRESH_TTL: "604800",
+      JWT_ACCESS_SECRET: "test-access-secret-for-vitest",
+      JWT_ACCESS_TTL: "900",
     },
     coverage: {
       provider: "v8",

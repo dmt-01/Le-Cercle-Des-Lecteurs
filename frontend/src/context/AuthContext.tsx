@@ -5,13 +5,13 @@
 // • AuthProvider  — wrapping de toute l'app, charge la session au démarrage
 // • useAuth()     — hook d'accès au contexte dans n'importe quel composant
 //
-// L'authentification est basée sur un cookie httpOnly (refresh token).
-// Le cookie est géré côté backend ; le frontend ne manipule jamais le JWT.
+// L'authentification repose sur deux tokens : un refresh token (cookie httpOnly, géré
+// côté backend) et un access token (stocké en mémoire JS, jamais en localStorage).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { apiFetch, setAccessToken } from "../services/api";
 import type { AuthContextType, User } from "../types";
-import { apiFetch } from "../services/api";
 import type { ReactNode } from "react";
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -45,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
+    setAccessToken(res.accessToken);
     setUser(res.data);
   }
 
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ username, email, password }),
     });
+    setAccessToken(res.accessToken);
     setUser(res.data);
   }
 
@@ -65,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   async function logout() {
     await apiFetch("/users/logout", { method: "POST" });
+    setAccessToken(null);
     setUser(null);
   }
 

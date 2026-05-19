@@ -29,6 +29,11 @@ function Header() {
     if (search) navigate(`/books?search=${encodeURIComponent(search)}`);
   }
 
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
+
   return (
     <>
       <a
@@ -119,7 +124,7 @@ function Header() {
                 <Link to={`/users/${user.id}`} aria-label="Mon profil" className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition">
                   <img src="/img/icon_profil.png" alt="Profil" className="rounded-full object-cover" />
                 </Link>
-                <button onClick={logout} aria-label="Se déconnecter" className="text-white/60 text-sm hover:text-gold transition-colors">
+                <button onClick={handleLogout} aria-label="Se déconnecter" className="text-white/60 text-sm hover:text-gold transition-colors">
                   Déconnexion
                 </button>
               </nav>
@@ -169,7 +174,7 @@ function Header() {
                   <Link to={`/users/${user.id}`} className="text-sm uppercase tracking-widest text-white/80 hover:text-gold py-3.5 border-b border-white/10 transition-colors">
                     Mon profil
                   </Link>
-                  <button onClick={logout} className="text-left text-sm uppercase tracking-widest text-white/60 hover:text-gold py-3.5 transition-colors">
+                  <button onClick={handleLogout} className="text-left text-sm uppercase tracking-widest text-white/60 hover:text-gold py-3.5 transition-colors">
                     Déconnexion
                   </button>
                 </>

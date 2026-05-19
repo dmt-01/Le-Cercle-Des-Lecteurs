@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 /**
- * Service gérant la création et la configuration des JWT de rafraîchissement.
+ * Service gérant la création et la configuration des JWT.
  */
 export class TokenService {
   /**
@@ -21,6 +21,26 @@ export class TokenService {
     if (!secret) throw new Error("JWT_REFRESH_SECRET non défini");
     return jwt.sign(payload, secret, {
       expiresIn: TokenService.getRefreshTokenTTL(),
+    });
+  }
+
+  /**
+   * Retourne la durée de vie de l'access token en secondes.
+   * Lue depuis la variable d'environnement JWT_ACCESS_TTL (défaut : 15 minutes).
+   */
+  static getAccessTokenTTL(): number {
+    return parseInt(process.env.JWT_ACCESS_TTL ?? "900");
+  }
+
+  /**
+   * Signe et retourne un JWT d'accès.
+   * @param payload - Objet contenant `sub` (identifiant de l'utilisateur)
+   */
+  static signAccessToken(payload: { sub: string }): string {
+    const secret = process.env.JWT_ACCESS_SECRET;
+    if (!secret) throw new Error("JWT_ACCESS_SECRET non défini");
+    return jwt.sign(payload, secret, {
+      expiresIn: TokenService.getAccessTokenTTL(),
     });
   }
 }

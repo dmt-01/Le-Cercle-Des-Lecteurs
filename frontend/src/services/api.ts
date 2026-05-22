@@ -57,7 +57,8 @@ export async function apiFetch(
   }
 
   // 3. TOKEN EXPIRÉ : on tente un refresh automatique (une seule fois)
-  if (response.status === 401 && !_retry) {
+  const isAuthRoute = endpoint === "/users/signin" || endpoint === "/users/signup";
+  if (response.status === 401 && !_retry && !isAuthRoute) {
     const refreshResponse = await fetch(API_BASE_URL + "/users/refresh", {
       method: "POST",
       credentials: "include",

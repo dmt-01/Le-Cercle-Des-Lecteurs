@@ -51,9 +51,12 @@ migrate-dev:
 deploy-prisma: migrate-dev migrate seed
 	@echo "✅ Prisma déployé et BDD peuplée !"
 
-# Déploiement production (sans toucher à la base de données)
+# Déploiement production
+# Pull les nouvelles images depuis GHCR puis redémarre les containers
+# Sans toucher à la base de données
 deploy:
-	DOCKER_BUILDKIT=1 docker compose --env-file .env.prod up -d --build --no-deps backend frontend
+	docker compose --env-file .env.prod pull backend frontend
+	docker compose --env-file .env.prod up -d --no-deps backend frontend
 
 ## ─── Tests ────────────────────────────────────────────────────────────────────
 

@@ -5,6 +5,7 @@ on:
     branches: [main, staging]
 
 jobs:
+  # ─── Job 1 : Tests backend ────────────────────────────────────────
   test-backend:
     name: Tests backend
     runs-on: ubuntu-latest
@@ -34,6 +35,7 @@ jobs:
         working-directory: backend
         run: pnpm test
 
+  # ─── Job 2 : Tests frontend ────────────────────────────────────────
   test-frontend:
     name: Tests frontend
     runs-on: ubuntu-latest
@@ -59,9 +61,63 @@ jobs:
         working-directory: frontend
         run: pnpm test --run
 
+  # ─── Job 3 : Build et push des images sur GHCR ────────────────────
+  # Ce job ne tourne que sur main (pas la peine de builder sur staging)
+  # Il attend que les deux jobs de tests soient verts
+  build:
+    name: Build images Docker
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      # Se connecte à GHCR avec le token GitHub automatique
+      # GITHUB_TOKEN est fourni automatiquement par GitHub Actions, pas besoin de le créer
+      - name: Connexion à GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Active BuildKit pour des builds plus rapides avec cache
+      - name: Configurer Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build l'image backend et la pousse sur GHCR
+      # Le tag :latest est mis à jour à chaque push sur main
+      - name: Build et push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/cercle-backend:latest
+          # Le cache permet de ne pas tout rebuilder si rien n'a changé
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Build l'image frontend avec la variable Vite injectée au build
+      # VITE_API_BASE_URL doit être connue au moment du build (pas à l'exécution)
+      - name: Build et push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/cercle-frontend:latest
+          build-args: |
+            VITE_API_BASE_URL=https://lecercledeslecteurs.fr/api
+          # Le cache permet de ne pas tout rebuilder si rien n'a changé
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Job 4 : Déploiement sur le VPS ──────────────────────────────
+  # Attend que les images soient buildées et poussées sur GHCR
   deploy:
     name: Déploiement VPS
-    needs: [test-backend, test-frontend]
+    needs: [build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:

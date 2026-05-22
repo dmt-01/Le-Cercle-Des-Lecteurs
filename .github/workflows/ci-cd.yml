@@ -124,6 +124,21 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - uses: actions/checkout@v4
+
+      # Copie compose.yml et Makefile sur le VPS
+      # scp = secure copy, utilise SSH pour transférer des fichiers
+      - name: Copier les fichiers de config sur le VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "compose.yml,Makefile"
+          target: /var/www/Le-Cercle-Des-Lecteurs
+
+      # Se connecte en SSH et lance le déploiement
       - name: Déployer sur le VPS
         uses: appleboy/ssh-action@v1
         with:
@@ -134,5 +149,4 @@ jobs:
           script: |
             set -e
             cd /var/www/Le-Cercle-Des-Lecteurs
-            git pull origin main
             make deploy
